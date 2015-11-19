@@ -10,31 +10,21 @@ y <- t( t(y) / apply(y, 2, sd, na.rm=TRUE) )
 # LMM by REML and ML with regress package
 library(regress)
 out1r <- regress(y[,1] ~ -1 + X, ~k, tol=tol)
-out1m <- regress(y[,1] ~ -1 + X, ~k, kernel=0, tol=tol)
 
 # LMM with lmm.R
 e <- eigen_rotation(k, y[,1], X)
 lmm1r <- fitLMM(e$Kva, e$y, e$X, tol=tol)
-lmm1m <- fitLMM(e$Kva, e$y, e$X, reml=FALSE, tol=tol)
-
-# grab sigma^2 values from lmm_result
-grab_sigs <-
-    function(lmm_result)
-{
-    c(k=lmm_result$sigsq_g,
-      In=lmm_result$sigsq_e)
-}
-
 
 # compare results
 library(testthat)
-expect_equal(out1r$sigma, grab_sigs(lmm1r), tolerance=0.00001)
+expect_equal(out1r$sigma, c(k=lmm1r$sigsq_g, In=lmm1r$sigsq_e),
+             tolerance=0.00001)
 rownames(out1r$beta) <- gsub("^X", "", rownames(out1r$beta))
 expect_equal(out1r$beta, lmm1r$beta, tolerance=0.0000001)
 
 # do all phenotypes by reml
 library(parallel)
-lmmr_all <- mclapply(1:ncol(y), function(i) {
+lmm_all_r <- mclapply(1:ncol(y), function(i) {
     thisy <- y[,i,drop=FALSE]
     omit <- is.na(thisy)
     thisy <- thisy[!omit,,drop=FALSE]
@@ -42,28 +32,19 @@ lmmr_all <- mclapply(1:ncol(y), function(i) {
     thisk <- k[!omit,!omit]
     e <- eigen_rotation(thisk, thisy, thisX)
     fitLMM(e$Kva, e$y, e$X, tol=tol)},
-                     mc.cores=parallel::detectCores())
+                     mc.cores=detectCores())
 
-regr_all <- mclapply(1:ncol(y), function(i) regress(y[,i] ~ X, ~k, tol=tol), mc.cores=parallel::detectCores())
-
-sig_lmm <- vapply(lmmr_all, grab_sigs, c(0,0))
-sig_regr <- vapply(regr_all, function(a) a$sigma, c(0,0))
-plot(sig_lmm[1,], sig_regr[1,])
-abline(0,1)
-
-beta_lmm <- vapply(lmmr_all, function(a) a$beta, c(0,0))
-beta_regr <- vapply(regr_all, function(a) a$beta, c(0,0))
-plot((beta_lmm[1,] + beta_regr[1,])/2, beta_lmm[1,]- beta_regr[1,])
-abline(0,1)
+tab_lmm_r <- t(vapply(lmm_all_r, function(a) c(sigsq_g=a$sigsq_g,
+                                               sigsq_e=a$sigsq_e,
+                                               hsq=a$hsq,
+                                               beta_int=a$beta[1],
+                                               beta_sex=a$beta[2],
+                                               loglik=a$loglik),
+                      rep(0, 6)))
 
 
 
-
-expect_equal(out1m$sigma, grab_sigs(lmm1m), tolerance=0.00001)
-rownames(out1m$beta) <- gsub("^X", "", rownames(out1m$beta))
-expect_equal(out1m$beta, lmm1m$beta, tolerance=0.0000001)
-
-lmmm_all <- mclapply(1:ncol(y), function(i) {
+lmm_all_m <- mclapply(1:ncol(y), function(i) {
     thisy <- y[,i,drop=FALSE]
     omit <- is.na(thisy)
     thisy <- thisy[!omit,]
@@ -71,4 +52,16 @@ lmmm_all <- mclapply(1:ncol(y), function(i) {
     thisk <- k[!omit,!omit]
     e <- eigen_rotation(thisk, thisy, thisX)
     fitLMM(e$Kva, e$y, e$X, tol=tol, reml=FALSE)},
-                     mc.cores=parallel::detectCores())
+                     mc.cores=detectCores())
+
+tab_lmm_m <- t(vapply(lmm_all_m, function(a) c(sigsq_g=a$sigsq_g,
+                                               sigsq_e=a$sigsq_e,
+                                               hsq=a$hsq,
+                                               beta_int=a$beta[1],
+                                               beta_sex=a$beta[2],
+                                               loglik=a$loglik),
+                      rep(0, 6)))
+
+source("expected_lmm.R")
+expect_equal(tab_lmm_r, expected_lmm_r)
+expect_equal(tab_lmm_m, expected_lmm_m)
