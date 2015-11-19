@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/kbroman/lmmlite.svg?branch=master)](https://travis-ci.org/kbroman/lmmlite)
 
-Karl Broman (following [Nick Furlotte](http://whatmind.com).)
+Karl Broman (following [Nick Furlotte](http://whatmind.com))
 
 I'm following the code in [pylmm](https://github.com/nickFurlotte/pylmm),
 in order to understand it, and porting it to R.
