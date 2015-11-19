@@ -1,7 +1,10 @@
 # simple port of pyLMM to R
 
 # do eigen decomposition of kinship matrix
-# and rotate X and y by that
+# and rotate X and y by that [ie., pre-multiply by t(eigenvec)]
+#
+# If Kva and Kve_t provided, just do the "rotation"
+#
 # K = kinship matrix
 # y = phenotypes
 # X = covariate matrix
@@ -16,7 +19,7 @@ eigen_rotation <-
         n <- nrow(K) # no. individuals
         stopifnot(ncol(K) == n) # square?
 
-        # eigen vals and vecs
+        # calculate eigen vals and vecs
         e <- eigen(K)
         Kva <- e$values
         Kve_t <- t(e$vectors)
@@ -27,6 +30,7 @@ eigen_rotation <-
         stopifnot(length(Kva) == n)
     }
 
+    # more checks
     if(missing(y) || is.null(y))
         y <- as.matrix(y)
     stopifnot(length(y) == n)
