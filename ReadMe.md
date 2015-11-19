@@ -1,5 +1,7 @@
 ## lmmlite - R port of [pylmm](https://github.com/nickFurlotte/pylmm)
 
+[![Build Status](https://travis-ci.org/kbroman/lmmlite.svg?branch=master)](https://travis-ci.org/kbroman/lmmlite)
+
 Karl Broman (following [Nick Furlotte](http://whatmind.com).)
 
 I'm following the code in [pylmm](https://github.com/nickFurlotte/pylmm),
