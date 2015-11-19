@@ -1,4 +1,4 @@
-dPackage: lmmlite
+Package: lmmlite
 Version: 0.1-2
 Date: 2015-11-19
 Title: Simple LMM Fitter for QTL Mapping
