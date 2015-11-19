@@ -73,7 +73,7 @@ eigen_rotation <-
 #'
 #' @export
 #' @return list containing \code{beta} and \code{sigsq}, with residual
-#' sum of squares and (if \code{reml=TRUE}, \code{log det (X'SX)}) as
+#' sum of squares and (if \code{reml=TRUE}, \code{log det (XSX)}) as
 #' attributes.
 #'
 #' @examples
