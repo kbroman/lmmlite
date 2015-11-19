@@ -32,6 +32,43 @@ expect_equal(out1r$sigma, grab_sigs(lmm1r), tolerance=0.00001)
 rownames(out1r$beta) <- gsub("^X", "", rownames(out1r$beta))
 expect_equal(out1r$beta, lmm1r$beta, tolerance=0.0000001)
 
+# do all phenotypes by reml
+library(parallel)
+lmmr_all <- mclapply(1:ncol(y), function(i) {
+    thisy <- y[,i,drop=FALSE]
+    omit <- is.na(thisy)
+    thisy <- thisy[!omit,,drop=FALSE]
+    thisX <- X[!omit,,drop=FALSE]
+    thisk <- k[!omit,!omit]
+    e <- eigen_rotation(thisk, thisy, thisX)
+    fitLMM(e$Kva, e$y, e$X, tol=tol)},
+                     mc.cores=parallel::detectCores())
+
+regr_all <- mclapply(1:ncol(y), function(i) regress(y[,i] ~ X, ~k, tol=tol), mc.cores=parallel::detectCores())
+
+sig_lmm <- vapply(lmmr_all, grab_sigs, c(0,0))
+sig_regr <- vapply(regr_all, function(a) a$sigma, c(0,0))
+plot(sig_lmm[1,], sig_regr[1,])
+abline(0,1)
+
+beta_lmm <- vapply(lmmr_all, function(a) a$beta, c(0,0))
+beta_regr <- vapply(regr_all, function(a) a$beta, c(0,0))
+plot((beta_lmm[1,] + beta_regr[1,])/2, beta_lmm[1,]- beta_regr[1,])
+abline(0,1)
+
+
+
+
 expect_equal(out1m$sigma, grab_sigs(lmm1m), tolerance=0.00001)
 rownames(out1m$beta) <- gsub("^X", "", rownames(out1m$beta))
 expect_equal(out1m$beta, lmm1m$beta, tolerance=0.0000001)
+
+lmmm_all <- mclapply(1:ncol(y), function(i) {
+    thisy <- y[,i,drop=FALSE]
+    omit <- is.na(thisy)
+    thisy <- thisy[!omit,]
+    thisX <- X[!omit,]
+    thisk <- k[!omit,!omit]
+    e <- eigen_rotation(thisk, thisy, thisX)
+    fitLMM(e$Kva, e$y, e$X, tol=tol, reml=FALSE)},
+                     mc.cores=parallel::detectCores())
