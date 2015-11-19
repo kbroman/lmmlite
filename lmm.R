@@ -101,7 +101,7 @@ calcLL <-
     function(hsq, Kva, y, X, reml=TRUE)
 {
     if(length(hsq) > 1)
-        return(vapply(hsq, calcLL, 0, Kva, X, y, reml))
+        return(vapply(hsq, calcLL, 0, Kva, y, X, reml))
 
     n <- nrow(X)
     p <- ncol(X)
