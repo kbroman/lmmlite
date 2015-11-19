@@ -19,7 +19,8 @@ getMLsoln(hsq, Kva, y, X, reml = TRUE)
 }
 \value{
 list containing \code{beta} and \code{sigsq}, with residual
-sum of squares and X'WX matrix as attributes.
+sum of squares and (if \code{reml=TRUE}, \code{log det (X'SX)}) as
+attributes.
 }
 \description{
 For a fixed value for \code{hsq}, the heritability, calculate the
