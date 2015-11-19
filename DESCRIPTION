@@ -15,7 +15,6 @@ Suggests:
     testthat,
     devtools,
     roxygen2,
-    regress,
     data.table,
     utils
 License: AGPL-3

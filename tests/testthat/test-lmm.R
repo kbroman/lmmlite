@@ -41,20 +41,6 @@ test_that("fitLMM works", {
     # scale phenotypes to have sd 1
     y <- t( t(y) / apply(y, 2, sd, na.rm=TRUE) )
 
-    # LMM by REML and ML with regress package
-    library(regress)
-    out1r <- regress(y[,1] ~ -1 + X, ~k, tol=tol)
-
-    # LMM with lmm.R
-    e <- eigen_rotation(k, y[,1], X)
-    lmm1r <- fitLMM(e$Kva, e$y, e$X, tol=tol)
-
-    # compare results
-    expect_equal(out1r$sigma, c(k=lmm1r$sigsq_g, In=lmm1r$sigsq_e),
-                 tolerance=0.00001)
-    rownames(out1r$beta) <- gsub("^X", "", rownames(out1r$beta))
-    expect_equal(out1r$beta, lmm1r$beta, tolerance=0.00001)
-
     # analyses all phenotypes by reml
     lmm_all_r <- lapply(1:ncol(y), function(i) {
         thisy <- y[,i,drop=FALSE]
@@ -67,25 +53,6 @@ test_that("fitLMM works", {
 
     # combine results
     tab_lmm_r <- t(vapply(lmm_all_r, function(a) c(sigsq_g=a$sigsq_g,
-                                                   sigsq_e=a$sigsq_e,
-                                                   hsq=a$hsq,
-                                                   beta_int=a$beta[1],
-                                                   beta_sex=a$beta[2],
-                                                   loglik=a$loglik),
-                          rep(0, 6)))
-
-
-    # analyses all phenotypes by ML
-    lmm_all_m <- lapply(1:ncol(y), function(i) {
-        thisy <- y[,i,drop=FALSE]
-        omit <- is.na(thisy)
-        thisy <- thisy[!omit,]
-        thisX <- X[!omit,]
-        thisk <- k[!omit,!omit]
-        e <- eigen_rotation(thisk, thisy, thisX)
-        fitLMM(e$Kva, e$y, e$X, tol=tol, reml=FALSE)})
-
-    tab_lmm_m <- t(vapply(lmm_all_m, function(a) c(sigsq_g=a$sigsq_g,
                                                    sigsq_e=a$sigsq_e,
                                                    hsq=a$hsq,
                                                    beta_int=a$beta[1],
@@ -140,6 +107,30 @@ test_that("fitLMM works", {
                                   ), .Dim = c(26L, 6L), .Dimnames = list(NULL, c("sigsq_g", "sigsq_e",
                                                         "hsq", "beta_int", "beta_sex", "loglik")))
 
+    # compare
+    expect_equal(tab_lmm_r, expected_lmm_r)
+
+
+    # analyses all phenotypes by ML
+    lmm_all_m <- lapply(1:ncol(y), function(i) {
+        thisy <- y[,i,drop=FALSE]
+        omit <- is.na(thisy)
+        thisy <- thisy[!omit,]
+        thisX <- X[!omit,]
+        thisk <- k[!omit,!omit]
+        e <- eigen_rotation(thisk, thisy, thisX)
+        fitLMM(e$Kva, e$y, e$X, tol=tol, reml=FALSE)})
+
+    # combine results
+    tab_lmm_m <- t(vapply(lmm_all_m, function(a) c(sigsq_g=a$sigsq_g,
+                                                   sigsq_e=a$sigsq_e,
+                                                   hsq=a$hsq,
+                                                   beta_int=a$beta[1],
+                                                   beta_sex=a$beta[2],
+                                                   loglik=a$loglik),
+                          rep(0, 6)))
+
+    # expected results
     expected_lmm_m <- structure(c(0.796833960834209, 1.10970848012991, 0.00000000370735012333556,
                                   0.00000000363968135236, 1.08406091027421, 0.00000000371664998653968,
                                   1.10430746718068, 0.495965151690246, 0.00000000371008013011523,
@@ -186,7 +177,6 @@ test_that("fitLMM works", {
                                                                                            NULL, c("sigsq_g", "sigsq_e", "hsq", "beta_int", "beta_sex",
                                                                                                    "loglik")))
 
-
-    expect_equal(tab_lmm_r, expected_lmm_r)
+    # compare
     expect_equal(tab_lmm_m, expected_lmm_m)
 })
