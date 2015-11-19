@@ -28,4 +28,8 @@ Do eigen decomposition of kinship matrix and rotate \code{X} and
 of eigenvectors. If \code{Kva} and \code{Kve_t} provided, just do
 the "rotation".
 }
+\examples{
+data(recla)
+e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
+}
 

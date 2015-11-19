@@ -27,4 +27,9 @@ corresponding maximum likelihood estimates of \code{beta} and
 \code{sigsq}, with the latter being the total variance,
 \code{sigsq_g + sigsq_e}.
 }
+\examples{
+data(recla)
+e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
+ml <- getMLsoln(0.5, e$Kva, e$y, e$X)
+}
 

@@ -1,5 +1,5 @@
 Package: lmmlite
-Version: 0.1-1
+Version: 0.1-2
 Date: 2015-11-19
 Title: Simple LMM Fitter for QTL Mapping
 Description: A port of parts of 'pylmm' for fitting linear mixed
@@ -19,4 +19,5 @@ Suggests:
     utils
 License: AGPL-3
 URL: https://github.com/kbroman/lmmlite
+LazyData: true
 RoxygenNote: 5.0.1

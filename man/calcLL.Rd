@@ -24,4 +24,10 @@ of \code{beta} and \code{sigsq} included as attributes.
 \description{
 Calculate the log likelihood for a given value of the heritability, \code{hsq}.
 }
+\examples{
+data(recla)
+e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
+loglik <- calcLL(0.5, e$Kva, e$y, e$X)
+many_loglik <- calcLL(seq(0, 1, by=0.1), e$Kva, e$y, e$X)
+}
 

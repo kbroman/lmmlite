@@ -17,6 +17,10 @@
 #' @export
 #' @return List containing \code{Kva}, \code{Kve_t} and rotated
 #' \code{y} and \code{X}.
+#'
+#' @examples
+#' data(recla)
+#' e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
 eigen_rotation <-
     function(K, y, X, Kva, Kve_t)
 {
@@ -70,6 +74,11 @@ eigen_rotation <-
 #' @export
 #' @return list containing \code{beta} and \code{sigsq}, with residual
 #' sum of squares and X'WX matrix as attributes.
+#'
+#' @examples
+#' data(recla)
+#' e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
+#' ml <- getMLsoln(0.5, e$Kva, e$y, e$X)
 getMLsoln <-
     function(hsq, Kva, y, X, reml=TRUE)
 {
@@ -123,6 +132,12 @@ getMLsoln <-
 #' @export
 #' @return The log likelihood value, with the corresponding estimates
 #' of \code{beta} and \code{sigsq} included as attributes.
+#'
+#' @examples
+#' data(recla)
+#' e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
+#' loglik <- calcLL(0.5, e$Kva, e$y, e$X)
+#' many_loglik <- calcLL(seq(0, 1, by=0.1), e$Kva, e$y, e$X)
 calcLL <-
     function(hsq, Kva, y, X, reml=TRUE)
 {
@@ -167,6 +182,11 @@ calcLL <-
 #' @return List containing estimates of \code{beta}, \code{sigsq},
 #' \code{hsq}, \code{sigsq_g}, and \code{sigsq_e}, as well as the log
 #' likelihood (\code{loglik}).
+#'
+#' @examples
+#' data(recla)
+#' e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
+#' result <- fitLMM(e$Kva, e$y, e$X)
 fitLMM <-
     function(Kva, y, X, reml=TRUE, tol=1e-4)
 {

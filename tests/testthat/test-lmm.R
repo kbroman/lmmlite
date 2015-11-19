@@ -1,42 +1,14 @@
 context("lmm regression test")
 
-# function to load the test data
-load_test_data <-
-    function()
-{
-    dir <- tempdir()
-
-    utils::unzip(system.file("extdata", "recla.zip", package="lmmlite"), exdir=dir)
-    dir <- file.path(dir, "Recla")
-
-    read_csv <-
-        function(dir, file)
-        {
-            tmp <- data.table::fread(file.path(dir, file), header=TRUE, data.table=FALSE)
-            rownames(tmp) <- tmp[,1]
-            as.matrix(tmp[,-1,drop=FALSE])
-        }
-
-    k <- read_csv(dir, "kinship.csv")
-    y <- read_csv(dir, "pheno.csv")
-
-    # covariates, adding intercept column
-    X <- read_csv(dir, "covar.csv")
-    X <- cbind(intercept=1, sex=X)
-
-    list(k=k, y=y, X=X)
-}
-
-
 test_that("fitLMM works", {
 
     tol <- 1e-8 # tolerance for convergence
 
     # load test data
-    dat <- load_test_data()
-    k <- dat$k
-    y <- dat$y
-    X <- dat$X
+    data(recla)
+    k <- recla$kinship
+    y <- recla$pheno
+    X <- recla$covar
 
     # scale phenotypes to have sd 1
     y <- t( t(y) / apply(y, 2, sd, na.rm=TRUE) )

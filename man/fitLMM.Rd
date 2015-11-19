@@ -28,4 +28,9 @@ multivariate normal distribution with mean 0 and variance matrix
 \code{sigsq_g K + sigsq_e I}, where \code{K} is a known kniship
 matrix and \code{I} is the identity matrix.
 }
+\examples{
+data(recla)
+e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
+result <- fitLMM(e$Kva, e$y, e$X)
+}
 
