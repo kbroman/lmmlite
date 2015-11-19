@@ -157,8 +157,15 @@ calcLL <-
     # calculate log likelihood
     LL <- -0.5*(sum(log(hsq*Kva + 1-hsq)) + n*log(Q))
 
-    if(reml) # note that default is determinant() gives log det
-        LL <- LL + 0.5 * (p*log(sigsq) + determinant(t(X) %*% X)$modulus - determinant(XX)$modulus)
+    if(reml) { # note that default is determinant() gives log det
+        logdetXpX <- attr(X, "logdetXpX")
+        if(is.null(logdetXpX)) { # need to calculate it
+            XpX <- t(X) %*% X
+            logdetXpX <- sum(log(eigen(XpX)$values))
+        }
+
+        LL <- LL + 0.5 * (p*log(sigsq) + logdetXpX - determinant(XX)$modulus)
+    }
 
     attr(LL, "beta") <- beta
     attr(LL, "sigsq") <- sigsq
@@ -195,6 +202,12 @@ fitLMM <-
     stopifnot(nrow(X) == n)
     if(!is.matrix(y)) y <- as.matrix(y)
     stopifnot(nrow(y) == n)
+
+    # calculate log determinant of X'X matrix, so it's only done once
+    if(reml) {
+        XpX <- t(X) %*% X
+        attr(X, "logdetXpX") <- sum(log( eigen(XpX)$values ))
+    }
 
     # maximize log likelihood
     out <- stats::optimize(calcLL, c(0, 1), Kva=Kva, y=y, X=X, reml=reml,
