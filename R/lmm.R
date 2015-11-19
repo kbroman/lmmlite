@@ -92,29 +92,29 @@ getMLsoln <-
     # diagonal matrix of weights
     S = 1/(hsq*Kva + 1-hsq)
 
-    # X'S
-    Xt = t(X * S)
-
-    # X'SX
-    XX = Xt %*% X
+    # calculate a bunch of matrices
+    XSt = t(X * S)     # (XS)'
+    ySt = t(y * S)     # (yS)'
+    XSX = XSt %*% X    # (XS)'X
+    XSy = XSt %*% y    # (XS)'y
+    ySy = ySt %*% y    # (yS)'y
 
     # estimate of beta, by weighted LS
-    # (use eigen decomposition of XX here, for later determinant?)
-    beta = solve(XX, Xt %*% y)
+    e <- eigen(XSX)
+    evals <- e$values
+    evecs <- t(e$vectors)
+    if(reml) logdetXSX <- sum(log(evals))
+    beta <- t(evecs/evals) %*% evecs %*% XSy
 
-    # resid
-    resid = y - X %*% beta
-
-    # RSS
-    Q = sum(resid * S * resid)
+    rss = ySy - t(XSy) %*% beta
 
     # estimate of sigma^2 (total variance = sigma_g^2 + sigma_e^2)
-    sigsq <- Q / ifelse(reml, n - p, n)
+    sigsq <- rss / ifelse(reml, n - p, n)
 
     # return value
     result <- list(beta=beta, sigsq=sigsq)
-    attr(result, "Q") <- Q
-    attr(result, "XX") <- XX
+    attr(result, "rss") <- rss
+    if(reml) attr(result, "logdetXSX") <- logdetXSX
 
     result
 }
@@ -151,11 +151,10 @@ calcLL <-
     MLsoln <- getMLsoln(hsq, Kva, y, X, reml=reml)
     beta <- MLsoln$beta
     sigsq <- MLsoln$sigsq
-    Q <- attr(MLsoln, "Q")
-    XX <- attr(MLsoln, "XX")
 
     # calculate log likelihood
-    LL <- -0.5*(sum(log(hsq*Kva + 1-hsq)) + n*log(Q))
+    rss <- attr(MLsoln, "rss")
+    LL <- -0.5*(sum(log(hsq*Kva + 1-hsq)) + n*log(rss))
 
     if(reml) { # note that default is determinant() gives log det
         logdetXpX <- attr(X, "logdetXpX")
@@ -164,7 +163,8 @@ calcLL <-
             logdetXpX <- sum(log(eigen(XpX)$values))
         }
 
-        LL <- LL + 0.5 * (p*log(sigsq) + logdetXpX - determinant(XX)$modulus)
+        logdetXSX <- attr(MLsoln, "logdetXSX")
+        LL <- LL + 0.5 * (p*log(sigsq) + logdetXpX - logdetXSX)
     }
 
     attr(LL, "beta") <- beta
