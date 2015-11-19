@@ -33,7 +33,7 @@ eigen_rotation <-
     # more checks
     if(missing(y) || is.null(y))
         y <- as.matrix(y)
-    stopifnot(length(y) == n)
+    stopifnot(nrow(y) == n)
 
     if(missing(X) || is.null(X))
         X <- matrix(1, nrow=n)
