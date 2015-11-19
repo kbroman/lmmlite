@@ -9,8 +9,8 @@ y <- t( t(y) / apply(y, 2, sd, na.rm=TRUE) )
 
 # LMM by REML and ML with regress package
 library(regress)
-out1r <- regress(y[,1] ~ X, ~k, tol=tol)
-out1m <- regress(y[,1] ~ X, ~k, kernel=0, tol=tol)
+out1r <- regress(y[,1] ~ -1 + X, ~k, tol=tol)
+out1m <- regress(y[,1] ~ -1 + X, ~k, kernel=0, tol=tol)
 
 # LMM with lmm.R
 e <- eigen_rotation(k, y[,1], X)
@@ -22,7 +22,7 @@ grab_sigs <-
     function(lmm_result)
 {
     c(k=lmm_result$sigsq_g,
-      In=lmm_result$sigsq)
+      In=lmm_result$sigsq_e)
 }
 
 

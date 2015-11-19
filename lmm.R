@@ -62,7 +62,7 @@ getMLsoln <-
     p <- ncol(X)
 
     # diagonal matrix of weights
-    S = 1/(hsq/(1-hsq)*Kva + 1)
+    S = 1/(hsq*Kva + 1-hsq)
 
     # X'S
     Xt = t(X * S)
@@ -80,7 +80,7 @@ getMLsoln <-
     # RSS
     Q = sum(resid * S * resid)
 
-    # estimate of sigma-sq
+    # estimate of sigma^2 (total variance = sigma_g^2 + sigma_e^2)
     sigsq <- Q / ifelse(reml, n - p, n)
 
     # return value
@@ -114,7 +114,7 @@ calcLL <-
     XX <- attr(MLsoln, "XX")
 
     # calculate log likelihood
-    LL <- -0.5*(sum(log(hsq/(1-hsq)*Kva + 1)) + n*log(Q))
+    LL <- -0.5*(sum(log(hsq*Kva + 1-hsq)) + n*log(Q))
 
     if(reml) # note that default is determinant() gives log det
         LL <- LL + 0.5 * (p*log(sigsq) + determinant(t(X) %*% X)$modulus - determinant(XX)$modulus)
@@ -145,8 +145,9 @@ fitLMM <-
     sigsq <- attr(obj, "sigsq")
 
     list(beta=attr(obj, "beta"),
-         sigsq=sigsq,
+         sigsq=sigsq, # total var
          hsq=hsq,
-         sigsq_g= hsq/(1-hsq)*sigsq,
+         sigsq_g= hsq*sigsq, # genetic variance
+         sigsq_e = (1-hsq)*sigsq, # residual variance
          loglik = as.numeric(obj))
 }
