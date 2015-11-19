@@ -31,13 +31,13 @@ eigen_rotation <-
     }
 
     # more checks
-    if(missing(y) || is.null(y))
-        y <- as.matrix(y)
+    if(!is.matrix(y)) y <- as.matrix(y)
     stopifnot(nrow(y) == n)
 
     if(missing(X) || is.null(X))
         X <- matrix(1, nrow=n)
-    stopifnot(is.matrix(X) && nrow(X) == n)
+    if(!is.matrix(X)) X <- as.matrix(X)
+    stopifnot(nrow(X) == n)
 
     # rotation
     y <- Kve_t %*% y
@@ -57,8 +57,10 @@ getMLsoln <-
     function(hsq, Kva, y, X, reml=TRUE)
 {
     n <- length(Kva)
-    stopifnot(is.matrix(X) && nrow(X) == n)
-    stopifnot(is.matrix(y) && nrow(y) == n)
+    if(!is.matrix(X)) X <- as.matrix(X)
+    stopifnot(nrow(X) == n)
+    if(!is.matrix(y)) y <- as.matrix(y)
+    stopifnot(nrow(y) == n)
     p <- ncol(X)
 
     # diagonal matrix of weights
@@ -133,8 +135,10 @@ fitLMM <-
     function(Kva, y, X, reml=TRUE, tol=1e-4)
 {
     n <- length(Kva)
-    stopifnot(is.matrix(X) && nrow(X) == n)
-    stopifnot(is.matrix(y) && nrow(y) == n)
+    if(!is.matrix(X)) X <- as.matrix(X)
+    stopifnot(nrow(X) == n)
+    if(!is.matrix(y)) y <- as.matrix(y)
+    stopifnot(nrow(y) == n)
 
     # maximize log likelihood
     out <- optimize(calcLL, c(0, 1), Kva=Kva, y=y, X=X, reml=reml,
