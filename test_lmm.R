@@ -29,4 +29,9 @@ grab_sigs <-
 # compare results
 library(testthat)
 expect_equal(out1r$sigma, grab_sigs(lmm1r), tolerance=0.00001)
+rownames(out1r$beta) <- gsub("^X", "", rownames(out1r$beta))
+expect_equal(out1r$beta, lmm1r$beta, tolerance=0.0000001)
+
 expect_equal(out1m$sigma, grab_sigs(lmm1m), tolerance=0.00001)
+rownames(out1m$beta) <- gsub("^X", "", rownames(out1m$beta))
+expect_equal(out1m$beta, lmm1m$beta, tolerance=0.0000001)
