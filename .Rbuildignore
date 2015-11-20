@@ -1,5 +1,8 @@
-Makefile
+^Makefile
 ^ReadMe\.md$
 ^LICENSE\.md$
 ^\.travis\.yml$
 \.Rout$
+^inst/compare2pylmm/__pycache__
+^inst/compare2pylmm/.+\.csv$
+^inst/compare2pylmm/lmm\.py$
