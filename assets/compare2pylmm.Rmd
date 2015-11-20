@@ -1,0 +1,413 @@
+---
+title: Comparison to pylmm and regress
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Comparison to pylmm and regress}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8](inputenc)
+---
+
+```{r options, echo=FALSE}
+knitr::opts_chunk$set(fig.width=7, fig.height=4)
+```
+
+
+My goal with [R/lmmlite](https://github.com/kbroman/lmmlite) is light
+implementation of the fit of linear mixed models for QTL analysis,
+to further my understanding of how to do this.
+
+I benefited greatly from
+[Artem Tarasov](https://github.com/lomereiter)'s series of
+[blog posts](http://lomereiter.github.io/2015/02/16/lmm_cov.html) that
+work through the details of
+[FaST-LMM](https://github.com/MicrosoftGenomics/FaST-LMM) and
+[pylmm](https://github.com/nickFurlotte/pylmm). And I'm closely
+following [Nick Furlotte](http://whatmind.com/)'s pylmm code, which is
+remarkably clear and easy to follow.
+
+The sort of model I want to fit is
+$y = X\beta + \epsilon$ where $\epsilon$ is multivariate normal with
+mean 0 and variance $\sigma^2_g K + \sigma^2_e I$, where $K$ is a
+known kinship matrix and $I$ is the identity. In pylmm, the focus is
+on $\sigma^2 = \sigma^2_g + \sigma^2_e$ and the heritability
+$h^2 = \sigma^2_g / \sigma^2$.
+
+To make sure that my code is correct, here I'll compare the lmmlite
+results to those of the R package
+[regress](https://cran.r-project.org/web/packages/regress/) (which, as
+we'll see, gives rather different results) and
+[pylmm](https://github.com/nickFurlotte/pylmm) (and fortunately pylmm and lmmlite
+results do generally correspond).
+
+```{r load_data, echo=FALSE}
+library(lmmlite)
+data(recla)
+```
+
+I'll focus on the `recla` dataset that I include with the
+package. This is data on a set of diversity outcross mice, from
+[Recla et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24700285) and
+[Logan et al. (2013)](http://www.ncbi.nlm.nih.gov/pubmed/23433259). The data are
+originally from the
+[QTL Archive/Mouse Phenotype Database](http://phenome.jax.org/db/q?rtn=projects/projdet&reqprojid=285)
+and I've also
+[placed them online](https://github.com/kbroman/qtl2data/tree/master/DO_Recla)
+in the format used by [R/qtl2](http://kbroman.org/qtl2). I used
+[qtl2geno](https://github.com/rqtl/qtl2geno) to calculate genotype
+probabilities from the MUGA SNP array data. The data include
+`r nrow(recla$kinship)` mice, and form a list with three components:
+the estimated kinship matrix, a matrix with `r ncol(recla$pheno)`
+phenotypes, and a covariate matrix that contains an intercept (all
+1's) and sex (0 for female and 1 for male).
+
+```{r show_load_data, eval=FALSE}
+library(lmmlite)
+data(recla)
+```
+
+Let's first run the lmmlite code and fit the LMM for each phenotype,
+by REML and maximum likelihood (ML). Currently, lmmlite doesn't deal
+with missing data at all, so we need to do a bit of extra work: for
+each phenotype, we drop any individuals with missing phenotypes.
+
+I'll first create an object to contain the results.
+
+```{r create_result_obj}
+n_phe <- ncol(recla$pheno)
+lmmlite <- data.frame(index=rep(NA,2*n_phe),
+                      method=rep("", 2*n_phe),
+                      hsq=rep(NA,2*n_phe),
+                      intercept=rep(NA,2*n_phe),
+                      sex=rep(NA,2*n_phe),
+                      sigmasq=rep(NA,2*n_phe),
+                      loglik=rep(NA,2*n_phe), stringsAsFactors=FALSE)
+```
+
+Now the actual fitting.  The first batch of code omits individuals
+with missing phenotype. I then call `eigen_rotation()` which does an
+eigen decomposition of the kinship matrix and "rotates" the phenotypes
+and covariates by the transpose of the matrix of eigenvectors. This
+turns what would be a general least squares problem into a simpler
+weighted least squares problem. Then I fit the model, first by REML
+and then by ML, and grab the key results.
+
+```{r lmmlite_fit}
+all_e <- vector("list", n_phe)
+for(i in 1:ncol(recla$pheno)) {
+    keep <- !is.na(recla$pheno[,i])
+    y <- recla$pheno[keep,i,drop=FALSE]
+    x <- recla$covar[keep,]
+    k <- recla$kinship[keep,keep]
+
+    all_e[[i]] <- e <- eigen_rotation(k, y, x)
+    res <- fitLMM(e$Kva, e$y, e$X, reml=TRUE)
+    lmmlite[i*2-1,1] <- i
+    lmmlite[i*2-1,2] <- "reml"
+    lmmlite[i*2-1,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
+
+    res <- fitLMM(e$Kva, e$y, e$X, reml=FALSE)
+    lmmlite[i*2,1] <- i
+    lmmlite[i*2,2] <- "ml"
+    lmmlite[i*2,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
+}
+```
+
+## Comparison to pylmm
+
+I ran pylmm with these data separately (see
+[the code](https://github.com/kbroman/lmmlite/tree/gh-pages/compare2pylmm/try_pylmm.py))
+and saved the results to a CSV file, which we'll now load. (Note that
+my python code is even uglier than my R code.)
+
+```{r load_pylmm_results}
+pylmm <- read.csv("../compare2pylmm/pylmm_results.csv", as.is=TRUE)
+```
+
+### Log likelihoods
+
+The log likelihood values provided by lmmlite are shifted relative to
+the pylmm ones, because I dropped a few terms that depend only on the
+sample size.
+
+For both REML and ML, the difference should be $n[\log(2 \pi) + 1 - \log n]/2$.
+Let's make the adjustment and plot the differences.
+
+```{r adjust_loglik_and_plot}
+n <- colSums(!is.na(recla$pheno))
+adj <- n*(log(2*pi) + 1 - log(n))/2
+lldiff <- lmmlite$loglik - pylmm$loglik - rep(adj, each=2)
+
+ymx <- max(abs(lldiff))
+par(mar=c(5.1,4.1,2.1,1.1))
+library(broman)
+grayplot(lldiff, ylab="LL(lmmlite) - LL(pylmm)", pch=21,
+                 ylim=c(-ymx, ymx), bg=c("slateblue", "violetred"),
+                 main="Difference in log likelihood")
+legend("topleft", pch=21, pt.bg=c("slateblue", "violetred"),
+       c("REML", "ML"), bg="gray80")
+```
+
+The biggest difference in log likelihood, after the adjustment, is
+`r myround(ymx, 2)`. For the larger discrepancies, lmmlite is giving a
+larger likelihood value.
+
+The points come in pairs (blue for REML, and then pink for ML for the
+same phenotype). We can see that there are `r sum(lldiff > 0.005)/2`
+phenotypes with non-negligible differences, and in each case the REML
+difference is larger than the ML one, and lmmlite is giving larger
+likelihood values than pylmm.
+
+For completeness, let's look at the log likelihoods from lmmlite
+calculated at the heritability estimates from pylmm. I use the
+function `calcLL`, which takes a specific value (or vector of values)
+for the heritability.
+
+```{r recalc_loglik}
+rev_loglik <- rep(NA, 2*n_phe)
+for(i in 1:ncol(recla$pheno)) {
+    e <- all_e[[i]]
+    rev_loglik[i*2-1] <- calcLL(pylmm$hsq[i*2-1], e$Kva, e$y, e$X, reml=TRUE)
+
+    rev_loglik[i*2] <- calcLL(pylmm$hsq[i*2], e$Kva, e$y, e$X, reml=FALSE)
+}
+```
+
+Actually the results basically don't change. It's not even worth
+making a plot. The largest absolute change in log
+likelihood was `r myround(max(abs(rev_loglik - lmmlite$loglik)), 2)`,
+while the differences between lmmlite and pylmm log likelihoods are
+still as large as `r myround(max(abs(rev_loglik - pylmm$loglik - adj)), 1)`.
+
+
+### Heritability
+
+Let's turn to the parameter estimates. First, the heritability.
+Here the results are quite similar (maximum absolute difference
+`r myround(max(abs(pylmm$hsq - lmmlite$hsq)), 2)`).
+
+```{r plot_hsq_diff}
+par(mfrow=c(1,2))
+par(mar=c(5.1,4.1,2.1,1.1))
+grayplot(pylmm$hsq, lmmlite$hsq, main="Heritability",
+         xlab="pylmm", ylab="lmmlite", type="n")
+abline(0,1)
+points(pylmm$hsq, lmmlite$hsq, pch=21, bg=c("slateblue", "violetred"))
+legend("topleft", pch=21, pt.bg=c("slateblue", "violetred"),
+       c("REML", "ML"), bg="gray80")
+
+grayplot(pylmm$hsq, lmmlite$hsq - pylmm$hsq, main="Difference in Heritability",
+         xlab="pylmm", ylab="Difference (lmmlite - pylmm)",
+         pch=21, bg=c("slateblue", "violetred"))
+```
+
+There seem to be very few differences except at the high end, but
+actually there are `r sum(abs(pylmm$hsq - lmmlite$hsq) > 0.005)`
+points there, where the two heritability estimates differ by about
+0.01. These are all cases where pylmm gives estimated heritability
+exactly 0.99. In
+`r sum(abs(pylmm$hsq - lmmlite$hsq) > 0.005 & lmmlite$hsq > 0.99)`
+cases, lmmlite gives an estimate that is very close to 1; in the other
+case, lmmlite gives an estimate around
+`r myround(lmmlite$hsq[abs(pylmm$hsq - lmmlite$hsq) > 0.005 & lmmlite$hsq < 0.99],2)`.
+So I think this just has to do with the optimization near the boundary &mdash; that
+pylmm is not seeking to optimize the likelihood further when the
+initial heritability estimate is 0.99.
+
+Here's a plot of the differences by index, and then repeating the plot
+of the differences in log likelihoods. You can see that these are the
+same set of `r sum(lldiff > 0.005)/2` phenotypes when these small
+differences in estimated heritability and also differences in log
+likelihood, plus another phenotype with a small difference in
+estimated heritability but a negligible difference in log likelihood.
+
+```{r plot_hsq_diff_by_index, fig.height=7}
+par(mfrow=c(2,1))
+par(mar=c(5.1,4.1,2.1,1.1))
+grayplot(lmmlite$hsq - pylmm$hsq, main="Difference in heritability",
+         ylab="Difference(lmmlite - pylmm)", pch=21,
+         bg=c("slateblue", "violetred"))
+
+grayplot(lldiff, ylab="LL(lmmlite) - LL(pylmm)", pch=21,
+                 ylim=c(-ymx, ymx), bg=c("slateblue", "violetred"),
+                 main="Difference in log likelihood")
+
+legend("bottomright", pch=21, pt.bg=c("slateblue", "violetred"),
+       c("REML", "ML"), bg="gray80")
+```
+
+### Coefficients
+
+The other parameters show similar largely negligible
+differences. Here's a plot of the differences of the intercept and sex
+coefficients, against the estimate from pylmm.
+
+```{r beta_differences}
+par(mfrow=c(1,2))
+par(mar=c(5.1,4.1,2.1,1.1))
+dif <- lmmlite$intercept - pylmm$intercept
+mx <- max(abs(dif))
+grayplot(pylmm$intercept, dif, ylim=c(-mx,mx),
+         main="Intercept",
+         xlab="pylmm", ylab="difference(lmmlite - pylmm)",
+         pch=21, bg=c("slateblue", "violetred"))
+dif <- lmmlite$sex - pylmm$sex
+mx <- max(abs(dif))
+grayplot(pylmm$sex, dif, ylim=c(-mx,mx),
+         main="Sex coefficient",
+         xlab="pylmm", ylab="difference(lmmlite - pylmm)",
+         pch=21, bg=c("slateblue", "violetred"))
+
+legend("topleft", pch=21, pt.bg=c("slateblue", "violetred"),
+       c("REML", "ML"), bg="gray80")
+```
+
+### Variance estimate
+
+Finally, let's look at the estimates of $\sigma^2 = \sigma^2_g + \sigma^2_e$.
+The phenotypes have huge differences in scale, so we'll look at the
+differences as a percent of the estimate from pylmm, and we'll put the
+x-axis on the log scale.
+
+```{r plot_sigmasq}
+dif <- (lmmlite$sigmasq - pylmm$sigmasq)/pylmm$sigmasq*100
+mx <- max(abs(dif))
+grayplot(log10(pylmm$sigmasq), dif, ylim=c(-mx,mx),
+         main="sigma^2",
+         xlab="log10(sigma^2) for pylmm", ylab="Percent difference",
+         pch=21, bg=c("slateblue", "violetred"))
+```
+
+The biggest differences is `r myround(mx,1)`%. And the larger
+differences are for exactly the phenotypes we'd expect. Here's the
+percent difference in $\hat{\sigma}^2$ by index, with the differences
+in estimated heritabilities for reference.
+
+```{r plot_sigmsq_with_hsq, fig.height=7}
+par(mfrow=c(2,1))
+par(mar=c(5.1,4.1,2.1,1.1))
+grayplot(dif, ylim=c(-mx,mx),
+         main="Difference in sigma^2",
+         ylab="Percent diff (lmmlite - pylmm)",
+         pch=21, bg=c("slateblue", "violetred"))
+
+grayplot(lmmlite$hsq - pylmm$hsq, main="Difference in heritability",
+         ylab="Difference(lmmlite - pylmm)", pch=21,
+         bg=c("slateblue", "violetred"))
+
+legend("bottomright", pch=21, pt.bg=c("slateblue", "violetred"),
+       c("REML", "ML"), bg="gray80")
+```
+
+Originally, I bigger differences by the two programs in the estimates
+of $\sigma^2$ with ML, but that was because I was using $1/n$ while
+pylmm uses $1/(n-p)$ where $p$ is the number of covariates. I've
+revised the code to match pylmm.
+
+**Conclusion**: lmmlite and pylmm are giving the same results, except
+  for small differences when the estimated heritability is near 1 and
+  pylmm gives an estimate of exactly 0.99.
+
+## Comparison to regress
+
+The R package
+[regress](https://cran.r-project.org/web/packages/regress/) is another
+option for fitting this sort of model, and it's super easy to use and
+so deserving comparison. The package has a single function exposed to
+the user, `regress()`. It takes two formulas, one for the phenotype
+mean, and the second for the variance. In the second formula, the
+inclusion of the identity matrix is assumed. (An advantage of the regress
+package is that you can use multiple kinship-type matrices.)
+
+The default is to use REML; to use ML use give `kernel=0`. At least
+that's what the documentation seems to say.
+
+```{r regress_fit}
+library(regress)
+regr <- data.frame(index=rep(NA,2*n_phe),
+                   method=rep("", 2*n_phe),
+                   hsq=rep(NA,2*n_phe),
+                   intercept=rep(NA,2*n_phe),
+                   sex=rep(NA,2*n_phe),
+                   sigmasq=rep(NA,2*n_phe),
+                   loglik=rep(NA,2*n_phe), stringsAsFactors=FALSE)
+
+recla$pheno <- scale(recla$pheno)
+
+for(i in (1:ncol(recla$pheno))[-6]) {
+    cat(i,"\n")
+    out <- regress(recla$pheno[,i] ~ recla$covar, ~ recla$kinship)
+    regr[i*2-1,1] <- i
+    regr[i*2-1,2] <- "reml"
+    sigsq <- sum(out$sigma)
+    regr[i*2-1,-(1:2)] <- c(out$sigma[1]/sigsq, out$beta[,1], sigsq, out$llik)
+
+    out <- regress(recla$pheno[,i] ~ recla$covar, ~ recla$kinship, kernel=0)
+    regr[i*2,1] <- i
+    regr[i*2,2] <- "ml"
+    sigsq <- sum(out$sigma)
+    regr[i*2,-(1:2)] <- c(out$sigma[1]/sigsq, out$beta[,1], sigsq, out$llik)
+}
+```
+
+I had a lot of problems with errors and found that it helped to
+standardize the phenotypes to have mean 0 and SD 1. But even after
+that, one of the phenotypes gives an error with `regress()` so I just
+skipped it.
+
+Because I've scaled the phenotypes, I need to re-run
+lmmlite. Fortunately it's a lot faster.
+
+```{r rerun_lmmlite}
+all_e <- vector("list", n_phe)
+for(i in 1:ncol(recla$pheno)) {
+    keep <- !is.na(recla$pheno[,i])
+    y <- recla$pheno[keep,i,drop=FALSE]
+    x <- recla$covar[keep,]
+    k <- recla$kinship[keep,keep]
+
+    all_e[[i]] <- e <- eigen_rotation(k, y, x)
+    res <- fitLMM(e$Kva, e$y, e$X, reml=TRUE)
+    lmmlite[i*2-1,1] <- i
+    lmmlite[i*2-1,2] <- "reml"
+    lmmlite[i*2-1,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
+
+    res <- fitLMM(e$Kva, e$y, e$X, reml=FALSE)
+    lmmlite[i*2,1] <- i
+    lmmlite[i*2,2] <- "ml"
+    lmmlite[i*2,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
+}
+```
+
+The results are quite different, but basically at the
+boundaries. regress doesn't constrain the variance estimates to be
+positive, and so the estimated heritability can be <0 or >1.
+
+It doesn't seem worthwhile looking at everything, since the results
+are so different, but here are the estimates of the variance parameters.
+
+```{r plot_regr_herit, fig.height=7}
+par(mar=c(5.1,4.1,2.1,1.1), mfrow=c(2,2))
+grayplot(lmmlite$hsq, regr$hsq, xlab="lmmlite", ylab="regress",
+         main="heritability", type="n")
+abline(0,1)
+points(lmmlite$hsq, regr$hsq, pch=21, bg=c("slateblue", "violetred"))
+
+grayplot(lmmlite$sigmasq, regr$sigmasq, xlab="lmmlite", ylab="regress",
+         main="sigma^2", type="n")
+abline(0,1)
+points(lmmlite$sigmasq, regr$sigmasq, pch=21, bg=c("slateblue", "violetred"))
+
+grayplot(lmmlite$sigmasq*lmmlite$hsq, regr$sigmasq*regr$hsq,
+         xlab="lmmlite", ylab="regress",
+         main="sigma^2_g", type="n")
+abline(0,1)
+points(lmmlite$sigmasq*lmmlite$hsq, regr$sigmasq*regr$hsq,
+       pch=21, bg=c("slateblue", "violetred"))
+
+grayplot(lmmlite$sigmasq*(1-lmmlite$hsq), regr$sigmasq*(1-regr$hsq),
+         xlab="lmmlite", ylab="regress",
+         main="sigma^2_e", type="n")
+abline(0,1)
+points(lmmlite$sigmasq*(1-lmmlite$hsq), regr$sigmasq*(1-regr$hsq),
+       pch=21, bg=c("slateblue", "violetred"))
+```

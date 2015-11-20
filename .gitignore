@@ -1,1 +1,4 @@
 _site
+compare2pylmm/__pycache__
+compare2pylmm/*.csv
+compare2pylmm/lmm.py

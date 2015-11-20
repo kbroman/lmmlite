@@ -92,8 +92,8 @@ for(i in <span class="dv">1</span>:<span class="kw">ncol</span>(recla$pheno)) {
 }</code></pre>
 <div id="comparison-to-pylmm" class="section level2">
 <h2>Comparison to pylmm</h2>
-<p>I ran pylmm with these data separately (see <a href="https://github.com/kbroman/lmmlite/blob/master/inst/compare2pylmm/try_pylmm.py">the code</a>) and saved the results to a CSV file, which we’ll now load. (Note that my python code is even uglier than my R code.)</p>
-<pre class="sourceCode r"><code class="sourceCode r">pylmm &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../inst/compare2pylmm/pylmm_results.csv&quot;</span>, <span class="dt">as.is=</span><span class="ot">TRUE</span>)</code></pre>
+<p>I ran pylmm with these data separately (see <a href="https://github.com/kbroman/lmmlite/tree/gh-pages/compare2pylmm/try_pylmm.py">the code</a>) and saved the results to a CSV file, which we’ll now load. (Note that my python code is even uglier than my R code.)</p>
+<pre class="sourceCode r"><code class="sourceCode r">pylmm &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../compare2pylmm/pylmm_results.csv&quot;</span>, <span class="dt">as.is=</span><span class="ot">TRUE</span>)</code></pre>
 <div id="log-likelihoods" class="section level3">
 <h3>Log likelihoods</h3>
 <p>The log likelihood values provided by lmmlite are shifted relative to the pylmm ones, because I dropped a few terms that depend only on the sample size.</p>
