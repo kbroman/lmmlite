@@ -17,5 +17,7 @@ Suggests:
     roxygen2
 License: AGPL-3
 URL: https://kbroman.org/lmmlite
+VignetteBuilder: knitr
+BuildVignettes: no
 LazyData: true
 RoxygenNote: 5.0.1
