@@ -36,7 +36,7 @@ To make sure that my code is correct, here I'll compare the lmmlite
 results to those of the R package
 [regress](https://cran.r-project.org/web/packages/regress/) (which, as
 we'll see, gives rather different results) and
-[pylmm](https://nickFurlotte/pylmm) (and fortunately pylmm and lmmlite
+[pylmm](https://github.com/nickFurlotte/pylmm) (and fortunately pylmm and lmmlite
 results do generally correspond).
 
 ```{r load_data, echo=FALSE}
