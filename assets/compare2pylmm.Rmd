@@ -116,8 +116,7 @@ for(i in 1:ncol(recla$pheno)) {
 
 I ran pylmm with these data separately (see
 [the code](https://github.com/kbroman/lmmlite/tree/gh-pages/compare2pylmm/try_pylmm.py))
-and saved the results to a CSV file, which we'll now load. (Note that
-my python code is even uglier than my R code.)
+and saved the results to a CSV file, which we'll now load.
 
 ```{r load_pylmm_results}
 pylmm <- read.csv("../compare2pylmm/pylmm_results.csv", as.is=TRUE)
