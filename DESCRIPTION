@@ -1,6 +1,6 @@
 Package: lmmlite
-Version: 0.1-4
-Date: 2015-11-19
+Version: 0.1-5
+Date: 2015-11-20
 Title: Simple LMM Fitter for QTL Mapping
 Description: A port of parts of 'pylmm' for fitting linear mixed
     models relevant to genome-wide association studies (GWAS) and
@@ -14,11 +14,8 @@ Imports:
 Suggests:
     testthat,
     devtools,
-    roxygen2,
-    knitr
+    roxygen2
 License: AGPL-3
 URL: http://kbroman.org/lmmlite
-VignetteBuilder: knitr
-BuildVignettes: no
 LazyData: true
 RoxygenNote: 5.0.1
