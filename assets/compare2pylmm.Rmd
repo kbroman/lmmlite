@@ -409,3 +409,9 @@ abline(0,1)
 points(lmmlite$sigmasq*(1-lmmlite$hsq), regr$sigmasq*(1-regr$hsq),
        pch=21, bg=c("slateblue", "violetred"))
 ```
+
+## Session info
+
+```{r session_info}
+devtools::session_info()
+```
