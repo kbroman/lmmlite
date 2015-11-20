@@ -7,12 +7,12 @@ vignette: >
   \usepackage[utf8](inputenc)
 ---
 
-```{r options}
+```{r options, echo=FALSE}
 knitr::opts_chunk$set(fig.width=7, fig.height=4)
 ```
 
 
-My goal with [lmmlite](https://github.com/kbroman/lmmlite) is light
+My goal with [R/lmmlite](https://github.com/kbroman/lmmlite) is light
 implementation of the fit of linear mixed models for QTL analysis,
 to further my understanding of how to do this.
 
