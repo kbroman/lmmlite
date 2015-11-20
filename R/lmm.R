@@ -165,7 +165,7 @@ calcLL <-
         }
 
         logdetXSX <- attr(MLsoln, "logdetXSX")
-        LL <- LL + 0.5 * (p*log(sigsq) + logdetXpX - logdetXSX)
+        LL <- LL + 0.5 * (p*log(2*pi*sigsq) + logdetXpX - logdetXSX)
     }
 
     attr(LL, "beta") <- beta
