@@ -16,7 +16,7 @@ Suggests:
     devtools,
     roxygen2
 License: AGPL-3
-URL: https://kbroman.org/lmmlite
+URL: http://kbroman.org/lmmlite
 VignetteBuilder: knitr
 BuildVignettes: no
 LazyData: true
