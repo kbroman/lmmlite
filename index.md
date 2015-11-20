@@ -12,8 +12,9 @@ and really I'm developing this package mostly so that I can better understand py
 
 The code is on [GitHub](https://github.com/kbroman/lmmlite).
 
-I wrote [a vignette with comparisons](assets/compare2pylmm.html) to
-pylmm as well as the R package [regress](https://cran.r-project.org/web/packages/regress/).
+[Vignette](assets/compare2pylmm.html) with comparisons to
+[pylmm](https://github.com/nickFurlotte/pylmm) and
+[regress](https://cran.r-project.org/web/packages/regress/).
 
 ---
 
