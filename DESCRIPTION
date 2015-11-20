@@ -14,7 +14,8 @@ Imports:
 Suggests:
     testthat,
     devtools,
-    roxygen2
+    roxygen2,
+    knitr
 License: AGPL-3
 URL: http://kbroman.org/lmmlite
 VignetteBuilder: knitr
