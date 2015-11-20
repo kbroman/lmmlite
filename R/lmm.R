@@ -110,7 +110,7 @@ getMLsoln <-
     rss = ySy - t(XSy) %*% beta
 
     # estimate of sigma^2 (total variance = sigma_g^2 + sigma_e^2)
-    sigsq <- rss / ifelse(reml, n - p, n)
+    sigsq <- rss / (n - p)
 
     # return value
     result <- list(beta=beta, sigsq=sigsq)
