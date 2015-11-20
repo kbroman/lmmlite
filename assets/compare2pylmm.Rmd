@@ -333,7 +333,6 @@ regr <- data.frame(index=rep(NA,2*n_phe),
 recla$pheno <- scale(recla$pheno)
 
 for(i in (1:ncol(recla$pheno))[-6]) {
-    cat(i,"\n")
     out <- regress(recla$pheno[,i] ~ recla$covar, ~ recla$kinship)
     regr[i*2-1,1] <- i
     regr[i*2-1,2] <- "reml"
