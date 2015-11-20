@@ -16,6 +16,6 @@ Suggests:
     devtools,
     roxygen2
 License: AGPL-3
-URL: https://github.com/kbroman/lmmlite
+URL: https://kbroman.org/lmmlite
 LazyData: true
 RoxygenNote: 5.0.1
