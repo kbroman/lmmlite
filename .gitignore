@@ -1,1 +1,3 @@
 Rcache/
+src/*.o
+src/*.so
