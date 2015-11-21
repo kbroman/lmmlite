@@ -12,13 +12,6 @@ kinship = numpy.genfromtxt('kinship.csv', delimiter=',')
 pheno =   numpy.genfromtxt('pheno.csv', delimiter=',')
 covar =   numpy.genfromtxt('covar.csv', delimiter=',')
 
-# function to print results
-def print_result(result, index, method, hsq):
-    result_arr = [result[0], result[1][0,0], result[1][1,0], result[2][0,0], result[3]]
-    for j in range(len(result_arr)):
-        result_arr[j] = str(result_arr[j])
-    print(','.join([str(index), method] + result_arr))
-
 # values 0, 0.01, 0.02, ..., 1.0
 n_val = 101
 hsq_vec = [x/(n_val-1) for x in range(n_val)]
