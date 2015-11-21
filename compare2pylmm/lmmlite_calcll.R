@@ -2,7 +2,6 @@
 
 library(lmmlite)
 data(recla)
-n <- ncol(recla$pheno)
 hsq_v <- seq(0, 1, len=101)
 result <- NULL
 
