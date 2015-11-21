@@ -114,12 +114,53 @@ for(i in 1:ncol(recla$pheno)) {
 
 ## Comparison to pylmm
 
-I ran pylmm with these data separately (see
-[the code](https://github.com/kbroman/lmmlite/tree/gh-pages/compare2pylmm/try_pylmm.py))
-and saved the results to a CSV file, which we'll now load.
+I'll now run [pylmm](https://github.com/nickFurlotte/pylmm) in the same way.
+First, I need to save the data to a set of CSV files.
+
+```{r save_data_to_file}
+for(i in c("kinship", "pheno", "covar"))
+    write.table(recla[[i]], paste0(i, ".csv"), sep=",", quote=FALSE,
+                row.names=FALSE, col.names=FALSE)
+```
+
+Now I can run pylmm, writing the output to `"pylmm_results.csv"`.
+
+```{python fit_lmm_pylmm}
+import lmm
+import numpy
+
+# load the datasets
+kinship = numpy.genfromtxt('kinship.csv', delimiter=',')
+pheno =   numpy.genfromtxt('pheno.csv', delimiter=',')
+covar =   numpy.genfromtxt('covar.csv', delimiter=',')
+
+# file for writing
+ofile = 'pylmm_results.csv'
+f = open('pylmm_results.csv', 'w')
+
+# function to print results
+def print_result(result, index, method):
+    result_arr = [result[0], result[1][0,0], result[1][1,0], result[2][0,0], result[3]]
+    for j in range(len(result_arr)):
+        result_arr[j] = str(result_arr[j])
+    f.write(','.join([str(index), method] + result_arr) + '\n')
+
+# print header row
+f.write('index,method,hsq,intercept,sex,sigmasq,loglik\n')
+
+# loop over the columns in pheno
+#    fit the LMM by REML or ML and print the results to STDIN
+for i in range(pheno.shape[1]):
+    result = lmm.LMM(pheno[:,[i]], kinship, X0=covar).fit(REML=True)
+    print_result(result, i+1, 'reml')
+    result = lmm.LMM(pheno[:,[i]], kinship, X0=covar).fit(REML=False)
+    print_result(result, i+1, 'ml')
+```
+
+Now I'll read the data (into R).
 
 ```{r load_pylmm_results}
-pylmm <- read.csv("../compare2pylmm/pylmm_results.csv", as.is=TRUE)
+pylmm <- read.csv("pylmm_results.csv", as.is=TRUE)
 ```
 
 ### Log likelihoods

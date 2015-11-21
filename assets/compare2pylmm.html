@@ -92,8 +92,41 @@ for(i in <span class="dv">1</span>:<span class="kw">ncol</span>(recla$pheno)) {
 }</code></pre>
 <div id="comparison-to-pylmm" class="section level2">
 <h2>Comparison to pylmm</h2>
-<p>I ran pylmm with these data separately (see <a href="https://github.com/kbroman/lmmlite/tree/gh-pages/compare2pylmm/try_pylmm.py">the code</a>) and saved the results to a CSV file, which we’ll now load.</p>
-<pre class="sourceCode r"><code class="sourceCode r">pylmm &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;../compare2pylmm/pylmm_results.csv&quot;</span>, <span class="dt">as.is=</span><span class="ot">TRUE</span>)</code></pre>
+<p>I’ll now run <a href="https://github.com/nickFurlotte/pylmm">pylmm</a> in the same way. First, I need to save the data to a set of CSV files.</p>
+<pre class="sourceCode r"><code class="sourceCode r">for(i in <span class="kw">c</span>(<span class="st">&quot;kinship&quot;</span>, <span class="st">&quot;pheno&quot;</span>, <span class="st">&quot;covar&quot;</span>))
+    <span class="kw">write.table</span>(recla[[i]], <span class="kw">paste0</span>(i, <span class="st">&quot;.csv&quot;</span>), <span class="dt">sep=</span><span class="st">&quot;,&quot;</span>, <span class="dt">quote=</span><span class="ot">FALSE</span>,
+                <span class="dt">row.names=</span><span class="ot">FALSE</span>, <span class="dt">col.names=</span><span class="ot">FALSE</span>)</code></pre>
+<p>Now I can run pylmm, writing the output to <code>&quot;pylmm_results.csv&quot;</code>.</p>
+<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> lmm
+<span class="ch">import</span> numpy
+
+<span class="co"># load the datasets</span>
+kinship = numpy.genfromtxt(<span class="st">'kinship.csv'</span>, delimiter=<span class="st">','</span>)
+pheno =   numpy.genfromtxt(<span class="st">'pheno.csv'</span>, delimiter=<span class="st">','</span>)
+covar =   numpy.genfromtxt(<span class="st">'covar.csv'</span>, delimiter=<span class="st">','</span>)
+
+<span class="co"># file for writing</span>
+ofile = <span class="st">'pylmm_results.csv'</span>
+f = <span class="dt">open</span>(<span class="st">'pylmm_results.csv'</span>, <span class="st">'w'</span>)
+
+<span class="co"># function to print results</span>
+<span class="kw">def</span> print_result(result, index, method):
+    result_arr = [result[<span class="dv">0</span>], result[<span class="dv">1</span>][<span class="dv">0</span>,<span class="dv">0</span>], result[<span class="dv">1</span>][<span class="dv">1</span>,<span class="dv">0</span>], result[<span class="dv">2</span>][<span class="dv">0</span>,<span class="dv">0</span>], result[<span class="dv">3</span>]]
+    <span class="kw">for</span> j in <span class="dt">range</span>(<span class="dt">len</span>(result_arr)):
+        result_arr[j] = <span class="dt">str</span>(result_arr[j])
+    f.write(<span class="st">','</span>.join([<span class="dt">str</span>(index), method] + result_arr) + <span class="st">'</span><span class="ch">\n</span><span class="st">'</span>)
+
+f.write(<span class="st">'index,method,hsq,intercept,sex,sigmasq,loglik</span><span class="ch">\n</span><span class="st">'</span>) <span class="co"># print header row</span>
+
+<span class="co"># loop over the columns in pheno</span>
+<span class="co">#    fit the LMM by REML or ML and print the results to STDIN</span>
+<span class="kw">for</span> i in <span class="dt">range</span>(pheno.shape[<span class="dv">1</span>]):
+    result = lmm.LMM(pheno[:,[i]], kinship, X0=covar).fit(REML=<span class="ot">True</span>)
+    print_result(result, i<span class="dv">+1</span>, <span class="st">'reml'</span>)
+    result = lmm.LMM(pheno[:,[i]], kinship, X0=covar).fit(REML=<span class="ot">False</span>)
+    print_result(result, i<span class="dv">+1</span>, <span class="st">'ml'</span>)</code></pre>
+<p>Now I’ll read the data (into R).</p>
+<pre class="sourceCode r"><code class="sourceCode r">pylmm &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;pylmm_results.csv&quot;</span>, <span class="dt">as.is=</span><span class="ot">TRUE</span>)</code></pre>
 <div id="log-likelihoods" class="section level3">
 <h3>Log likelihoods</h3>
 <p>The log likelihood values provided by lmmlite are shifted relative to the pylmm ones, because I dropped a few terms that depend only on the sample size.</p>
@@ -293,7 +326,7 @@ for(i in <span class="dv">1</span>:<span class="kw">ncol</span>(recla$pheno)) {
 ##  language en_US.UTF-8                 
 ##  collate  en_US.UTF-8                 
 ##  tz       America/Chicago             
-##  date     2015-11-20</code></pre>
+##  date     2015-11-21</code></pre>
 <pre><code>## Packages ------------------------------------------------------------------</code></pre>
 <pre><code>##  package    * version date       source                      
 ##  assertthat   0.1     2013-12-06 CRAN (R 3.2.0)              
