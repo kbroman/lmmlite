@@ -9,6 +9,11 @@ for linear mixed models for genome-wide association studies
 (GWAS), I'm porting it to R.  The goal is learning, and ultimately
 LMMs for QTL mapping.
 
+Take a look at the
+[vignette](http://kbroman.org/lmmlite/assets/compare2pylmm.html)
+comparing lmmlite and pylmm (and also the R package
+[regress](https://cran.r-project.org/web/packages/regress/)).
+
 ---
 
 [R/lmmlite](https://github.com/kbroman/lmmlite) is released under the
