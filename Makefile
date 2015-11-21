@@ -18,3 +18,6 @@ compare2pylmm/lmm.py:
 
 compare2pylmm/pylmm_llvals.csv: compare2pylmm/pylmm_calcll.py compare2pylmm/lmm.py compare2pylmm/kinship.csv
 	cd $(<D);$(<F) > $(@F)
+
+compare2pylmm/lmmlite_llvals.csv: compare2pylmm/lmmlite_calcll.R
+	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
