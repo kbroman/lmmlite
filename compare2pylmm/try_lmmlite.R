@@ -11,7 +11,6 @@ result <- data.frame(index=rep(NA,2*n),
                      sigsq=rep(NA,2*n),
                      loglik=rep(NA,2*n), stringsAsFactors=FALSE)
 
-cur <- 1
 for(i in 1:ncol(recla$pheno)) {
     keep <- !is.na(recla$pheno[,i])
     y <- recla$pheno[keep,i,drop=FALSE]
@@ -20,18 +19,15 @@ for(i in 1:ncol(recla$pheno)) {
 
     e <- eigen_rotation(k, y, x)
     res <- fitLMM(e$Kva, e$y, e$X, reml=TRUE)
-    result[cur,1] <- i
-    result[cur,2] <- "reml"
-    result[cur,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
+    result[2*i-1,1] <- i
+    result[2*i-1,2] <- "reml"
+    result[2*i-1,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
 
-    cur <- cur + 1
 
     res <- fitLMM(e$Kva, e$y, e$X, reml=FALSE)
-    result[cur,1] <- i
-    result[cur,2] <- "ml"
-    result[cur,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
-
-    cur <- cur + 1
+    result[2*i,1] <- i
+    result[2*i,2] <- "ml"
+    result[2*i,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
 }
 
 write.table(result, "lmmlite_results.csv", row.names=FALSE,
