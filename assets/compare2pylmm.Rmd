@@ -134,8 +134,7 @@ kinship = numpy.genfromtxt('kinship.csv', delimiter=',')
 pheno =   numpy.genfromtxt('pheno.csv', delimiter=',')
 covar =   numpy.genfromtxt('covar.csv', delimiter=',')
 
-# file for writing
-ofile = 'pylmm_results.csv'
+# open file for writing
 f = open('pylmm_results.csv', 'w')
 
 # function to print results
