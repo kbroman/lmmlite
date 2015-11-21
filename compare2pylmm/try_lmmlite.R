@@ -25,7 +25,6 @@ for(i in 1:ncol(recla$pheno)) {
     result[cur,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
 
     cur <- cur + 1
-    e <- eigen_rotation(k, y, x)
 
     res <- fitLMM(e$Kva, e$y, e$X, reml=FALSE)
     result[cur,1] <- i
