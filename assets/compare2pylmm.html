@@ -97,7 +97,8 @@ for(i in <span class="dv">1</span>:n_phe) {
     <span class="kw">write.table</span>(recla[[i]], <span class="kw">paste0</span>(i, <span class="st">&quot;.csv&quot;</span>), <span class="dt">sep=</span><span class="st">&quot;,&quot;</span>, <span class="dt">quote=</span><span class="ot">FALSE</span>,
                 <span class="dt">row.names=</span><span class="ot">FALSE</span>, <span class="dt">col.names=</span><span class="ot">FALSE</span>)</code></pre>
 <p>Now I can run pylmm, writing the output to <code>&quot;pylmm_results.csv&quot;</code>.</p>
-<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> lmm
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># this chunk is python code</span>
+<span class="ch">import</span> lmm
 <span class="ch">import</span> numpy
 
 <span class="co"># load the datasets</span>
@@ -264,7 +265,8 @@ for(i in <span class="dv">1</span>:n_phe) {
                                    <span class="dt">stringsAsFactors=</span><span class="ot">FALSE</span>))
 }</code></pre>
 <p>Now I’ll do the same calculations with pylmm:</p>
-<pre class="sourceCode python"><code class="sourceCode python"><span class="ch">import</span> lmm
+<pre class="sourceCode python"><code class="sourceCode python"><span class="co"># this chunk is python code</span>
+<span class="ch">import</span> lmm
 <span class="ch">import</span> numpy
 
 <span class="co"># load the datasets</span>
@@ -408,7 +410,7 @@ for(i in <span class="dv">1</span>:<span class="kw">ncol</span>(recla$pheno)) {
 ##  formatR      1.2.1   2015-09-18 CRAN (R 3.2.0)              
 ##  htmltools    0.2.6   2014-09-08 CRAN (R 3.2.0)              
 ##  knitr        1.11.16 2015-11-16 Github (yihui/knitr@6e8ce0c)
-##  lmmlite    * 0.1-5   2015-11-20 local                       
+##  lmmlite    * 0.1-5   2015-11-21 local                       
 ##  magrittr     1.5     2014-11-22 CRAN (R 3.2.0)              
 ##  memoise      0.2.1   2014-04-22 CRAN (R 3.2.0)              
 ##  rmarkdown    0.8.1   2015-10-10 CRAN (R 3.2.2)              
