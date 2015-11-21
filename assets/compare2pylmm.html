@@ -116,7 +116,8 @@ f = <span class="dt">open</span>(<span class="st">'pylmm_results.csv'</span>, <s
         result_arr[j] = <span class="dt">str</span>(result_arr[j])
     f.write(<span class="st">','</span>.join([<span class="dt">str</span>(index), method] + result_arr) + <span class="st">'</span><span class="ch">\n</span><span class="st">'</span>)
 
-f.write(<span class="st">'index,method,hsq,intercept,sex,sigmasq,loglik</span><span class="ch">\n</span><span class="st">'</span>) <span class="co"># print header row</span>
+<span class="co"># print header row</span>
+f.write(<span class="st">'index,method,hsq,intercept,sex,sigmasq,loglik</span><span class="ch">\n</span><span class="st">'</span>)
 
 <span class="co"># loop over the columns in pheno</span>
 <span class="co">#    fit the LMM by REML or ML and print the results to STDIN</span>
