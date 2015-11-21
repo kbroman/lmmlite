@@ -93,7 +93,7 @@ and then by ML, and grab the key results.
 
 ```{r lmmlite_fit}
 all_e <- vector("list", n_phe)
-for(i in 1:ncol(recla$pheno)) {
+for(i in 1:n_phe) {
     keep <- !is.na(recla$pheno[,i])
     y <- recla$pheno[keep,i,drop=FALSE]
     x <- recla$covar[keep,]
@@ -203,7 +203,7 @@ for the heritability.
 
 ```{r recalc_loglik}
 rev_loglik <- rep(NA, 2*n_phe)
-for(i in 1:ncol(recla$pheno)) {
+for(i in 1:n_phe) {
     e <- all_e[[i]]
     rev_loglik[i*2-1] <- calcLL(pylmm$hsq[i*2-1], e$Kva, e$y, e$X, reml=TRUE)
 
@@ -342,9 +342,106 @@ of $\sigma^2$ with ML, but that was because I was using $1/n$ while
 pylmm uses $1/(n-p)$ where $p$ is the number of covariates. I've
 revised the code to match pylmm.
 
+### Detailed log likelihood comparisons
+
+It seems that pylmm and lmmlite are giving the same results, with the
+only difference being the optimization of the heritability. To check
+this, I'll calculate the log likelihood for $h^2$ at a fine grid.
+
+First, the calculations with lmmlite. I'll include the log likelihood
+adjusted to match pylmm in the results.
+
+```{r lmmlite_calcll}
+hsq_v <- seq(0, 1, by=0.01)
+lmmlite_ll <- NULL
+for(i in 1:n_phe) {
+    e <- all_e[[i]]
+    n <- length(e$Kva)
+
+    res <- calcLL(hsq_v, e$Kva, e$y, e$X, reml=TRUE)
+    lmmlite_ll <- rbind(lmmlite_ll,
+                        data.frame(index=i, method="reml",
+                                   hsq=hsq_v,
+                                   loglik=res,
+                                   loglik_adj=res - n*(log(2*pi) + 1 - log(n))/2,
+                                   stringsAsFactors=FALSE))
+
+    res <- calcLL(hsq_v, e$Kva, e$y, e$X, reml=FALSE)
+    lmmlite_ll <- rbind(lmmlite_ll,
+                        data.frame(index=i, method="ml",
+                                   hsq=hsq_v,
+                                   loglik=res,
+                                   loglik_adj=res - n*(log(2*pi) + 1 - log(n))/2,
+                                   stringsAsFactors=FALSE))
+}
+```
+
+Now I'll do the same calculations with pylmm:
+
+```{python pylmm_calcll}
+import lmm
+import numpy
+
+# load the datasets
+kinship = numpy.genfromtxt('kinship.csv', delimiter=',')
+pheno =   numpy.genfromtxt('pheno.csv', delimiter=',')
+covar =   numpy.genfromtxt('covar.csv', delimiter=',')
+
+# open file for writing
+f = open('pylmm_llvals.csv', 'w')
+
+# values 0, 0.01, 0.02, ..., 1.0
+n_val = 101
+hsq_vec = [x/(n_val-1) for x in range(n_val)]
+
+# write header
+f.write('index,method,hsq,loglik\n')
+
+for i in range(pheno.shape[1]):
+    obj = lmm.LMM(pheno[:,[i]], kinship, X0=covar)
+    ll = [obj.LL(hsq, REML=True)[0] for hsq in hsq_vec]
+    for j in range(n_val):
+        f.write(",".join([str(i+1), "reml", str(hsq_vec[j]), str(ll[j])]) + '\n')
+
+    ll = [obj.LL(hsq, REML=False)[0] for hsq in hsq_vec]
+    for j in range(n_val):
+        f.write(",".join([str(i+1), "ml", str(hsq_vec[j]), str(ll[j])]) + '\n')
+```
+
+Now read those results into R:
+
+```{r read_pylmm_results}
+pylmm_ll <- read.csv("pylmm_llvals.csv")
+```
+
+The results are equivalent; the maximum difference in log likelihoods
+is 10<sup>`r ceiling(log10(max(abs(lmmlite_ll$loglik_adj - pylmm_ll$loglik))))`</sup>.
+
+Here are plots of a few of them, with lmmlite in blue and pylmm in red (dashed):
+
+```{r plot_ll, fig.height=15}
+par(mfrow=c(5, 2), mar=c(5.1, 4.1, 2.1, 0.6))
+for(i in c(1,3,8,12,25)) {
+    for(j in c("reml", "ml")) {
+        toplot <- lmmlite_ll[lmmlite_ll$index==i & lmmlite_ll$method==j,]
+        grayplot(toplot$hsq, toplot$loglik_adj, main=paste(j, i),
+                 xlab="heritability", ylab="log likelihood",
+                 lwd=2, col="slateblue", type="l")
+        lines(loglik ~ hsq, data=pylmm_ll[pylmm_ll$index==i & pylmm_ll$method==j,],
+              lwd=2, lty=2, col="violetred")
+    }
+}
+```
+
+
+
 **Conclusion**: lmmlite and pylmm are giving the same results, except
   for small differences when the estimated heritability is near 1 and
-  pylmm gives an estimate of exactly 0.99.
+  pylmm gives an estimate of exactly 0.99. This difference appears to
+  be due to pylmm's scheme for the one-dimensional optimization of the
+  heritability parameter.
+
+
 
 ## Comparison to regress
 
@@ -360,7 +457,7 @@ package is that you can use multiple kinship-type matrices.)
 The default is to use REML; to use ML use give `kernel=0`. At least
 that's what the documentation seems to say.
 
-```{r regress_fit}
+```{r regress_fit, cache=TRUE}
 library(regress)
 regr <- data.frame(index=rep(NA,2*n_phe),
                    method=rep("", 2*n_phe),
