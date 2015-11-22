@@ -2,6 +2,7 @@
 
 // [[Rcpp::depends(RcppEigen)]]
 
+#include <math.h>
 #include <RcppEigen.h>
 
 using namespace Rcpp;
@@ -56,7 +57,7 @@ List R_eigen_decomp(NumericMatrix A)
 // Kva   = eigenvalues of kinship matrix
 // y     = rotated vector of phenotypes
 // X     = rotated matrix of covariates
-// reml  = boolean indicating whether to use REML (or ML)
+// reml  = whether you'll be using REML (so need to calculate log det XSX)
 VectorXd getMLsoln(double hsq, VectorXd Kva, VectorXd y,
                    MatrixXd X, bool reml=true)
 {
@@ -80,11 +81,9 @@ VectorXd getMLsoln(double hsq, VectorXd Kva, VectorXd y,
     std::pair<VectorXd, MatrixXd>e = eigen_decomp(XSX);
     double logdetXSX=0.0;
     VectorXd inv_evals(p);
-    if(reml) {
-        for(int i=0; i<p; i++) {
-            inv_evals[i] = 1.0/e.first[i];
-            if(reml) logdetXSX += log(e.first[i]);
-        }
+    for(int i=0; i<p; i++) {
+        inv_evals[i] = 1.0/e.first[i];
+        if(reml) logdetXSX += log(e.first[i]);
     }
     MatrixXd beta = e.second.transpose() * inv_evals.asDiagonal() * e.second * XSy;
 
@@ -121,5 +120,72 @@ List R_getMLsoln(double hsq, NumericVector Kva, NumericVector y,
     return List::create(Named("sigsq") =     result[0],
                         Named("rss") =       result[1],
                         Named("logdetXSX") = result[2],
+                        Named("beta") =      beta);
+}
+
+// calcLL
+// calculate log likelihood for fixed value of hsq
+// sigmasq = total variance = sig^2_g + sig^2_e
+//
+// hsq   = heritability
+// Kva   = eigenvalues of kinship matrix
+// y     = rotated vector of phenotypes
+// X     = rotated matrix of covariates
+// reml  = boolean indicating whether to use REML (vs ML)
+// logdetXpX = log det X'X; if NA, it's calculated
+VectorXd calcLL(double hsq, VectorXd Kva, VectorXd y,
+                MatrixXd X, bool reml=true, double logdetXpX=NA_REAL)
+{
+    int n = Kva.size();
+    int p = X.cols();
+
+    // estimate beta and sigma^2
+    VectorXd ml_soln = getMLsoln(hsq, Kva, y, X, reml);
+    double sigsq = ml_soln[0];
+    double rss   = ml_soln[1];
+    double logdetXSX = ml_soln[2];
+
+    // calculate log likelihood
+    double loglik = (double)n*log(rss);
+    for(int i=0; i<n; i++)
+        loglik += log(hsq*Kva[i] + 1.0 - hsq);
+    loglik *= -0.5;
+
+    if(reml) {
+        if(NumericVector::is_na(logdetXpX)) { // need to calculate it
+            MatrixXd XpX(calc_xpx(X));
+            std::pair<VectorXd, MatrixXd> e = eigen_decomp(XpX);
+            logdetXpX=0.0;
+            for(int i=0; i<p; i++) logdetXpX += log(e.first[i]);
+        }
+
+        loglik += 0.5*(p*log(2*M_PI*sigsq) + logdetXpX - logdetXSX);
+    }
+
+    VectorXd result(p+2);
+    result[0] = loglik;
+    result[1] = sigsq;
+    for(int i=0; i<p; i++) result[i+2] = ml_soln[i+3];
+    return result;
+}
+
+// calcLL (version called from R)
+// [[Rcpp::export]]
+List R_calcLL(double hsq, NumericVector Kva, NumericVector y,
+              NumericMatrix X, bool reml=true, double logdetXpX=NA_REAL)
+{
+    MatrixXd eKva(as<Map<MatrixXd> >(Kva));
+    VectorXd ey(as<Map<MatrixXd> >(y));
+    MatrixXd eX(as<Map<MatrixXd> >(X));
+
+    VectorXd result = calcLL(hsq, eKva, ey, eX, reml, logdetXpX);
+
+    int p = result.size()-2;
+    NumericVector beta(p);
+    for(int i=0; i<p; i++)
+        beta[i] = result[i+2];
+
+    return List::create(Named("loglik") =    result[0],
+                        Named("sigsq") =     result[1],
                         Named("beta") =      beta);
 }

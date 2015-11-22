@@ -7,7 +7,7 @@ test_that("X'X works", {
     expected <- t(recla$covar) %*% recla$covar
     dimnames(expected) <- NULL
 
-    expect_equal(lmmlite:::R_calc_xpx(recla$covar), expected)
+    expect_equal(R_calc_xpx(recla$covar), expected)
 
 })
 
@@ -38,7 +38,7 @@ test_that("getMLsoln works", {
     data(recla)
     e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
 
-    # REML
+    # all that reml=TRUE does is calculate logdetXSX
     outR <- getMLsoln(0.5, e$Kva, e$y, e$X, TRUE)
     outcpp <- R_getMLsoln(0.5, e$Kva, e$y, e$X, TRUE)
 
@@ -53,5 +53,54 @@ test_that("getMLsoln works", {
                      logdetXSX=6.96036161615051,
                      beta=c(1413.98690713607, -28.1793101783314))
     expect_equal(outcpp, expected)
+
+})
+
+
+test_that("calcLL works", {
+
+    data(recla)
+    e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
+    logdetXpX <- determinant(R_calc_xpx(e$X))$modulus
+
+    #ML
+    outR <- calcLL(0.5, e$Kva, e$y, e$X, FALSE)
+    outcpp <- R_calcLL(0.5, e$Kva, e$y, e$X, FALSE)
+    outcpp2 <- R_calcLL(0.5, e$Kva, e$y, e$X, FALSE, logdetXpX)
+
+    expect_equal(outcpp$loglik, as.numeric(outR))
+    expect_equal(outcpp$beta, as.numeric(attr(outR, "beta")))
+    expect_equal(outcpp$sigsq, as.numeric(attr(outR, "sigsq")))
+
+    expect_equal(outcpp2$loglik, as.numeric(outR))
+    expect_equal(outcpp2$beta, as.numeric(attr(outR, "beta")))
+    expect_equal(outcpp2$sigsq, as.numeric(attr(outR, "sigsq")))
+
+    # real expected values
+    expected <- list(loglik=-2349.20302794088,
+                     sigsq=276158.504472848,
+                     beta=c(1413.98690713607, -28.1793101783314))
+    expect_equal(outcpp, expected)
+    expect_equal(outcpp2, expected)
+
+    # REML
+    outR <- calcLL(0.5, e$Kva, e$y, e$X, TRUE)
+    outcpp <- R_calcLL(0.5, e$Kva, e$y, e$X, TRUE)
+    outcpp2 <- R_calcLL(0.5, e$Kva, e$y, e$X, TRUE, logdetXpX)
+
+    expect_equal(outcpp$loglik, as.numeric(outR))
+    expect_equal(outcpp$beta, as.numeric(attr(outR, "beta")))
+    expect_equal(outcpp$sigsq, as.numeric(attr(outR, "sigsq")))
+
+    expect_equal(outcpp2$loglik, as.numeric(outR))
+    expect_equal(outcpp2$beta, as.numeric(attr(outR, "beta")))
+    expect_equal(outcpp2$sigsq, as.numeric(attr(outR, "sigsq")))
+
+    # real expected values
+    expected <- list(loglik=-2333.44582306843,
+                     sigsq=276158.504472848,
+                     beta=c(1413.98690713607, -28.1793101783314))
+    expect_equal(outcpp, expected)
+    expect_equal(outcpp2, expected)
 
 })

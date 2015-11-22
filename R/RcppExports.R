@@ -13,3 +13,7 @@ R_getMLsoln <- function(hsq, Kva, y, X, reml = TRUE) {
     .Call('lmmlite_R_getMLsoln', PACKAGE = 'lmmlite', hsq, Kva, y, X, reml)
 }
 
+R_calcLL <- function(hsq, Kva, y, X, reml = TRUE, logdetXpX = NA_real_) {
+    .Call('lmmlite_R_calcLL', PACKAGE = 'lmmlite', hsq, Kva, y, X, reml, logdetXpX)
+}
+

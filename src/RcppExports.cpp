@@ -43,3 +43,19 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// R_calcLL
+List R_calcLL(double hsq, NumericVector Kva, NumericVector y, NumericMatrix X, bool reml, double logdetXpX);
+RcppExport SEXP lmmlite_R_calcLL(SEXP hsqSEXP, SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP, SEXP logdetXpXSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type hsq(hsqSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type Kva(KvaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< bool >::type reml(remlSEXP);
+    Rcpp::traits::input_parameter< double >::type logdetXpX(logdetXpXSEXP);
+    __result = Rcpp::wrap(R_calcLL(hsq, Kva, y, X, reml, logdetXpX));
+    return __result;
+END_RCPP
+}
