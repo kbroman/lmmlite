@@ -9,3 +9,7 @@ R_eigen_decomp <- function(A) {
     .Call('lmmlite_R_eigen_decomp', PACKAGE = 'lmmlite', A)
 }
 
+R_getMLsoln <- function(hsq, Kva, y, X, reml = TRUE) {
+    .Call('lmmlite_R_getMLsoln', PACKAGE = 'lmmlite', hsq, Kva, y, X, reml)
+}
+

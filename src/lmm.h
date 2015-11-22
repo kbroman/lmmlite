@@ -16,5 +16,20 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> eigen_decomp(Eigen::MatrixXd A);
 //    returns list with eigenvalues and transposed eigenvectors
 List R_eigen_decomp(const NumericMatrix &A);
 
+// getMLsoln
+// for fixed value of hsq, calculate MLEs of beta and sigmasq
+// sigmasq = total variance = sig^2_g + sig^2_e
+//
+// hsq   = heritability
+// Kva   = eigenvalues of kinship matrix
+// y     = rotated vector of phenotypes
+// X     = rotated matrix of covariates
+// reml  = boolean indicating whether to use REML (or ML)
+VectorXd getMLsoln(double hsq, VectorXd Kva, VectorXd y,
+                   MatrixXd X, bool reml);
+
+// getMLsoln (version called from R)
+List R_getMLsoln(double hsq, NumericVector Kva, NumericVector y,
+                 NumericMatrix X, bool reml);
 
 #endif // LMM_H

@@ -28,3 +28,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// R_getMLsoln
+List R_getMLsoln(double hsq, NumericVector Kva, NumericVector y, NumericMatrix X, bool reml);
+RcppExport SEXP lmmlite_R_getMLsoln(SEXP hsqSEXP, SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< double >::type hsq(hsqSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type Kva(KvaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< bool >::type reml(remlSEXP);
+    __result = Rcpp::wrap(R_getMLsoln(hsq, Kva, y, X, reml));
+    return __result;
+END_RCPP
+}

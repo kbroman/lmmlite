@@ -31,3 +31,27 @@ test_that("eigen decomp works", {
     expect_equal(t(e$vectors) %*% diag(1/e$values) %*% e$vectors, solve(expected))
 
 })
+
+
+test_that("getMLsoln works", {
+
+    data(recla)
+    e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
+
+    # REML
+    outR <- getMLsoln(0.5, e$Kva, e$y, e$X, TRUE)
+    outcpp <- R_getMLsoln(0.5, e$Kva, e$y, e$X, TRUE)
+
+    expect_equal(outcpp$beta, as.numeric(outR$beta))
+    expect_equal(outcpp$sigsq, as.numeric(outR$sigsq))
+    expect_equal(outcpp$logdetXSX, attr(outR, "logdetXSX"))
+    expect_equal(outcpp$rss, as.numeric(attr(outR, "rss")))
+
+    # real expected values
+    expected <- list(sigsq=276158.504472848,
+                     rss=71525052.6584677,
+                     logdetXSX=6.96036161615051,
+                     beta=c(1413.98690713607, -28.1793101783314))
+    expect_equal(outcpp, expected)
+
+})
