@@ -10,7 +10,7 @@ using namespace Eigen;
 #include "lmm.h"
 
 // calc X'X
-Eigen::MatrixXd calc_XpX(const Eigen::MatrixXd& X)
+MatrixXd calc_xpx(const MatrixXd& X)
 {
     int n = X.cols();
 
@@ -18,12 +18,31 @@ Eigen::MatrixXd calc_XpX(const Eigen::MatrixXd& X)
         .rankUpdate(X.transpose());
 }
 
-// eigen decomp
+// calc X'X (version to be called from R)
 // [[Rcpp::export]]
-List eigen_decomp(NumericMatrix A)
+NumericMatrix R_calc_xpx(const NumericMatrix& X)
+{
+    MatrixXd XX(as<Map<MatrixXd> >(X));
+    return wrap(calc_xpx(XX));
+}
+
+
+
+// eigen decomposition
+// returns eigenvalues and *transposed* eigenvectors
+std::pair<VectorXd, MatrixXd> eigen_decomp(MatrixXd A)
+{
+    const SelfAdjointEigenSolver<MatrixXd> VLV(A);
+    return std::make_pair(VLV.eigenvalues(), VLV.eigenvectors().transpose());
+}
+
+// eigen decomposition (version to be called from R)
+// returns eigenvalues and *transposed* eigenvectors
+// [[Rcpp::export]]
+List R_eigen_decomp(NumericMatrix A)
 {
     MatrixXd AA(as<Map<MatrixXd> >(A));
-    const Eigen::SelfAdjointEigenSolver<MatrixXd> VLV(AA);
-    return List::create(Named("vectors") = VLV.eigenvectors(),
-                        Named("values") = VLV.eigenvalues());
+    std::pair<VectorXd,MatrixXd> result = eigen_decomp(AA);
+    return List::create(Named("values") = result.first,
+                        Named("vectors") = result.second);
 }
