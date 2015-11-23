@@ -4,19 +4,21 @@
 \alias{eigen_rotation}
 \title{eigen decomposition + rotation}
 \usage{
-eigen_rotation(K, y, X, Kva, Kve_t)
+eigen_rotation(K, y, X, Kva, Kve_t, use_cpp = TRUE)
 }
 \arguments{
-\item{K}{Kinship matrix}
+\item{K}{Kinship matrix (required if \code{use_cpp=TRUE})}
 
 \item{y}{Phenotypes}
 
 \item{X}{Numeric matrix with covariates. If missing, use a column
 of 1's (for intercept).}
 
-\item{Kva}{Eigenvalues of \code{K} (optional)}
+\item{Kva}{Eigenvalues of \code{K} (optional, ignored if \code{use_cpp=TRUE})}
 
-\item{Kve_t}{= transposed eigenvectors of K (optional)}
+\item{Kve_t}{= transposed eigenvectors of K (optional, ignored if \code{use_cpp=TRUE})}
+
+\item{use_cpp}{= if TRUE, use c++ version of code}
 }
 \value{
 List containing \code{Kva}, \code{Kve_t} and rotated

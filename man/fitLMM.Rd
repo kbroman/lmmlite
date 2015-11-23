@@ -4,7 +4,8 @@
 \alias{fitLMM}
 \title{Fit a linear mixed model}
 \usage{
-fitLMM(Kva, y, X, reml = TRUE, tol = 0.0001)
+fitLMM(Kva, y, X, reml = TRUE, check_boundary = TRUE, tol = 0.0001,
+  use_cpp = TRUE)
 }
 \arguments{
 \item{Kva}{Eigenvalues of K (calculated by \code{\link{eigen_rotation}})}
@@ -15,7 +16,11 @@ fitLMM(Kva, y, X, reml = TRUE, tol = 0.0001)
 
 \item{reml}{If TRUE, use REML; otherwise use ordinary maximum likelihood.}
 
+\item{check_boundary}{If TRUE, explicitly check log likelihood at 0 and 1.}
+
 \item{tol}{Tolerance for convergence}
+
+\item{use_cpp}{= if TRUE, use c++ version of code}
 }
 \value{
 List containing estimates of \code{beta}, \code{sigmasq},

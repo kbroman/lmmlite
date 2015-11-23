@@ -4,7 +4,7 @@
 \alias{calcLL}
 \title{Calculate log likelihood for a given heritability}
 \usage{
-calcLL(hsq, Kva, y, X, reml = TRUE)
+calcLL(hsq, Kva, y, X, reml = TRUE, use_cpp = TRUE)
 }
 \arguments{
 \item{hsq}{heritability}
@@ -16,6 +16,8 @@ calcLL(hsq, Kva, y, X, reml = TRUE)
 \item{X}{rotated covariate matrix (calculated by \code{\link{eigen_rotation}})}
 
 \item{reml}{If TRUE, use REML; otherwise use ordinary maximum likelihood.}
+
+\item{use_cpp}{= if TRUE, use c++ version of code}
 }
 \value{
 The log likelihood value, with the corresponding estimates

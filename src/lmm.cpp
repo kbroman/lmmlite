@@ -79,7 +79,7 @@ List Rcpp_eigen_rotation(NumericMatrix K, NumericMatrix y, NumericMatrix X)
     struct eigenrot result = eigen_rotation(KK, yy, XX);
 
     return List::create(Named("Kva") = result.Kva,
-                        Named("Kve") = result.Kve,
+                        Named("Kve_t") = result.Kve,
                         Named("y") = result.y,
                         Named("X") = result.X);
 }

@@ -4,7 +4,7 @@
 \alias{getMLsoln}
 \title{Get MLEs for coefficients and variance}
 \usage{
-getMLsoln(hsq, Kva, y, X, reml = TRUE)
+getMLsoln(hsq, Kva, y, X, reml = TRUE, use_cpp = TRUE)
 }
 \arguments{
 \item{hsq}{heritability}
@@ -16,6 +16,8 @@ getMLsoln(hsq, Kva, y, X, reml = TRUE)
 \item{X}{rotated covariate matrix (calculated by \code{\link{eigen_rotation}})}
 
 \item{reml}{If TRUE, use REML; otherwise use ordinary maximum likelihood.}
+
+\item{use_cpp}{= if TRUE, use c++ version of code}
 }
 \value{
 list containing \code{beta} and \code{sigmasq}, with residual

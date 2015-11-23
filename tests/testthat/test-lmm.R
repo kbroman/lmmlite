@@ -20,8 +20,8 @@ test_that("fitLMM works", {
         thisy <- thisy[!omit,,drop=FALSE]
         thisX <- X[!omit,,drop=FALSE]
         thisk <- k[!omit,!omit]
-        e <- eigen_rotation(thisk, thisy, thisX)
-        fitLMM(e$Kva, e$y, e$X, tol=tol)})
+        e <- eigen_rotation(thisk, thisy, thisX, use_cpp=FALSE)
+        fitLMM(e$Kva, e$y, e$X, tol=tol, use_cpp=FALSE)})
 
     # combine results
     tab_lmm_r <- t(vapply(lmm_all_r, function(a) c(sigmasq_g=a$sigmasq_g,
@@ -91,8 +91,8 @@ test_that("fitLMM works", {
         thisy <- thisy[!omit,]
         thisX <- X[!omit,]
         thisk <- k[!omit,!omit]
-        e <- eigen_rotation(thisk, thisy, thisX)
-        fitLMM(e$Kva, e$y, e$X, tol=tol, reml=FALSE)})
+        e <- eigen_rotation(thisk, thisy, thisX, use_cpp=FALSE)
+        fitLMM(e$Kva, e$y, e$X, tol=tol, reml=FALSE, use_cpp=FALSE)})
 
     # combine results
     tab_lmm_m <- t(vapply(lmm_all_m, function(a) c(sigmasq_g=a$sigmasq_g,

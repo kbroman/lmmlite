@@ -7,12 +7,13 @@
 #' of eigenvectors. If \code{Kva} and \code{Kve_t} provided, just do
 #' the "rotation".
 #'
-#' @param K Kinship matrix
+#' @param K Kinship matrix (required if \code{use_cpp=TRUE})
 #' @param y Phenotypes
 #' @param X Numeric matrix with covariates. If missing, use a column
 #' of 1's (for intercept).
-#' @param Kva Eigenvalues of \code{K} (optional)
-#' @param Kve_t = transposed eigenvectors of K (optional)
+#' @param Kva Eigenvalues of \code{K} (optional, ignored if \code{use_cpp=TRUE})
+#' @param Kve_t = transposed eigenvectors of K (optional, ignored if \code{use_cpp=TRUE})
+#' @param use_cpp = if TRUE, use c++ version of code
 #'
 #' @export
 #' @return List containing \code{Kva}, \code{Kve_t} and rotated
@@ -22,26 +23,19 @@
 #' data(recla)
 #' e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
 eigen_rotation <-
-    function(K, y, X, Kva, Kve_t)
+    function(K, y, X, Kva, Kve_t, use_cpp=TRUE)
 {
-    if(missing(Kva) || is.null(Kva) ||
+    # check inputs
+    if(use_cpp || missing(Kva) || is.null(Kva) ||
        missing(Kve_t) || is.null(Kve_t)) {
-
         n <- nrow(K) # no. individuals
         stopifnot(ncol(K) == n) # square?
-
-        # calculate eigen vals and vecs
-        e <- eigen(K)
-        Kva <- e$values
-        Kve_t <- t(e$vectors)
     }
     else {
         n <- nrow(Kve_t)
         stopifnot(ncol(Kve_t) == n) # square?
         stopifnot(length(Kva) == n)
     }
-
-    # more checks
     if(!is.matrix(y)) y <- as.matrix(y)
     stopifnot(nrow(y) == n)
 
@@ -50,6 +44,19 @@ eigen_rotation <-
     if(!is.matrix(X)) X <- as.matrix(X)
     stopifnot(nrow(X) == n)
 
+    if(use_cpp) {
+        result <- Rcpp_eigen_rotation(K, y, X)
+        attr(result$X, "logdetXpX") <- Rcpp_calc_logdetXpX(e$X)
+        return(result)
+    }
+
+    if(missing(Kva) || is.null(Kva) ||
+       missing(Kve_t) || is.null(Kve_t)) {
+        # calculate eigen vals and vecs
+        e <- eigen(K)
+        Kva <- e$values
+        Kve_t <- t(e$vectors)
+    }
     # rotation
     y <- Kve_t %*% y
     X <- Kve_t %*% X
@@ -70,6 +77,7 @@ eigen_rotation <-
 #' @param y rotated phenotypes (calculated by \code{\link{eigen_rotation}})
 #' @param X rotated covariate matrix (calculated by \code{\link{eigen_rotation}})
 #' @param reml If TRUE, use REML; otherwise use ordinary maximum likelihood.
+#' @param use_cpp = if TRUE, use c++ version of code
 #'
 #' @export
 #' @return list containing \code{beta} and \code{sigmasq}, with residual
@@ -81,7 +89,7 @@ eigen_rotation <-
 #' e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
 #' ml <- getMLsoln(0.5, e$Kva, e$y, e$X)
 getMLsoln <-
-    function(hsq, Kva, y, X, reml=TRUE)
+    function(hsq, Kva, y, X, reml=TRUE, use_cpp=TRUE)
 {
     n <- length(Kva)
     if(!is.matrix(X)) X <- as.matrix(X)
@@ -89,6 +97,14 @@ getMLsoln <-
     if(!is.matrix(y)) y <- as.matrix(y)
     stopifnot(nrow(y) == n)
     p <- ncol(X)
+
+    if(use_cpp) {
+        result <- Rcpp_getMLsoln(hsq, Kva, y, X, reml)
+        tmp <- list(beta=result$beta, sigmasq=result$sigmasq)
+        attr(tmp, "rss") <- result$rss
+        if(reml) attr(tmp, "logdetXSX") <- result$logdetXSX
+        return(tmp)
+    }
 
     # diagonal matrix of weights
     S = 1/(hsq*Kva + 1-hsq)
@@ -129,6 +145,7 @@ getMLsoln <-
 #' @param y rotated phenotypes (calculated by \code{\link{eigen_rotation}})
 #' @param X rotated covariate matrix (calculated by \code{\link{eigen_rotation}})
 #' @param reml If TRUE, use REML; otherwise use ordinary maximum likelihood.
+#' @param use_cpp = if TRUE, use c++ version of code
 #'
 #' @export
 #' @return The log likelihood value, with the corresponding estimates
@@ -140,16 +157,24 @@ getMLsoln <-
 #' loglik <- calcLL(0.5, e$Kva, e$y, e$X)
 #' many_loglik <- calcLL(seq(0, 1, by=0.1), e$Kva, e$y, e$X)
 calcLL <-
-    function(hsq, Kva, y, X, reml=TRUE)
+    function(hsq, Kva, y, X, reml=TRUE, use_cpp=TRUE)
 {
     if(length(hsq) > 1)
-        return(vapply(hsq, calcLL, 0, Kva, y, X, reml))
+        return(vapply(hsq, calcLL, 0, Kva, y, X, reml, use_cpp))
+
+    if(use_cpp) {
+        result <- Rcpp_calcLL(hsq, Kva, y, X, reml, logdetXpX)
+        tmp <- result$loglik
+        attr(tmp, "beta") <- result$beta
+        attr(tmp, "sigmasq") <- result$sigmasq
+        return(tmp)
+    }
 
     n <- nrow(X)
     p <- ncol(X)
 
     # estimate beta and sigmasq
-    MLsoln <- getMLsoln(hsq, Kva, y, X, reml=reml)
+    MLsoln <- getMLsoln(hsq, Kva, y, X, reml=reml, use_cpp=use_cpp)
     beta <- MLsoln$beta
     sigmasq <- MLsoln$sigmasq
 
@@ -184,7 +209,9 @@ calcLL <-
 #' @param y Rotated phenotypes (calculated by \code{\link{eigen_rotation}})
 #' @param X Rotated covariate matrix (calculated by \code{\link{eigen_rotation}})
 #' @param reml If TRUE, use REML; otherwise use ordinary maximum likelihood.
+#' @param check_boundary If TRUE, explicitly check log likelihood at 0 and 1.
 #' @param tol Tolerance for convergence
+#' @param use_cpp = if TRUE, use c++ version of code
 #'
 #' @export
 #' @return List containing estimates of \code{beta}, \code{sigmasq},
@@ -196,13 +223,25 @@ calcLL <-
 #' e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
 #' result <- fitLMM(e$Kva, e$y, e$X)
 fitLMM <-
-    function(Kva, y, X, reml=TRUE, tol=1e-4)
+    function(Kva, y, X, reml=TRUE, check_boundary=TRUE, tol=1e-4, use_cpp=TRUE)
 {
     n <- length(Kva)
     if(!is.matrix(X)) X <- as.matrix(X)
     stopifnot(nrow(X) == n)
     if(!is.matrix(y)) y <- as.matrix(y)
     stopifnot(nrow(y) == n)
+
+    if(use_cpp) {
+        logdetXpX <- NA
+        if(reml) logdetXpX <- Rcpp_calc_logdetXpX(X)
+        result <- Rcpp_fitLMM(Kva, y, X, reml, check_boundary, logdetXpX, tol)
+        return(list(beta=result$beta,
+                    sigmasq=result$sigmasq,
+                    hsq=result$hsq,
+                    sigmasq_g=result$hsq*result$sigmasq,
+                    sigmasq_e=(1-result$hsq)*result$sigmasq,
+                    loglik=result$loglik))
+    }
 
     # calculate log determinant of X'X matrix, so it's only done once
     if(reml) {
@@ -211,7 +250,7 @@ fitLMM <-
     }
 
     # maximize log likelihood
-    out <- stats::optimize(calcLL, c(0, 1), Kva=Kva, y=y, X=X, reml=reml,
+    out <- stats::optimize(calcLL, c(0, 1), Kva=Kva, y=y, X=X, reml=reml, use_cpp=use_cpp,
                            maximum=TRUE, tol=tol)
 
     hsq <- out$maximum
