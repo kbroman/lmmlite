@@ -163,6 +163,12 @@ calcLL <-
         return(vapply(hsq, calcLL, 0, Kva, y, X, reml, use_cpp))
 
     if(use_cpp) {
+        logdetXpX <- NA
+        if(reml) {
+            logdetXpX <- attr(X, "logdetXpX")
+            if(is.null(logdetXpX))
+                logdetXpX <- Rcpp_calc_logdetXpX(X)
+        }
         result <- Rcpp_calcLL(hsq, Kva, y, X, reml, logdetXpX)
         tmp <- result$loglik
         attr(tmp, "beta") <- result$beta
