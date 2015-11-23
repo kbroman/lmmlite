@@ -103,12 +103,12 @@ for(i in 1:n_phe) {
     res <- fitLMM(e$Kva, e$y, e$X, reml=TRUE)
     lmmlite[i*2-1,1] <- i
     lmmlite[i*2-1,2] <- "reml"
-    lmmlite[i*2-1,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
+    lmmlite[i*2-1,-(1:2)] <- c(res$hsq, res$beta, res$sigmasq, res$loglik)
 
     res <- fitLMM(e$Kva, e$y, e$X, reml=FALSE)
     lmmlite[i*2,1] <- i
     lmmlite[i*2,2] <- "ml"
-    lmmlite[i*2,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
+    lmmlite[i*2,-(1:2)] <- c(res$hsq, res$beta, res$sigmasq, res$loglik)
 }
 ```
 
@@ -475,14 +475,14 @@ for(i in (1:ncol(recla$pheno))[-6]) {
     out <- regress(recla$pheno[,i] ~ recla$covar, ~ recla$kinship)
     regr[i*2-1,1] <- i
     regr[i*2-1,2] <- "reml"
-    sigsq <- sum(out$sigma)
-    regr[i*2-1,-(1:2)] <- c(out$sigma[1]/sigsq, out$beta[,1], sigsq, out$llik)
+    sigmasq <- sum(out$sigma)
+    regr[i*2-1,-(1:2)] <- c(out$sigma[1]/sigmasq, out$beta[,1], sigmasq, out$llik)
 
     out <- regress(recla$pheno[,i] ~ recla$covar, ~ recla$kinship, kernel=0)
     regr[i*2,1] <- i
     regr[i*2,2] <- "ml"
-    sigsq <- sum(out$sigma)
-    regr[i*2,-(1:2)] <- c(out$sigma[1]/sigsq, out$beta[,1], sigsq, out$llik)
+    sigmasq <- sum(out$sigma)
+    regr[i*2,-(1:2)] <- c(out$sigma[1]/sigmasq, out$beta[,1], sigmasq, out$llik)
 }
 ```
 
@@ -506,12 +506,12 @@ for(i in 1:ncol(recla$pheno)) {
     res <- fitLMM(e$Kva, e$y, e$X, reml=TRUE)
     lmmlite[i*2-1,1] <- i
     lmmlite[i*2-1,2] <- "reml"
-    lmmlite[i*2-1,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
+    lmmlite[i*2-1,-(1:2)] <- c(res$hsq, res$beta, res$sigmasq, res$loglik)
 
     res <- fitLMM(e$Kva, e$y, e$X, reml=FALSE)
     lmmlite[i*2,1] <- i
     lmmlite[i*2,2] <- "ml"
-    lmmlite[i*2,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
+    lmmlite[i*2,-(1:2)] <- c(res$hsq, res$beta, res$sigmasq, res$loglik)
 }
 ```
 

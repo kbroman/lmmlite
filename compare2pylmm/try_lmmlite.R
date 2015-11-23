@@ -8,7 +8,7 @@ result <- data.frame(index=rep(NA,2*n),
                      hsq=rep(NA,2*n),
                      intercept=rep(NA,2*n),
                      sex=rep(NA,2*n),
-                     sigsq=rep(NA,2*n),
+                     sigmasq=rep(NA,2*n),
                      loglik=rep(NA,2*n), stringsAsFactors=FALSE)
 
 for(i in 1:ncol(recla$pheno)) {
@@ -21,13 +21,13 @@ for(i in 1:ncol(recla$pheno)) {
     res <- fitLMM(e$Kva, e$y, e$X, reml=TRUE)
     result[2*i-1,1] <- i
     result[2*i-1,2] <- "reml"
-    result[2*i-1,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
+    result[2*i-1,-(1:2)] <- c(res$hsq, res$beta, res$sigmasq, res$loglik)
 
 
     res <- fitLMM(e$Kva, e$y, e$X, reml=FALSE)
     result[2*i,1] <- i
     result[2*i,2] <- "ml"
-    result[2*i,-(1:2)] <- c(res$hsq, res$beta, res$sigsq, res$loglik)
+    result[2*i,-(1:2)] <- c(res$hsq, res$beta, res$sigmasq, res$loglik)
 }
 
 write.table(result, "lmmlite_results.csv", row.names=FALSE,
