@@ -14,6 +14,10 @@ Take a look at the
 comparing lmmlite and pylmm (and also the R package
 [regress](https://cran.r-project.org/web/packages/regress/)).
 
+There's
+[another vignette on performance](http://kbroman.org/lmmlite/assets/performance.html)
+relative to pylmm.
+
 ---
 
 [R/lmmlite](https://github.com/kbroman/lmmlite) is released under the
