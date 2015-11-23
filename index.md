@@ -12,9 +12,14 @@ and really I'm developing this package mostly so that I can better understand py
 
 The code is on [GitHub](https://github.com/kbroman/lmmlite).
 
-[Vignette](assets/compare2pylmm.html) with comparisons to
+**Vignettes**:
+
+- [Comparison of results](assets/compare2pylmm.html) to those of
 [pylmm](https://github.com/nickFurlotte/pylmm) and
 [regress](https://cran.r-project.org/web/packages/regress/).
+
+- [Performance comparison](assets/performance.html) with
+[pylmm](https://github.com/nickFurlotte/pylmm).
 
 ---
 

@@ -1,0 +1,304 @@
+---
+title: Performance compared to pylmm
+date: "`r broman::kbdate()`"
+output: html_document
+---
+
+```{r options, echo=FALSE}
+knitr::opts_chunk$set(fig.width=7, fig.height=4)
+```
+
+
+[R/lmmlite](https://github.com/kbroman/lmmlite) is a light
+implementation of the fit of linear mixed models for QTL analysis,
+following [pylmm](https://github.com/nickFurlotte/pylmm). It includes
+both plain R and C++ implementations (the latter using
+[RcppEigen](https://github.com/RcppCore/RcppEigen)).
+
+
+Here I seek to compare the speed of my R and C++ implementations to
+pylmm. For timings within R, I use the
+[microbenchmark](https://cran.r-project.org/package=microbenchmark) package.
+
+```{r load_data, echo=FALSE}
+library(lmmlite)
+library(microbenchmark)
+library(broman)
+data(recla)
+```
+
+I'll focus on the `recla` dataset that I include with the
+package. This is data on a set of diversity outcross mice, from
+[Recla et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24700285) and
+[Logan et al. (2013)](http://www.ncbi.nlm.nih.gov/pubmed/23433259). The data are
+originally from the
+[QTL Archive/Mouse Phenotype Database](http://phenome.jax.org/db/q?rtn=projects/projdet&reqprojid=285)
+and I've also
+[placed them online](https://github.com/kbroman/qtl2data/tree/master/DO_Recla)
+in the format used by [R/qtl2](http://kbroman.org/qtl2). I used
+[qtl2geno](https://github.com/rqtl/qtl2geno) to calculate genotype
+probabilities from the MUGA SNP array data. The data include
+`r nrow(recla$kinship)` mice, and form a list with three components:
+the estimated kinship matrix, a matrix with `r ncol(recla$pheno)`
+phenotypes, and a covariate matrix that contains an intercept (all
+1's) and sex (0 for female and 1 for male).
+
+```{r show_load_data, eval=FALSE}
+library(lmmlite)
+library(microbenchmark)
+library(broman)
+data(recla)
+```
+
+## lmmlite
+
+As we'll see, about half of the time is spent on an initial eigen
+decomposition of the kinship matrix. Missing values in the phenotype
+data are a bit of an annoyance, as we'll need to re-compute the eigen
+decomposition for each batch of phenotypes that has the same set of
+missing values, as we need to omit individuals with missing phenotypes
+from the analysis.
+
+I first determine the batches of phenotypes with common missing data
+patterns.
+
+```{r function_to_batch_cols}
+batch_cols_by_missing <-
+    function(mat)
+{
+    # pattern of missing data (as character string with 0's and 1's
+    pat <- apply(is.na(mat), 2, function(a) paste(as.numeric(a), collapse=""))
+
+    u <- unique(pat)
+
+    result <- split(seq(along=pat), match(pat, u))
+    names(result) <- NULL
+
+    missing_pat <- lapply(strsplit(u, ""), function(a) which(a=="1"))
+    attr(result, "missing_pattern") <- missing_pat
+
+    result
+}
+batches <- batch_cols_by_missing(recla$pheno)
+```
+
+Now let's compare the full analysis for the R and C++
+implementations in lmmlite. I'll run the code 10 times.
+
+```{r lmmlite_full}
+time_full <- microbenchmark(R={
+    for(i in seq(along=batches)) {
+        omit <- attr(batches, "missing_pattern")[[i]]
+        keep <- is.na(match(1:nrow(recla$pheno), omit))
+        eigenrot <- eigen_rotation(recla$kinship[keep,keep],
+                                   recla$pheno[keep,batches[[i]]],
+                                   recla$covar[keep,], use_cpp=FALSE)
+        for(j in 1:ncol(eigenrot$y))
+            res <- fitLMM(eigenrot$Kva, eigenrot$y[,j], eigenrot$X, reml=TRUE, use_cpp=FALSE)
+    } },
+               cpp={
+    for(i in seq(along=batches)) {
+        omit <- attr(batches, "missing_pattern")[[i]]
+        keep <- is.na(match(1:nrow(recla$pheno), omit))
+        eigenrot <- eigen_rotation(recla$kinship[keep,keep],
+                                   recla$pheno[keep,batches[[i]]],
+                                   recla$covar[keep,], use_cpp=TRUE)
+        for(j in 1:ncol(eigenrot$y))
+            res <- fitLMM(eigenrot$Kva, eigenrot$y[,j], eigenrot$X, reml=TRUE, use_cpp=TRUE)
+    } }, times=10)
+print(time_full, digits=4)
+```
+
+```{r summary_time_full, include=FALSE}
+sum_time_full <- summary(time_full)
+mean_time <- sum_time_full[,"mean"]
+unit <- attr(sum_time_full, "unit")
+```
+
+The average computation time for the R code is `r round(mean_time[1])` `r unit`,
+while the C++ code takes `r round(mean_time[2])` `r unit`, a speed-up of
+**`r myround(mean_time[1]/mean_time[2], 1)`x**.
+
+Here's just the code to do the initial eigen decomposition and the
+"rotation" of the phenotypes and covariates.
+
+```{r llmlite_eigen}
+time_eigen <- microbenchmark(R={
+    for(i in seq(along=batches)) {
+        omit <- attr(batches, "missing_pattern")[[i]]
+        keep <- is.na(match(1:nrow(recla$pheno), omit))
+        eigenrot <- eigen_rotation(recla$kinship[keep,keep],
+                                   recla$pheno[keep,batches[[i]]],
+                                   recla$covar[keep,], use_cpp=FALSE)
+    } },
+               cpp={
+    for(i in seq(along=batches)) {
+        omit <- attr(batches, "missing_pattern")[[i]]
+        keep <- is.na(match(1:nrow(recla$pheno), omit))
+        eigenrot <- eigen_rotation(recla$kinship[keep,keep],
+                                   recla$pheno[keep,batches[[i]]],
+                                   recla$covar[keep,], use_cpp=TRUE)
+    } }, times=10)
+print(time_eigen, digits=4)
+```
+
+```{r summary_time_eigen, include=FALSE}
+sum_time_eigen <- summary(time_eigen)
+mean_time <- sum_time_eigen[,"mean"]
+unit <- attr(sum_time_eigen, "unit")
+```
+
+The mean computation time for the R code is `r round(mean_time[1])` `r unit`,
+while the C++ code takes `r round(mean_time[2])` `r unit`, a speed-up of
+**`r myround(mean_time[1]/mean_time[2], 1)`x**.
+
+I'll re-calculate the eigen decomposition for each batch, and save the results
+
+```{r calc_eigen}
+eigenrot_cpp <- eigenrot_R <- vector("list", length(batches))
+for(i in seq(along=batches)) {
+    omit <- attr(batches, "missing_pattern")[[i]]
+    keep <- is.na(match(1:nrow(recla$pheno), omit))
+    eigenrot_R[[i]] <- eigen_rotation(recla$kinship[keep,keep],
+                                    recla$pheno[keep,batches[[i]]],
+                                    recla$covar[keep,], use_cpp=FALSE)
+    eigenrot_cpp[[i]] <- eigen_rotation(recla$kinship[keep,keep],
+                                    recla$pheno[keep,batches[[i]]],
+                                    recla$covar[keep,], use_cpp=TRUE)
+}
+```
+
+And now I'll time the fit of the LMM.
+
+```{r llmlite_fitlmm}
+time_llm <- microbenchmark(R={
+    for(i in seq(along=batches)) {
+        for(j in 1:ncol(eigenrot_R[[i]]$y))
+            res <- fitLMM(eigenrot_R[[i]]$Kva, eigenrot_R[[i]]$y[,j], eigenrot_R[[i]]$X, reml=TRUE, use_cpp=FALSE)
+
+    } },
+               cpp={
+    for(i in seq(along=batches)) {
+        for(j in 1:ncol(eigenrot_cpp[[i]]$y))
+            res <- fitLMM(eigenrot_cpp[[i]]$Kva, eigenrot_cpp[[i]]$y[,j], eigenrot_cpp[[i]]$X, reml=TRUE, use_cpp=TRUE)
+    } }, times=10)
+print(time_llm, digits=4)
+```
+
+```{r summary_time_llm, include=FALSE}
+sum_time_llm <- summary(time_llm)
+mean_time <- sum_time_llm[,"mean"]
+unit <- attr(sum_time_llm, "unit")
+```
+
+The mean computation time for the R code is `r round(mean_time[1])` `r unit`,
+while the C++ code takes `r round(mean_time[2])` `r unit`, a speed-up of
+**`r myround(mean_time[1]/mean_time[2], 1)`x**.
+
+
+## pylmm
+
+Now I'll try running [pylmm](https://github.com/nickFurlotte/pylmm) in
+the same way. First, I need to save the data to a set of CSV files.
+
+```{r save_data_to_file}
+for(i in c("kinship", "pheno", "covar"))
+    write.table(recla[[i]], paste0(i, ".csv"), sep=",", quote=FALSE,
+                row.names=FALSE, col.names=FALSE)
+```
+
+I'm not sure the best way to time the code, so I'll just grab the
+start and stop time for the interesting bit.
+
+```{python time_pylmm}
+# this chunk is python code
+import lmm
+import numpy
+import time
+
+n_times = 10
+
+# load the datasets
+kinship = numpy.genfromtxt('kinship.csv', delimiter=',')
+pheno =   numpy.genfromtxt('pheno.csv', delimiter=',')
+covar =   numpy.genfromtxt('covar.csv', delimiter=',')
+
+# loop over the columns in pheno
+#    fit the LMM by REML or ML and print the results to STDIN
+start_time = time.time()
+for j in range(n_times):
+    for i in range(pheno.shape[1]):
+        result = lmm.LMM(pheno[:,[i]], kinship, X0=covar).fit(REML=True)
+stop_time = time.time()
+ave_time = (stop_time - start_time)/n_times
+open('pylmm_time.txt', 'w').write(str(ave_time) + "\n")
+print(ave_time)
+```
+
+```{r load_python_time, include=FALSE}
+pylmm_time <- as.numeric(readLines("pylmm_time.txt"))
+lmmlite_time <- sum_time_full[,"mean"]
+unit <- attr(sum_time_full, "unit")
+lmmlite_time <- switch(unit,
+                       "microseconds"=lmmlite_time/10^6,
+                       "milliseconds"=lmmlite_time/10^3,
+                       lmmlite_time)
+```
+
+This isn't really a fair comparison, but I'm seeing a time of
+`r myround(pylmm_time, 2)` sec for pylmm,
+`r myround(lmmlite_time[1], 2)` sec for the R version of lmmlite,
+and `r myround(lmmlite_time[2], 2)` sec for the C++ version of
+lmmlite, so speed-ups of **`r myround(pylmm_time/lmmlite_time[1], 1)`x**
+and **`r myround(pylmm_time/lmmlite_time[2], 1)`x**
+for the R and C++ code in lmmlite, vs pylmm.
+
+As a more fair comparison, I'll re-run the lmmlite analysis,
+considering each phenotype individually.
+
+```{r lmmlite_full_individually}
+time_full2 <- microbenchmark(R={
+    for(i in 1:ncol(recla$pheno)) {
+        keep <- !is.na(recla$pheno[,i])
+        eigenrot <- eigen_rotation(recla$kinship[keep,keep],
+                                   recla$pheno[keep,i],
+                                   recla$covar[keep,], use_cpp=FALSE)
+        res <- fitLMM(eigenrot$Kva, eigenrot$y, eigenrot$X, reml=TRUE, use_cpp=FALSE)
+    }},
+               cpp={
+    for(i in 1:ncol(recla$pheno)) {
+        keep <- !is.na(recla$pheno[,i])
+        eigenrot <- eigen_rotation(recla$kinship[keep,keep],
+                                   recla$pheno[keep,i],
+                                   recla$covar[keep,], use_cpp=TRUE)
+        res <- fitLMM(eigenrot$Kva, eigenrot$y, eigenrot$X, reml=TRUE, use_cpp=TRUE)
+    }}, times=10)
+print(time_full2, digits=4)
+```
+
+```{r adjust_lmmlite_time, include=FALSE}
+sum_time_full2 <- summary(time_full2)
+lmmlite_time2 <- sum_time_full2[,"mean"]
+unit <- attr(sum_time_full2, "unit")
+lmmlite_time2 <- switch(unit,
+                       "microseconds"=lmmlite_time2/10^6,
+                       "milliseconds"=lmmlite_time2/10^3,
+                       lmmlite_time2)
+```
+
+
+Now, in comparison to `r myround(pylmm_time, 2)` sec for pylmm,
+I see `r myround(lmmlite_time2[1], 2)` sec for the R version of lmmlite,
+and `r myround(lmmlite_time2[2], 2)` sec for the C++ version of
+lmmlite, so speed-ups of **`r myround(pylmm_time/lmmlite_time2[1], 1)`x**
+and **`r myround(pylmm_time/lmmlite_time2[2], 1)`x**
+for the R and C++ code in lmmlite, vs pylmm.
+(Actually, the R version of lmmlite is slower than pylmm, so that's
+not really a "speed-up". The C++ version is faster, though.)
+
+
+## Session info
+
+```{r session_info}
+devtools::session_info()
+```
