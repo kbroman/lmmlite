@@ -46,7 +46,7 @@ eigen_rotation <-
 
     if(use_cpp) {
         result <- Rcpp_eigen_rotation(K, y, X)
-        attr(result$X, "logdetXpX") <- Rcpp_calc_logdetXpX(e$X)
+        attr(result$X, "logdetXpX") <- Rcpp_calc_logdetXpX(result$X)
         return(result)
     }
 
