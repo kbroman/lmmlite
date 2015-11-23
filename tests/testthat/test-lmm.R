@@ -24,8 +24,8 @@ test_that("fitLMM works", {
         fitLMM(e$Kva, e$y, e$X, tol=tol)})
 
     # combine results
-    tab_lmm_r <- t(vapply(lmm_all_r, function(a) c(sigsq_g=a$sigsq_g,
-                                                   sigsq_e=a$sigsq_e,
+    tab_lmm_r <- t(vapply(lmm_all_r, function(a) c(sigmasq_g=a$sigmasq_g,
+                                                   sigmasq_e=a$sigmasq_e,
                                                    hsq=a$hsq,
                                                    beta_int=a$beta[1],
                                                    beta_sex=a$beta[2],
@@ -76,7 +76,7 @@ test_that("fitLMM works", {
                                   -691.70061732983, -695.386321272136, -694.046300667259, -703.137566586369,
                                   -711.280681974735, -702.717286014442, -716.699340702028, -711.18856371976,
                                   -714.197176248473, -716.613423119153, -597.754459379841), .Dim = c(26L,
-                                                                                            6L), .Dimnames = list(NULL, c("sigsq_g", "sigsq_e", "hsq", "beta_int",
+                                                                                            6L), .Dimnames = list(NULL, c("sigmasq_g", "sigmasq_e", "hsq", "beta_int",
                                                                                                  "beta_sex", "loglik")))
 
 
@@ -95,8 +95,8 @@ test_that("fitLMM works", {
         fitLMM(e$Kva, e$y, e$X, tol=tol, reml=FALSE)})
 
     # combine results
-    tab_lmm_m <- t(vapply(lmm_all_m, function(a) c(sigsq_g=a$sigsq_g,
-                                                   sigsq_e=a$sigsq_e,
+    tab_lmm_m <- t(vapply(lmm_all_m, function(a) c(sigmasq_g=a$sigmasq_g,
+                                                   sigmasq_e=a$sigmasq_e,
                                                    hsq=a$hsq,
                                                    beta_int=a$beta[1],
                                                    beta_sex=a$beta[2],
@@ -146,7 +146,7 @@ test_that("fitLMM works", {
                                   -697.711890575179, -695.223734048965, -698.938232553319, -697.587743037467,
                                   -706.708749745274, -714.503558651465, -706.237066443981, -720.066701880965,
                                   -714.649624587561, -717.383324924947, -718.45010139659, -600.483468426093
-                                  ), .Dim = c(26L, 6L), .Dimnames = list(NULL, c("sigsq_g", "sigsq_e",
+                                  ), .Dim = c(26L, 6L), .Dimnames = list(NULL, c("sigmasq_g", "sigmasq_e",
                                                         "hsq", "beta_int", "beta_sex", "loglik")))
 
     # compare

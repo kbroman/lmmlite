@@ -2,6 +2,23 @@
 #ifndef LMM_H
 #define LMM_H
 
+struct lmm_fit {
+    VectorXd beta;
+    double sigmasq;
+    double loglik;
+    double rss;
+    double logdetXSX;
+};
+
+struct calcLL_args {
+    VectorXd Kva;
+    VectorXd y;
+    MatrixXd X;
+    bool reml;
+    double logdetXpX;
+};
+
+
 // calc X'X
 MatrixXd calc_XpX(const MatrixXd& X);
 
@@ -25,8 +42,8 @@ List R_eigen_decomp(const NumericMatrix &A);
 // y     = rotated vector of phenotypes
 // X     = rotated matrix of covariates
 // reml  = whether you'll be using REML (so need to calculate log det XSX)
-VectorXd getMLsoln(double hsq, VectorXd Kva, VectorXd y,
-                   MatrixXd X, bool reml);
+struct lmm_fit getMLsoln(double hsq, VectorXd Kva, VectorXd y,
+                         MatrixXd X, bool reml);
 
 // getMLsoln (version called from R)
 List R_getMLsoln(double hsq, NumericVector Kva, NumericVector y,
@@ -42,11 +59,15 @@ List R_getMLsoln(double hsq, NumericVector Kva, NumericVector y,
 // X     = rotated matrix of covariates
 // reml  = boolean indicating whether to use REML (vs ML)
 // logdetXpX = log det X'X; if NA, it's calculated
-VectorXd calcLL(double hsq, VectorXd Kva, VectorXd y,
-                MatrixXd X, bool reml, double logdetXpX);
+struct lmm_fit calcLL(double hsq, VectorXd Kva, VectorXd y,
+                      MatrixXd X, bool reml, double logdetXpX);
 
 // calcLL (version called from R)
 List R_calcLL(double hsq, NumericVector Kva, NumericVector y,
               NumericMatrix X, bool reml, double logdetXpX);
+
+// just the negative log likelihood, for the optimization
+double negLL(double x, struct calcLL_args *args);
+
 
 #endif // LMM_H

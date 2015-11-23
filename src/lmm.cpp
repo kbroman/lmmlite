@@ -58,11 +58,12 @@ List R_eigen_decomp(NumericMatrix A)
 // y     = rotated vector of phenotypes
 // X     = rotated matrix of covariates
 // reml  = whether you'll be using REML (so need to calculate log det XSX)
-VectorXd getMLsoln(double hsq, VectorXd Kva, VectorXd y,
+struct lmm_fit getMLsoln(double hsq, VectorXd Kva, VectorXd y,
                    MatrixXd X, bool reml=true)
 {
     const int n = Kva.size();
     const int p = X.cols();
+    struct lmm_fit result;
 
     // diagonal matrix of weights
     VectorXd S(n);
@@ -91,12 +92,10 @@ VectorXd getMLsoln(double hsq, VectorXd Kva, VectorXd y,
     MatrixXd rss = ySy - XSy.transpose() * beta;
 
     // return value
-    VectorXd result(p+3);
-    result[0] = rss(0,0) / (double)(n-p); // sigma^2
-    result[1] = rss(0,0);
-    result[2] = logdetXSX; // determinant (if REML)
-    for(int i=0; i<p; i++)
-        result[i+3] = beta(i,0);
+    result.rss = rss(0,0);
+    result.sigmasq = result.rss/(double)(n-p);
+    result.beta = beta.col(0);
+    result.logdetXSX = logdetXSX; // determinant (if REML)
 
     return result;
 }
@@ -110,17 +109,12 @@ List R_getMLsoln(double hsq, NumericVector Kva, NumericVector y,
     VectorXd ey(as<Map<MatrixXd> >(y));
     MatrixXd eX(as<Map<MatrixXd> >(X));
 
-    VectorXd result = getMLsoln(hsq, eKva, ey, eX, reml);
+    struct lmm_fit result = getMLsoln(hsq, eKva, ey, eX, reml);
 
-    int p = result.size()-3;
-    NumericVector beta(p);
-    for(int i=0; i<p; i++)
-        beta[i] = result[i+3];
-
-    return List::create(Named("sigsq") =     result[0],
-                        Named("rss") =       result[1],
-                        Named("logdetXSX") = result[2],
-                        Named("beta") =      beta);
+    return List::create(Named("sigmasq") =     result.sigmasq,
+                        Named("rss") =       result.rss,
+                        Named("logdetXSX") = result.logdetXSX,
+                        Named("beta") =      result.beta);
 }
 
 // calcLL
@@ -133,20 +127,17 @@ List R_getMLsoln(double hsq, NumericVector Kva, NumericVector y,
 // X     = rotated matrix of covariates
 // reml  = boolean indicating whether to use REML (vs ML)
 // logdetXpX = log det X'X; if NA, it's calculated
-VectorXd calcLL(double hsq, VectorXd Kva, VectorXd y,
+struct lmm_fit calcLL(double hsq, VectorXd Kva, VectorXd y,
                 MatrixXd X, bool reml=true, double logdetXpX=NA_REAL)
 {
     int n = Kva.size();
     int p = X.cols();
 
     // estimate beta and sigma^2
-    VectorXd ml_soln = getMLsoln(hsq, Kva, y, X, reml);
-    double sigsq = ml_soln[0];
-    double rss   = ml_soln[1];
-    double logdetXSX = ml_soln[2];
+    struct lmm_fit ml_soln = getMLsoln(hsq, Kva, y, X, reml);
 
     // calculate log likelihood
-    double loglik = (double)n*log(rss);
+    double loglik = (double)n*log(ml_soln.rss);
     for(int i=0; i<n; i++)
         loglik += log(hsq*Kva[i] + 1.0 - hsq);
     loglik *= -0.5;
@@ -159,14 +150,11 @@ VectorXd calcLL(double hsq, VectorXd Kva, VectorXd y,
             for(int i=0; i<p; i++) logdetXpX += log(e.first[i]);
         }
 
-        loglik += 0.5*(p*log(2*M_PI*sigsq) + logdetXpX - logdetXSX);
+        loglik += 0.5*(p*log(2 * M_PI * ml_soln.sigmasq) + logdetXpX - ml_soln.logdetXSX);
     }
 
-    VectorXd result(p+2);
-    result[0] = loglik;
-    result[1] = sigsq;
-    for(int i=0; i<p; i++) result[i+2] = ml_soln[i+3];
-    return result;
+    ml_soln.loglik = loglik;
+    return ml_soln;
 }
 
 // calcLL (version called from R)
@@ -178,14 +166,18 @@ List R_calcLL(double hsq, NumericVector Kva, NumericVector y,
     VectorXd ey(as<Map<MatrixXd> >(y));
     MatrixXd eX(as<Map<MatrixXd> >(X));
 
-    VectorXd result = calcLL(hsq, eKva, ey, eX, reml, logdetXpX);
+    struct lmm_fit result = calcLL(hsq, eKva, ey, eX, reml, logdetXpX);
 
-    int p = result.size()-2;
-    NumericVector beta(p);
-    for(int i=0; i<p; i++)
-        beta[i] = result[i+2];
+    return List::create(Named("loglik") =    result.loglik,
+                        Named("sigmasq") =   result.sigmasq,
+                        Named("beta") =      result.beta);
+}
 
-    return List::create(Named("loglik") =    result[0],
-                        Named("sigsq") =     result[1],
-                        Named("beta") =      beta);
+// just the negative log likelihood, for the optimization
+double negLL(double x, struct calcLL_args *args)
+{
+    struct lmm_fit result = calcLL(x, args->Kva, args->y, args->X,
+                                   args->reml, args->logdetXpX);
+
+    return -result.loglik;
 }

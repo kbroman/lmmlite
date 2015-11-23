@@ -62,8 +62,8 @@ eigen_rotation <-
 #'
 #' For a fixed value for \code{hsq}, the heritability, calculate the
 #' corresponding maximum likelihood estimates of \code{beta} and
-#' \code{sigsq}, with the latter being the total variance,
-#' \code{sigsq_g + sigsq_e}.
+#' \code{sigmasq}, with the latter being the total variance,
+#' \code{sigmasq_g + sigmasq_e}.
 #'
 #' @param hsq heritability
 #' @param Kva eigenvalues of K (calculated by \code{\link{eigen_rotation}})
@@ -72,7 +72,7 @@ eigen_rotation <-
 #' @param reml If TRUE, use REML; otherwise use ordinary maximum likelihood.
 #'
 #' @export
-#' @return list containing \code{beta} and \code{sigsq}, with residual
+#' @return list containing \code{beta} and \code{sigmasq}, with residual
 #' sum of squares and (if \code{reml=TRUE}, \code{log det (XSX)}) as
 #' attributes.
 #'
@@ -110,10 +110,10 @@ getMLsoln <-
     rss = ySy - t(XSy) %*% beta
 
     # estimate of sigma^2 (total variance = sigma_g^2 + sigma_e^2)
-    sigsq <- rss / (n - p)
+    sigmasq <- rss / (n - p)
 
     # return value
-    result <- list(beta=beta, sigsq=sigsq)
+    result <- list(beta=beta, sigmasq=sigmasq)
     attr(result, "rss") <- rss
     if(reml) attr(result, "logdetXSX") <- logdetXSX
 
@@ -132,7 +132,7 @@ getMLsoln <-
 #'
 #' @export
 #' @return The log likelihood value, with the corresponding estimates
-#' of \code{beta} and \code{sigsq} included as attributes.
+#' of \code{beta} and \code{sigmasq} included as attributes.
 #'
 #' @examples
 #' data(recla)
@@ -151,7 +151,7 @@ calcLL <-
     # estimate beta and sigmasq
     MLsoln <- getMLsoln(hsq, Kva, y, X, reml=reml)
     beta <- MLsoln$beta
-    sigsq <- MLsoln$sigsq
+    sigmasq <- MLsoln$sigmasq
 
     # calculate log likelihood
     rss <- attr(MLsoln, "rss")
@@ -165,11 +165,11 @@ calcLL <-
         }
 
         logdetXSX <- attr(MLsoln, "logdetXSX")
-        LL <- LL + 0.5 * (p*log(2*pi*sigsq) + logdetXpX - logdetXSX)
+        LL <- LL + 0.5 * (p*log(2*pi*sigmasq) + logdetXpX - logdetXSX)
     }
 
     attr(LL, "beta") <- beta
-    attr(LL, "sigsq") <- sigsq
+    attr(LL, "sigmasq") <- sigmasq
     LL
 }
 
@@ -177,7 +177,7 @@ calcLL <-
 #'
 #' Fit a linear mixed model of the form y = Xb + e where e follows a
 #' multivariate normal distribution with mean 0 and variance matrix
-#' \code{sigsq_g K + sigsq_e I}, where \code{K} is a known kniship
+#' \code{sigmasq_g K + sigmasq_e I}, where \code{K} is a known kniship
 #' matrix and \code{I} is the identity matrix.
 #'
 #' @param Kva Eigenvalues of K (calculated by \code{\link{eigen_rotation}})
@@ -187,8 +187,8 @@ calcLL <-
 #' @param tol Tolerance for convergence
 #'
 #' @export
-#' @return List containing estimates of \code{beta}, \code{sigsq},
-#' \code{hsq}, \code{sigsq_g}, and \code{sigsq_e}, as well as the log
+#' @return List containing estimates of \code{beta}, \code{sigmasq},
+#' \code{hsq}, \code{sigmasq_g}, and \code{sigmasq_e}, as well as the log
 #' likelihood (\code{loglik}).
 #'
 #' @examples
@@ -216,12 +216,12 @@ fitLMM <-
 
     hsq <- out$maximum
     obj <- out$objective
-    sigsq <- attr(obj, "sigsq")
+    sigmasq <- attr(obj, "sigmasq")
 
     list(beta=attr(obj, "beta"),
-         sigsq=sigsq, # total var
+         sigmasq=sigmasq, # total var
          hsq=hsq,
-         sigsq_g= hsq*sigsq, # genetic variance
-         sigsq_e = (1-hsq)*sigsq, # residual variance
+         sigmasq_g= hsq*sigmasq, # genetic variance
+         sigmasq_e = (1-hsq)*sigmasq, # residual variance
          loglik = as.numeric(obj))
 }
