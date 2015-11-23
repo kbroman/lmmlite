@@ -50,6 +50,66 @@ List R_eigen_decomp(NumericMatrix A)
 }
 
 
+// eigen + rotation
+// perform eigen decomposition of kinship matrix
+// and rotate phenotype and covariate matrices by transpose of eigenvectors
+struct eigenrot eigen_rotation(MatrixXd K, MatrixXd y, MatrixXd X)
+{
+    std::pair<VectorXd,MatrixXd> e = eigen_decomp(K);
+    MatrixXd yrot = e.second * y;
+    MatrixXd Xrot = e.second * X;
+
+    struct eigenrot result;
+    result.Kva = e.first;
+    result.Kve = e.second;
+    result.y = yrot;
+    result.X = Xrot;
+
+    return result;
+}
+
+// eigen + rotation
+// [[Rcpp::export]]
+List R_eigen_rotation(NumericMatrix K, NumericMatrix y, NumericMatrix X)
+{
+    MatrixXd KK(as<Map<MatrixXd> >(K));
+    MatrixXd yy(as<Map<MatrixXd> >(y));
+    MatrixXd XX(as<Map<MatrixXd> >(X));
+
+    struct eigenrot result = eigen_rotation(KK, yy, XX);
+
+    return List::create(Named("Kva") = result.Kva,
+                        Named("Kve") = result.Kve,
+                        Named("y") = result.y,
+                        Named("X") = result.X);
+}
+
+// calculate log det X'X
+double calc_logdetXpX(MatrixXd X)
+{
+    MatrixXd XpX(calc_xpx(X)); // calc X'X
+    int p = X.cols();
+
+    // eigen decomposition of X'X
+    std::pair<VectorXd, MatrixXd> e = eigen_decomp(XpX);
+
+    // calculate log det X'X
+    double result=0.0;
+    for(int i=0; i<p; i++) result += log(e.first[i]);
+
+    return result;
+}
+
+// calculate log det X'X (version to be called from R)
+// [[Rcpp::export]]
+double R_calc_logdetXpX(NumericMatrix X)
+{
+    MatrixXd XX(as<Map <MatrixXd> >(X));
+
+    return calc_logdetXpX(XX);
+}
+
+
 // getMLsoln
 // for fixed value of hsq, calculate MLEs of beta and sigmasq
 // sigmasq = total variance = sig^2_g + sig^2_e

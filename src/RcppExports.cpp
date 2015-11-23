@@ -28,6 +28,30 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// R_eigen_rotation
+List R_eigen_rotation(NumericMatrix K, NumericMatrix y, NumericMatrix X);
+RcppExport SEXP lmmlite_R_eigen_rotation(SEXP KSEXP, SEXP ySEXP, SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type K(KSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    __result = Rcpp::wrap(R_eigen_rotation(K, y, X));
+    return __result;
+END_RCPP
+}
+// R_calc_logdetXpX
+double R_calc_logdetXpX(NumericMatrix X);
+RcppExport SEXP lmmlite_R_calc_logdetXpX(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    __result = Rcpp::wrap(R_calc_logdetXpX(X));
+    return __result;
+END_RCPP
+}
 // R_getMLsoln
 List R_getMLsoln(double hsq, NumericVector Kva, NumericVector y, NumericMatrix X, bool reml);
 RcppExport SEXP lmmlite_R_getMLsoln(SEXP hsqSEXP, SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP) {

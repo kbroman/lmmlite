@@ -9,6 +9,14 @@ R_eigen_decomp <- function(A) {
     .Call('lmmlite_R_eigen_decomp', PACKAGE = 'lmmlite', A)
 }
 
+R_eigen_rotation <- function(K, y, X) {
+    .Call('lmmlite_R_eigen_rotation', PACKAGE = 'lmmlite', K, y, X)
+}
+
+R_calc_logdetXpX <- function(X) {
+    .Call('lmmlite_R_calc_logdetXpX', PACKAGE = 'lmmlite', X)
+}
+
 R_getMLsoln <- function(hsq, Kva, y, X, reml = TRUE) {
     .Call('lmmlite_R_getMLsoln', PACKAGE = 'lmmlite', hsq, Kva, y, X, reml)
 }

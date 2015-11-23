@@ -32,6 +32,49 @@ test_that("eigen decomp works", {
 
 })
 
+test_that("eigen_rotation works", {
+
+    y <- recla$pheno[,1,drop=FALSE]
+    X <- recla$covar
+    dimnames(X) <- dimnames(y) <- NULL
+
+    e <- R_eigen_rotation(recla$kinship, y, X)
+    expected <- eigen_rotation(recla$kinship, y, X)
+
+    # eigenvalues match
+    expect_equal(sort(e$Kva), sort(expected$Kva))
+
+    # back-rotation match
+    expect_equal(t(e$Kve) %*% e$y, y)
+    expect_equal(t(e$Kve) %*% e$X, X)
+
+    # fit of LMM match
+    out <- R_fitLMM(e$Kva, e$y, e$X)
+    outR <- fitLMM(expected$Kva, expected$y, expected$X)
+
+    expect_equal(out$loglik, as.numeric(outR$loglik))
+    expect_equal(out$hsq, outR$hsq)
+    expect_equal(out$beta, as.numeric(outR$beta))
+    expect_equal(out$sigmasq, as.numeric(outR$sigmasq))
+
+    # real expected values
+    expected <- list(loglik=-2332.84011782658,
+                     hsq=0.764284086070972,
+                     sigmasq=295340.52598977,
+                     beta=c(1417.98330225743, -23.242180295058))
+    expect_equal(out, expected)
+
+})
+
+
+test_that("logdetXpX works", {
+    data(recla)
+
+    expected <- determinant( t(recla$covar) %*% recla$covar)$modulus
+
+    expect_equal(R_calc_logdetXpX(recla$covar), as.numeric(expected))
+})
+
 
 test_that("getMLsoln works", {
 

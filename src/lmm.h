@@ -19,6 +19,12 @@ struct calcLL_args {
     double logdetXpX;
 };
 
+struct eigenrot {
+    VectorXd Kva;
+    MatrixXd Kve;
+    MatrixXd y;
+    MatrixXd X;
+};
 
 // calc X'X
 MatrixXd calc_XpX(const MatrixXd& X);
@@ -33,6 +39,20 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> eigen_decomp(Eigen::MatrixXd A);
 // eigen decomposition
 //    returns list with eigenvalues and transposed eigenvectors
 List R_eigen_decomp(const NumericMatrix &A);
+
+// eigen + rotation
+// perform eigen decomposition of kinship matrix
+// and rotate phenotype and covariate matrices by transpose of eigenvectors
+struct eigenrot eigen_rotation(MatrixXd K, MatrixXd y, MatrixXd X);
+
+// eigen + rotation
+List R_eigen_rotation(NumericMatrix K, NumericMatrix y, NumericMatrix X);
+
+// calculate log det X'X
+double calc_logdetXpX(MatrixXd X);
+
+// calculate log det X'X (version to be called from R)
+double R_calc_logdetXpX(NumericMatrix X);
 
 // getMLsoln
 // for fixed value of hsq, calculate MLEs of beta and sigmasq
