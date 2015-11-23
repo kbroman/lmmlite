@@ -104,3 +104,57 @@ test_that("calcLL works", {
     expect_equal(outcpp2, expected)
 
 })
+
+test_that("fitLMM works", {
+
+    data(recla)
+    e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
+    logdetXpX <- determinant(R_calc_xpx(e$X))$modulus
+
+    #ML
+    outR <- fitLMM(e$Kva, e$y, e$X, FALSE)
+    outcpp <- R_fitLMM(e$Kva, e$y, e$X, FALSE)
+    outcpp2 <- R_fitLMM(e$Kva, e$y, e$X, FALSE, logdetXpX=logdetXpX)
+
+    expect_equal(outcpp$loglik, as.numeric(outR$loglik))
+    expect_equal(outcpp$hsq, outR$hsq)
+    expect_equal(outcpp$beta, as.numeric(outR$beta))
+    expect_equal(outcpp$sigmasq, as.numeric(outR$sigmasq))
+
+    expect_equal(outcpp2$loglik, as.numeric(outR$loglik))
+    expect_equal(outcpp2$hsq, outR$hsq)
+    expect_equal(outcpp2$beta, as.numeric(outR$beta))
+    expect_equal(outcpp2$sigmasq, as.numeric(outR$sigmasq))
+
+    # real expected values
+    expected <- list(loglik=-2348.79972912762,
+                     hsq=0.720556143620898,
+                     sigmasq=291566.300541588,
+                     beta=c(1417.33690798302, -23.9850529710706))
+    expect_equal(outcpp, expected)
+    expect_equal(outcpp2, expected)
+
+    # REML
+    outR <- fitLMM(e$Kva, e$y, e$X, TRUE)
+    outcpp <- R_fitLMM(e$Kva, e$y, e$X, TRUE)
+    outcpp2 <- R_fitLMM(e$Kva, e$y, e$X, TRUE, logdetXpX=logdetXpX)
+
+    expect_equal(outcpp$loglik, as.numeric(outR$loglik))
+    expect_equal(outcpp$hsq, outR$hsq)
+    expect_equal(outcpp$beta, as.numeric(outR$beta))
+    expect_equal(outcpp$sigmasq, as.numeric(outR$sigmasq))
+
+    expect_equal(outcpp2$loglik, as.numeric(outR$loglik))
+    expect_equal(outcpp2$hsq, outR$hsq)
+    expect_equal(outcpp2$beta, as.numeric(outR$beta))
+    expect_equal(outcpp2$sigmasq, as.numeric(outR$sigmasq))
+
+    # real expected values
+    expected <- list(loglik=-2332.84011782658,
+                     hsq=0.764284086070972,
+                     sigmasq=295340.52598977,
+                     beta=c(1417.98330225743, -23.242180295058))
+    expect_equal(outcpp, expected)
+    expect_equal(outcpp2, expected)
+
+})

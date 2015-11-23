@@ -17,3 +17,7 @@ R_calcLL <- function(hsq, Kva, y, X, reml = TRUE, logdetXpX = NA_real_) {
     .Call('lmmlite_R_calcLL', PACKAGE = 'lmmlite', hsq, Kva, y, X, reml, logdetXpX)
 }
 
+R_fitLMM <- function(Kva, y, X, reml = TRUE, check_boundary = TRUE, logdetXpX = NA_real_, tol = 1e-4) {
+    .Call('lmmlite_R_fitLMM', PACKAGE = 'lmmlite', Kva, y, X, reml, check_boundary, logdetXpX, tol)
+}
+

@@ -8,6 +8,7 @@
 using namespace Rcpp;
 using namespace Eigen;
 
+#include "brent_fmin.h"
 #include "lmm.h"
 
 // calc X'X
@@ -180,4 +181,78 @@ double negLL(double x, struct calcLL_args *args)
                                    args->reml, args->logdetXpX);
 
     return -result.loglik;
+}
+
+// fitLMM
+// Optimize log liklihood over hsq
+//
+// Kva   = eigenvalues of kinship matrix
+// y     = rotated vector of phenotypes
+// X     = rotated matrix of covariates
+// reml  = boolean indicating whether to use REML (vs ML)
+// check_boundary = if true, explicity check 0.0 and 1.0 boundaries
+// logdetXpX = log det X'X; if NA, it's calculated
+// tol   = tolerance for convergence
+struct lmm_fit fitLMM(VectorXd Kva, VectorXd y, MatrixXd X,
+                      bool reml=true, bool check_boundary=true,
+                      double logdetXpX=NA_REAL, double tol=1e-4)
+{
+    struct lmm_fit result;
+
+    // calculate log det XpX, if necessary
+    // (note same befor and after it's "rotated" by eigenvec of kinship matrix
+    if(reml && NumericVector::is_na(logdetXpX)) {
+        MatrixXd XpX(calc_xpx(X));
+        std::pair<VectorXd, MatrixXd> e = eigen_decomp(XpX);
+        int p = X.cols();
+        logdetXpX=0.0;
+        for(int i=0; i<p; i++) logdetXpX += log(e.first[i]);
+    }
+
+    // function arguments for calcLL
+    struct calcLL_args args;
+    args.Kva = Kva;
+    args.y = y;
+    args.X = X;
+    args.reml = reml;
+    args.logdetXpX = logdetXpX;
+
+    double hsq = qtl2_Brent_fmin(0.0, 1.0, (double (*)(double, void*)) negLL, &args, tol);
+    result = calcLL(hsq, Kva, y, X, reml, logdetXpX);
+    result.hsq = hsq;
+
+    if(check_boundary) {
+        struct lmm_fit boundary_result;
+        boundary_result = calcLL(0.0, Kva, y, X, reml, logdetXpX);
+        if(boundary_result.loglik > result.loglik) {
+            result = boundary_result;
+            result.hsq = 0.0;
+        }
+        boundary_result = calcLL(1.0, Kva, y, X, reml, logdetXpX);
+        if(boundary_result.loglik > result.loglik) {
+            result = boundary_result;
+            result.hsq = 1.0;
+        }
+    }
+
+    return result;
+}
+
+// fitLMM (version called from R)
+// [[Rcpp::export]]
+List R_fitLMM(NumericVector Kva, NumericVector y, NumericMatrix X,
+              bool reml=true, bool check_boundary=true,
+              double logdetXpX=NA_REAL, double tol=1e-4)
+{
+    MatrixXd eKva(as<Map<MatrixXd> >(Kva));
+    VectorXd ey(as<Map<MatrixXd> >(y));
+    MatrixXd eX(as<Map<MatrixXd> >(X));
+
+    struct lmm_fit result = fitLMM(eKva, ey, eX, reml, check_boundary,
+                                   logdetXpX, tol);
+
+    return List::create(Named("loglik") =    result.loglik,
+                        Named("hsq") =       result.hsq,
+                        Named("sigmasq") =   result.sigmasq,
+                        Named("beta") =      result.beta);
 }

@@ -59,3 +59,20 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// R_fitLMM
+List R_fitLMM(NumericVector Kva, NumericVector y, NumericMatrix X, bool reml, bool check_boundary, double logdetXpX, double tol);
+RcppExport SEXP lmmlite_R_fitLMM(SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP, SEXP check_boundarySEXP, SEXP logdetXpXSEXP, SEXP tolSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericVector >::type Kva(KvaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< bool >::type reml(remlSEXP);
+    Rcpp::traits::input_parameter< bool >::type check_boundary(check_boundarySEXP);
+    Rcpp::traits::input_parameter< double >::type logdetXpX(logdetXpXSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    __result = Rcpp::wrap(R_fitLMM(Kva, y, X, reml, check_boundary, logdetXpX, tol));
+    return __result;
+END_RCPP
+}

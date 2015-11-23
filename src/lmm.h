@@ -3,6 +3,7 @@
 #define LMM_H
 
 struct lmm_fit {
+    double hsq;
     VectorXd beta;
     double sigmasq;
     double loglik;
@@ -69,5 +70,23 @@ List R_calcLL(double hsq, NumericVector Kva, NumericVector y,
 // just the negative log likelihood, for the optimization
 double negLL(double x, struct calcLL_args *args);
 
+// fitLMM
+// Optimize log liklihood over hsq
+//
+// Kva   = eigenvalues of kinship matrix
+// y     = rotated vector of phenotypes
+// X     = rotated matrix of covariates
+// reml  = boolean indicating whether to use REML (vs ML)
+// check_boundary = if true, explicity check 0.0 and 1.0 boundaries
+// logdetXpX = log det X'X; if NA, it's calculated
+// tol   = tolerance for convergence
+struct lmm_fit fitLMM(VectorXd Kva, VectorXd y, MatrixXd X,
+                      bool reml, bool check_boundary,
+                      double logdetXpX, double tol);
+
+// fitLMM (version called from R)
+List R_fitLMM(NumericVector Kva, NumericVector y, NumericMatrix X,
+              bool reml, bool check_boundary,
+              double logdetXpX, double tol);
 
 #endif // LMM_H
