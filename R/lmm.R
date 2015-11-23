@@ -44,6 +44,8 @@ eigen_rotation <-
     if(!is.matrix(X)) X <- as.matrix(X)
     stopifnot(nrow(X) == n)
 
+    if(n==0) stop("need at least one individual")
+
     if(use_cpp) {
         result <- Rcpp_eigen_rotation(K, y, X)
         attr(result$X, "logdetXpX") <- Rcpp_calc_logdetXpX(result$X)
