@@ -18,14 +18,14 @@ fitLMM(Kva, y, X, reml = TRUE, tol = 0.0001)
 \item{tol}{Tolerance for convergence}
 }
 \value{
-List containing estimates of \code{beta}, \code{sigsq},
-\code{hsq}, \code{sigsq_g}, and \code{sigsq_e}, as well as the log
+List containing estimates of \code{beta}, \code{sigmasq},
+\code{hsq}, \code{sigmasq_g}, and \code{sigmasq_e}, as well as the log
 likelihood (\code{loglik}).
 }
 \description{
 Fit a linear mixed model of the form y = Xb + e where e follows a
 multivariate normal distribution with mean 0 and variance matrix
-\code{sigsq_g K + sigsq_e I}, where \code{K} is a known kniship
+\code{sigmasq_g K + sigmasq_e I}, where \code{K} is a known kniship
 matrix and \code{I} is the identity matrix.
 }
 \examples{

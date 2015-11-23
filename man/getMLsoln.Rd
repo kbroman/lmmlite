@@ -18,15 +18,15 @@ getMLsoln(hsq, Kva, y, X, reml = TRUE)
 \item{reml}{If TRUE, use REML; otherwise use ordinary maximum likelihood.}
 }
 \value{
-list containing \code{beta} and \code{sigsq}, with residual
+list containing \code{beta} and \code{sigmasq}, with residual
 sum of squares and (if \code{reml=TRUE}, \code{log det (XSX)}) as
 attributes.
 }
 \description{
 For a fixed value for \code{hsq}, the heritability, calculate the
 corresponding maximum likelihood estimates of \code{beta} and
-\code{sigsq}, with the latter being the total variance,
-\code{sigsq_g + sigsq_e}.
+\code{sigmasq}, with the latter being the total variance,
+\code{sigmasq_g + sigmasq_e}.
 }
 \examples{
 data(recla)

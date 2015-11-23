@@ -19,7 +19,7 @@ calcLL(hsq, Kva, y, X, reml = TRUE)
 }
 \value{
 The log likelihood value, with the corresponding estimates
-of \code{beta} and \code{sigsq} included as attributes.
+of \code{beta} and \code{sigmasq} included as attributes.
 }
 \description{
 Calculate the log likelihood for a given value of the heritability, \code{hsq}.
