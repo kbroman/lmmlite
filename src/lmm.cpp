@@ -22,7 +22,7 @@ MatrixXd calc_xpx(const MatrixXd& X)
 
 // calc X'X (version to be called from R)
 // [[Rcpp::export]]
-NumericMatrix R_calc_xpx(const NumericMatrix& X)
+NumericMatrix Rcpp_calc_xpx(const NumericMatrix& X)
 {
     MatrixXd XX(as<Map<MatrixXd> >(X));
     return wrap(calc_xpx(XX));
@@ -41,7 +41,7 @@ std::pair<VectorXd, MatrixXd> eigen_decomp(MatrixXd A)
 // eigen decomposition (version to be called from R)
 // returns eigenvalues and *transposed* eigenvectors
 // [[Rcpp::export]]
-List R_eigen_decomp(NumericMatrix A)
+List Rcpp_eigen_decomp(NumericMatrix A)
 {
     MatrixXd AA(as<Map<MatrixXd> >(A));
     std::pair<VectorXd,MatrixXd> result = eigen_decomp(AA);
@@ -70,7 +70,7 @@ struct eigenrot eigen_rotation(MatrixXd K, MatrixXd y, MatrixXd X)
 
 // eigen + rotation
 // [[Rcpp::export]]
-List R_eigen_rotation(NumericMatrix K, NumericMatrix y, NumericMatrix X)
+List Rcpp_eigen_rotation(NumericMatrix K, NumericMatrix y, NumericMatrix X)
 {
     MatrixXd KK(as<Map<MatrixXd> >(K));
     MatrixXd yy(as<Map<MatrixXd> >(y));
@@ -102,7 +102,7 @@ double calc_logdetXpX(MatrixXd X)
 
 // calculate log det X'X (version to be called from R)
 // [[Rcpp::export]]
-double R_calc_logdetXpX(NumericMatrix X)
+double Rcpp_calc_logdetXpX(NumericMatrix X)
 {
     MatrixXd XX(as<Map <MatrixXd> >(X));
 
@@ -163,8 +163,8 @@ struct lmm_fit getMLsoln(double hsq, VectorXd Kva, VectorXd y,
 
 // getMLsoln (version called from R)
 // [[Rcpp::export]]
-List R_getMLsoln(double hsq, NumericVector Kva, NumericVector y,
-                 NumericMatrix X, bool reml=true)
+List Rcpp_getMLsoln(double hsq, NumericVector Kva, NumericVector y,
+                    NumericMatrix X, bool reml=true)
 {
     MatrixXd eKva(as<Map<MatrixXd> >(Kva));
     VectorXd ey(as<Map<MatrixXd> >(y));
@@ -220,8 +220,8 @@ struct lmm_fit calcLL(double hsq, VectorXd Kva, VectorXd y,
 
 // calcLL (version called from R)
 // [[Rcpp::export]]
-List R_calcLL(double hsq, NumericVector Kva, NumericVector y,
-              NumericMatrix X, bool reml=true, double logdetXpX=NA_REAL)
+List Rcpp_calcLL(double hsq, NumericVector Kva, NumericVector y,
+                 NumericMatrix X, bool reml=true, double logdetXpX=NA_REAL)
 {
     MatrixXd eKva(as<Map<MatrixXd> >(Kva));
     VectorXd ey(as<Map<MatrixXd> >(y));
@@ -300,9 +300,9 @@ struct lmm_fit fitLMM(VectorXd Kva, VectorXd y, MatrixXd X,
 
 // fitLMM (version called from R)
 // [[Rcpp::export]]
-List R_fitLMM(NumericVector Kva, NumericVector y, NumericMatrix X,
-              bool reml=true, bool check_boundary=true,
-              double logdetXpX=NA_REAL, double tol=1e-4)
+List Rcpp_fitLMM(NumericVector Kva, NumericVector y, NumericMatrix X,
+                 bool reml=true, bool check_boundary=true,
+                 double logdetXpX=NA_REAL, double tol=1e-4)
 {
     MatrixXd eKva(as<Map<MatrixXd> >(Kva));
     VectorXd ey(as<Map<MatrixXd> >(y));

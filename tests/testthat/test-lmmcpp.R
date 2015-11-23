@@ -7,7 +7,7 @@ test_that("X'X works", {
     expected <- t(recla$covar) %*% recla$covar
     dimnames(expected) <- NULL
 
-    expect_equal(R_calc_xpx(recla$covar), expected)
+    expect_equal(Rcpp_calc_xpx(recla$covar), expected)
 
 })
 
@@ -15,7 +15,7 @@ test_that("eigen decomp works", {
 
     data(recla)
 
-    e <- R_eigen_decomp(recla$kinship)
+    e <- Rcpp_eigen_decomp(recla$kinship)
 
     eR <- eigen(recla$kinship)
 
@@ -38,7 +38,7 @@ test_that("eigen_rotation works", {
     X <- recla$covar
     dimnames(X) <- dimnames(y) <- NULL
 
-    e <- R_eigen_rotation(recla$kinship, y, X)
+    e <- Rcpp_eigen_rotation(recla$kinship, y, X)
     expected <- eigen_rotation(recla$kinship, y, X)
 
     # eigenvalues match
@@ -49,7 +49,7 @@ test_that("eigen_rotation works", {
     expect_equal(t(e$Kve) %*% e$X, X)
 
     # fit of LMM match
-    out <- R_fitLMM(e$Kva, e$y, e$X)
+    out <- Rcpp_fitLMM(e$Kva, e$y, e$X)
     outR <- fitLMM(expected$Kva, expected$y, expected$X)
 
     expect_equal(out$loglik, as.numeric(outR$loglik))
@@ -72,7 +72,7 @@ test_that("logdetXpX works", {
 
     expected <- determinant( t(recla$covar) %*% recla$covar)$modulus
 
-    expect_equal(R_calc_logdetXpX(recla$covar), as.numeric(expected))
+    expect_equal(Rcpp_calc_logdetXpX(recla$covar), as.numeric(expected))
 })
 
 
@@ -83,7 +83,7 @@ test_that("getMLsoln works", {
 
     # all that reml=TRUE does is calculate logdetXSX
     outR <- getMLsoln(0.5, e$Kva, e$y, e$X, TRUE)
-    outcpp <- R_getMLsoln(0.5, e$Kva, e$y, e$X, TRUE)
+    outcpp <- Rcpp_getMLsoln(0.5, e$Kva, e$y, e$X, TRUE)
 
     expect_equal(outcpp$beta, as.numeric(outR$beta))
     expect_equal(outcpp$sigmasq, as.numeric(outR$sigmasq))
@@ -104,12 +104,12 @@ test_that("calcLL works", {
 
     data(recla)
     e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
-    logdetXpX <- determinant(R_calc_xpx(e$X))$modulus
+    logdetXpX <- determinant(Rcpp_calc_xpx(e$X))$modulus
 
     #ML
     outR <- calcLL(0.5, e$Kva, e$y, e$X, FALSE)
-    outcpp <- R_calcLL(0.5, e$Kva, e$y, e$X, FALSE)
-    outcpp2 <- R_calcLL(0.5, e$Kva, e$y, e$X, FALSE, logdetXpX)
+    outcpp <- Rcpp_calcLL(0.5, e$Kva, e$y, e$X, FALSE)
+    outcpp2 <- Rcpp_calcLL(0.5, e$Kva, e$y, e$X, FALSE, logdetXpX)
 
     expect_equal(outcpp$loglik, as.numeric(outR))
     expect_equal(outcpp$beta, as.numeric(attr(outR, "beta")))
@@ -128,8 +128,8 @@ test_that("calcLL works", {
 
     # REML
     outR <- calcLL(0.5, e$Kva, e$y, e$X, TRUE)
-    outcpp <- R_calcLL(0.5, e$Kva, e$y, e$X, TRUE)
-    outcpp2 <- R_calcLL(0.5, e$Kva, e$y, e$X, TRUE, logdetXpX)
+    outcpp <- Rcpp_calcLL(0.5, e$Kva, e$y, e$X, TRUE)
+    outcpp2 <- Rcpp_calcLL(0.5, e$Kva, e$y, e$X, TRUE, logdetXpX)
 
     expect_equal(outcpp$loglik, as.numeric(outR))
     expect_equal(outcpp$beta, as.numeric(attr(outR, "beta")))
@@ -152,12 +152,12 @@ test_that("fitLMM works", {
 
     data(recla)
     e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
-    logdetXpX <- determinant(R_calc_xpx(e$X))$modulus
+    logdetXpX <- determinant(Rcpp_calc_xpx(e$X))$modulus
 
     #ML
     outR <- fitLMM(e$Kva, e$y, e$X, FALSE)
-    outcpp <- R_fitLMM(e$Kva, e$y, e$X, FALSE)
-    outcpp2 <- R_fitLMM(e$Kva, e$y, e$X, FALSE, logdetXpX=logdetXpX)
+    outcpp <- Rcpp_fitLMM(e$Kva, e$y, e$X, FALSE)
+    outcpp2 <- Rcpp_fitLMM(e$Kva, e$y, e$X, FALSE, logdetXpX=logdetXpX)
 
     expect_equal(outcpp$loglik, as.numeric(outR$loglik))
     expect_equal(outcpp$hsq, outR$hsq)
@@ -179,8 +179,8 @@ test_that("fitLMM works", {
 
     # REML
     outR <- fitLMM(e$Kva, e$y, e$X, TRUE)
-    outcpp <- R_fitLMM(e$Kva, e$y, e$X, TRUE)
-    outcpp2 <- R_fitLMM(e$Kva, e$y, e$X, TRUE, logdetXpX=logdetXpX)
+    outcpp <- Rcpp_fitLMM(e$Kva, e$y, e$X, TRUE)
+    outcpp2 <- Rcpp_fitLMM(e$Kva, e$y, e$X, TRUE, logdetXpX=logdetXpX)
 
     expect_equal(outcpp$loglik, as.numeric(outR$loglik))
     expect_equal(outcpp$hsq, outR$hsq)

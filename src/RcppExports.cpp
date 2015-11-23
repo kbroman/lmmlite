@@ -6,55 +6,55 @@
 
 using namespace Rcpp;
 
-// R_calc_xpx
-NumericMatrix R_calc_xpx(const NumericMatrix& X);
-RcppExport SEXP lmmlite_R_calc_xpx(SEXP XSEXP) {
+// Rcpp_calc_xpx
+NumericMatrix Rcpp_calc_xpx(const NumericMatrix& X);
+RcppExport SEXP lmmlite_Rcpp_calc_xpx(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const NumericMatrix& >::type X(XSEXP);
-    __result = Rcpp::wrap(R_calc_xpx(X));
+    __result = Rcpp::wrap(Rcpp_calc_xpx(X));
     return __result;
 END_RCPP
 }
-// R_eigen_decomp
-List R_eigen_decomp(NumericMatrix A);
-RcppExport SEXP lmmlite_R_eigen_decomp(SEXP ASEXP) {
+// Rcpp_eigen_decomp
+List Rcpp_eigen_decomp(NumericMatrix A);
+RcppExport SEXP lmmlite_Rcpp_eigen_decomp(SEXP ASEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< NumericMatrix >::type A(ASEXP);
-    __result = Rcpp::wrap(R_eigen_decomp(A));
+    __result = Rcpp::wrap(Rcpp_eigen_decomp(A));
     return __result;
 END_RCPP
 }
-// R_eigen_rotation
-List R_eigen_rotation(NumericMatrix K, NumericMatrix y, NumericMatrix X);
-RcppExport SEXP lmmlite_R_eigen_rotation(SEXP KSEXP, SEXP ySEXP, SEXP XSEXP) {
+// Rcpp_eigen_rotation
+List Rcpp_eigen_rotation(NumericMatrix K, NumericMatrix y, NumericMatrix X);
+RcppExport SEXP lmmlite_Rcpp_eigen_rotation(SEXP KSEXP, SEXP ySEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< NumericMatrix >::type K(KSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type y(ySEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    __result = Rcpp::wrap(R_eigen_rotation(K, y, X));
+    __result = Rcpp::wrap(Rcpp_eigen_rotation(K, y, X));
     return __result;
 END_RCPP
 }
-// R_calc_logdetXpX
-double R_calc_logdetXpX(NumericMatrix X);
-RcppExport SEXP lmmlite_R_calc_logdetXpX(SEXP XSEXP) {
+// Rcpp_calc_logdetXpX
+double Rcpp_calc_logdetXpX(NumericMatrix X);
+RcppExport SEXP lmmlite_Rcpp_calc_logdetXpX(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    __result = Rcpp::wrap(R_calc_logdetXpX(X));
+    __result = Rcpp::wrap(Rcpp_calc_logdetXpX(X));
     return __result;
 END_RCPP
 }
-// R_getMLsoln
-List R_getMLsoln(double hsq, NumericVector Kva, NumericVector y, NumericMatrix X, bool reml);
-RcppExport SEXP lmmlite_R_getMLsoln(SEXP hsqSEXP, SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP) {
+// Rcpp_getMLsoln
+List Rcpp_getMLsoln(double hsq, NumericVector Kva, NumericVector y, NumericMatrix X, bool reml);
+RcppExport SEXP lmmlite_Rcpp_getMLsoln(SEXP hsqSEXP, SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -63,13 +63,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
     Rcpp::traits::input_parameter< bool >::type reml(remlSEXP);
-    __result = Rcpp::wrap(R_getMLsoln(hsq, Kva, y, X, reml));
+    __result = Rcpp::wrap(Rcpp_getMLsoln(hsq, Kva, y, X, reml));
     return __result;
 END_RCPP
 }
-// R_calcLL
-List R_calcLL(double hsq, NumericVector Kva, NumericVector y, NumericMatrix X, bool reml, double logdetXpX);
-RcppExport SEXP lmmlite_R_calcLL(SEXP hsqSEXP, SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP, SEXP logdetXpXSEXP) {
+// Rcpp_calcLL
+List Rcpp_calcLL(double hsq, NumericVector Kva, NumericVector y, NumericMatrix X, bool reml, double logdetXpX);
+RcppExport SEXP lmmlite_Rcpp_calcLL(SEXP hsqSEXP, SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP, SEXP logdetXpXSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -79,13 +79,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
     Rcpp::traits::input_parameter< bool >::type reml(remlSEXP);
     Rcpp::traits::input_parameter< double >::type logdetXpX(logdetXpXSEXP);
-    __result = Rcpp::wrap(R_calcLL(hsq, Kva, y, X, reml, logdetXpX));
+    __result = Rcpp::wrap(Rcpp_calcLL(hsq, Kva, y, X, reml, logdetXpX));
     return __result;
 END_RCPP
 }
-// R_fitLMM
-List R_fitLMM(NumericVector Kva, NumericVector y, NumericMatrix X, bool reml, bool check_boundary, double logdetXpX, double tol);
-RcppExport SEXP lmmlite_R_fitLMM(SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP, SEXP check_boundarySEXP, SEXP logdetXpXSEXP, SEXP tolSEXP) {
+// Rcpp_fitLMM
+List Rcpp_fitLMM(NumericVector Kva, NumericVector y, NumericMatrix X, bool reml, bool check_boundary, double logdetXpX, double tol);
+RcppExport SEXP lmmlite_Rcpp_fitLMM(SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP, SEXP check_boundarySEXP, SEXP logdetXpXSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -96,7 +96,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type check_boundary(check_boundarySEXP);
     Rcpp::traits::input_parameter< double >::type logdetXpX(logdetXpXSEXP);
     Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
-    __result = Rcpp::wrap(R_fitLMM(Kva, y, X, reml, check_boundary, logdetXpX, tol));
+    __result = Rcpp::wrap(Rcpp_fitLMM(Kva, y, X, reml, check_boundary, logdetXpX, tol));
     return __result;
 END_RCPP
 }

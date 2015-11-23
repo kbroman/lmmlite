@@ -30,7 +30,7 @@ struct eigenrot {
 MatrixXd calc_XpX(const MatrixXd& X);
 
 // calc X'X (version to be called from R)
-NumericMatrix R_calc_xpx(const NumericMatrix& X);
+NumericMatrix Rcpp_calc_xpx(const NumericMatrix& X);
 
 // eigen decomposition
 //    returns eigenvalues and transposed eigenvectors
@@ -38,7 +38,7 @@ std::pair<Eigen::VectorXd, Eigen::MatrixXd> eigen_decomp(Eigen::MatrixXd A);
 
 // eigen decomposition
 //    returns list with eigenvalues and transposed eigenvectors
-List R_eigen_decomp(const NumericMatrix &A);
+List Rcpp_eigen_decomp(const NumericMatrix &A);
 
 // eigen + rotation
 // perform eigen decomposition of kinship matrix
@@ -46,13 +46,13 @@ List R_eigen_decomp(const NumericMatrix &A);
 struct eigenrot eigen_rotation(MatrixXd K, MatrixXd y, MatrixXd X);
 
 // eigen + rotation
-List R_eigen_rotation(NumericMatrix K, NumericMatrix y, NumericMatrix X);
+List Rcpp_eigen_rotation(NumericMatrix K, NumericMatrix y, NumericMatrix X);
 
 // calculate log det X'X
 double calc_logdetXpX(MatrixXd X);
 
 // calculate log det X'X (version to be called from R)
-double R_calc_logdetXpX(NumericMatrix X);
+double Rcpp_calc_logdetXpX(NumericMatrix X);
 
 // getMLsoln
 // for fixed value of hsq, calculate MLEs of beta and sigmasq
@@ -67,8 +67,8 @@ struct lmm_fit getMLsoln(double hsq, VectorXd Kva, VectorXd y,
                          MatrixXd X, bool reml);
 
 // getMLsoln (version called from R)
-List R_getMLsoln(double hsq, NumericVector Kva, NumericVector y,
-                 NumericMatrix X, bool reml);
+List Rcpp_getMLsoln(double hsq, NumericVector Kva, NumericVector y,
+                    NumericMatrix X, bool reml);
 
 // calcLL
 // calculate log likelihood for fixed value of hsq
@@ -84,8 +84,8 @@ struct lmm_fit calcLL(double hsq, VectorXd Kva, VectorXd y,
                       MatrixXd X, bool reml, double logdetXpX);
 
 // calcLL (version called from R)
-List R_calcLL(double hsq, NumericVector Kva, NumericVector y,
-              NumericMatrix X, bool reml, double logdetXpX);
+List Rcpp_calcLL(double hsq, NumericVector Kva, NumericVector y,
+                 NumericMatrix X, bool reml, double logdetXpX);
 
 // just the negative log likelihood, for the optimization
 double negLL(double x, struct calcLL_args *args);
@@ -105,8 +105,8 @@ struct lmm_fit fitLMM(VectorXd Kva, VectorXd y, MatrixXd X,
                       double logdetXpX, double tol);
 
 // fitLMM (version called from R)
-List R_fitLMM(NumericVector Kva, NumericVector y, NumericMatrix X,
-              bool reml, bool check_boundary,
-              double logdetXpX, double tol);
+List Rcpp_fitLMM(NumericVector Kva, NumericVector y, NumericMatrix X,
+                 bool reml, bool check_boundary,
+                 double logdetXpX, double tol);
 
 #endif // LMM_H
