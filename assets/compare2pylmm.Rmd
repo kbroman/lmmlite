@@ -1,10 +1,7 @@
 ---
 title: Comparison to pylmm and regress
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Comparison to pylmm and regress}
-  %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8](inputenc)
+date: "`r broman::kbdate()`"
+output: html_document
 ---
 
 ```{r options, echo=FALSE}
@@ -12,7 +9,7 @@ knitr::opts_chunk$set(fig.width=7, fig.height=4)
 ```
 
 
-My goal with [R/lmmlite](https://github.com/kbroman/lmmlite) is light
+My goal with [R/lmmlite](https://github.com/kbroman/lmmlite) is a light
 implementation of the fit of linear mixed models for QTL analysis,
 to further my understanding of how to do this.
 
