@@ -14,7 +14,7 @@ using namespace Eigen;
 // calc X'X
 MatrixXd calc_xpx(const MatrixXd& X)
 {
-    int n = X.cols();
+    const int n = X.cols();
 
     return MatrixXd(n,n).setZero().selfadjointView<Lower>()
         .rankUpdate(X.transpose());
@@ -24,7 +24,7 @@ MatrixXd calc_xpx(const MatrixXd& X)
 // [[Rcpp::export]]
 NumericMatrix Rcpp_calc_xpx(const NumericMatrix& X)
 {
-    MatrixXd XX(as<Map<MatrixXd> >(X));
+    const MatrixXd XX(as<Map<MatrixXd> >(X));
     return wrap(calc_xpx(XX));
 }
 
@@ -43,8 +43,8 @@ std::pair<VectorXd, MatrixXd> eigen_decomp(const MatrixXd& A)
 // [[Rcpp::export]]
 List Rcpp_eigen_decomp(const NumericMatrix& A)
 {
-    MatrixXd AA(as<Map<MatrixXd> >(A));
-    std::pair<VectorXd,MatrixXd> result = eigen_decomp(AA);
+    const MatrixXd AA(as<Map<MatrixXd> >(A));
+    const std::pair<VectorXd,MatrixXd> result = eigen_decomp(AA);
     return List::create(Named("values") = result.first,
                         Named("vectors") = result.second);
 }
@@ -55,9 +55,9 @@ List Rcpp_eigen_decomp(const NumericMatrix& A)
 // and rotate phenotype and covariate matrices by transpose of eigenvectors
 struct eigenrot eigen_rotation(const MatrixXd& K, const MatrixXd& y, const MatrixXd& X)
 {
-    std::pair<VectorXd,MatrixXd> e = eigen_decomp(K);
-    MatrixXd yrot = e.second * y;
-    MatrixXd Xrot = e.second * X;
+    const std::pair<VectorXd,MatrixXd> e = eigen_decomp(K);
+    const MatrixXd yrot = e.second * y;
+    const MatrixXd Xrot = e.second * X;
 
     struct eigenrot result;
     result.Kva = e.first;
@@ -72,11 +72,11 @@ struct eigenrot eigen_rotation(const MatrixXd& K, const MatrixXd& y, const Matri
 // [[Rcpp::export]]
 List Rcpp_eigen_rotation(const NumericMatrix& K, const NumericMatrix& y, const NumericMatrix& X)
 {
-    MatrixXd KK(as<Map<MatrixXd> >(K));
-    MatrixXd yy(as<Map<MatrixXd> >(y));
-    MatrixXd XX(as<Map<MatrixXd> >(X));
+    const MatrixXd KK(as<Map<MatrixXd> >(K));
+    const MatrixXd yy(as<Map<MatrixXd> >(y));
+    const MatrixXd XX(as<Map<MatrixXd> >(X));
 
-    struct eigenrot result = eigen_rotation(KK, yy, XX);
+    const struct eigenrot result = eigen_rotation(KK, yy, XX);
 
     return List::create(Named("Kva") = result.Kva,
                         Named("Kve_t") = result.Kve,
@@ -87,11 +87,11 @@ List Rcpp_eigen_rotation(const NumericMatrix& K, const NumericMatrix& y, const N
 // calculate log det X'X
 double calc_logdetXpX(const MatrixXd& X)
 {
-    MatrixXd XpX(calc_xpx(X)); // calc X'X
-    int p = X.cols();
+    const MatrixXd XpX(calc_xpx(X)); // calc X'X
+    const int p = X.cols();
 
     // eigen decomposition of X'X
-    std::pair<VectorXd, MatrixXd> e = eigen_decomp(XpX);
+    const std::pair<VectorXd, MatrixXd> e = eigen_decomp(XpX);
 
     // calculate log det X'X
     double result=0.0;
@@ -104,7 +104,7 @@ double calc_logdetXpX(const MatrixXd& X)
 // [[Rcpp::export]]
 double Rcpp_calc_logdetXpX(const NumericMatrix& X)
 {
-    MatrixXd XX(as<Map <MatrixXd> >(X));
+    const MatrixXd XX(as<Map <MatrixXd> >(X));
 
     return calc_logdetXpX(XX);
 }
@@ -132,25 +132,25 @@ struct lmm_fit getMLsoln(const double hsq, const VectorXd& Kva, const VectorXd& 
         S[i] = 1.0/(hsq*Kva[i] + 1.0-hsq);
 
     // calculate a bunch of matrices
-    MatrixXd XSt = X.transpose() * S.asDiagonal();
+    const MatrixXd XSt = X.transpose() * S.asDiagonal();
     MatrixXd ySt(1,n);
     for(int i=0; i<n; i++) ySt(0,i) = y[i]*S[i];
-    MatrixXd XSX = XSt * X;
-    MatrixXd XSy = XSt * y;
-    MatrixXd ySy = ySt * y;
+    const MatrixXd XSX = XSt * X;
+    const MatrixXd XSy = XSt * y;
+    const MatrixXd ySy = ySt * y;
 
     // estimate of beta, by weighted LS
-    std::pair<VectorXd, MatrixXd>e = eigen_decomp(XSX);
+    const std::pair<VectorXd, MatrixXd>e = eigen_decomp(XSX);
     double logdetXSX=0.0;
     VectorXd inv_evals(p);
     for(int i=0; i<p; i++) {
         inv_evals[i] = 1.0/e.first[i];
         if(reml) logdetXSX += log(e.first[i]);
     }
-    MatrixXd beta = e.second.transpose() * inv_evals.asDiagonal() * e.second * XSy;
+    const MatrixXd beta = e.second.transpose() * inv_evals.asDiagonal() * e.second * XSy;
 
     // residual sum of squares
-    MatrixXd rss = ySy - XSy.transpose() * beta;
+    const MatrixXd rss = ySy - XSy.transpose() * beta;
 
     // return value
     result.rss = rss(0,0);
@@ -166,9 +166,9 @@ struct lmm_fit getMLsoln(const double hsq, const VectorXd& Kva, const VectorXd& 
 List Rcpp_getMLsoln(const double hsq, const NumericVector& Kva, const NumericVector& y,
                     const NumericMatrix& X, const bool reml=true)
 {
-    MatrixXd eKva(as<Map<MatrixXd> >(Kva));
-    VectorXd ey(as<Map<MatrixXd> >(y));
-    MatrixXd eX(as<Map<MatrixXd> >(X));
+    const MatrixXd eKva(as<Map<MatrixXd> >(Kva));
+    const VectorXd ey(as<Map<MatrixXd> >(y));
+    const MatrixXd eX(as<Map<MatrixXd> >(X));
 
     struct lmm_fit result = getMLsoln(hsq, eKva, ey, eX, reml);
 
@@ -191,8 +191,8 @@ List Rcpp_getMLsoln(const double hsq, const NumericVector& Kva, const NumericVec
 struct lmm_fit calcLL(const double hsq, const VectorXd& Kva, const VectorXd& y,
                 const MatrixXd& X, const bool reml=true, const double logdetXpX=NA_REAL)
 {
-    int n = Kva.size();
-    int p = X.cols();
+    const int n = Kva.size();
+    const int p = X.cols();
 
     // estimate beta and sigma^2
     struct lmm_fit ml_soln = getMLsoln(hsq, Kva, y, X, reml);
@@ -225,11 +225,11 @@ struct lmm_fit calcLL(const double hsq, const VectorXd& Kva, const VectorXd& y,
 List Rcpp_calcLL(const double hsq, const NumericVector& Kva, const NumericVector& y,
                  const NumericMatrix& X, const bool reml=true, const double logdetXpX=NA_REAL)
 {
-    MatrixXd eKva(as<Map<MatrixXd> >(Kva));
-    VectorXd ey(as<Map<MatrixXd> >(y));
-    MatrixXd eX(as<Map<MatrixXd> >(X));
+    const MatrixXd eKva(as<Map<MatrixXd> >(Kva));
+    const VectorXd ey(as<Map<MatrixXd> >(y));
+    const MatrixXd eX(as<Map<MatrixXd> >(X));
 
-    struct lmm_fit result = calcLL(hsq, eKva, ey, eX, reml, logdetXpX);
+    const struct lmm_fit result = calcLL(hsq, eKva, ey, eX, reml, logdetXpX);
 
     return List::create(Named("loglik") =    result.loglik,
                         Named("sigmasq") =   result.sigmasq,
@@ -239,8 +239,8 @@ List Rcpp_calcLL(const double hsq, const NumericVector& Kva, const NumericVector
 // just the negative log likelihood, for the optimization
 double negLL(const double x, struct calcLL_args *args)
 {
-    struct lmm_fit result = calcLL(x, args->Kva, args->y, args->X,
-                                   args->reml, args->logdetXpX);
+    const struct lmm_fit result = calcLL(x, args->Kva, args->y, args->X,
+                                         args->reml, args->logdetXpX);
 
     return -result.loglik;
 }
@@ -280,7 +280,7 @@ struct lmm_fit fitLMM(const VectorXd& Kva, const VectorXd& y, const MatrixXd& X,
     args.reml = reml;
     args.logdetXpX = logdetXpX_val;
 
-    double hsq = qtl2_Brent_fmin(0.0, 1.0, (double (*)(double, void*)) negLL, &args, tol);
+    const double hsq = qtl2_Brent_fmin(0.0, 1.0, (double (*)(double, void*)) negLL, &args, tol);
     result = calcLL(hsq, Kva, y, X, reml, logdetXpX_val);
     result.hsq = hsq;
 
@@ -307,12 +307,12 @@ List Rcpp_fitLMM(const NumericVector& Kva, const NumericVector& y, const Numeric
                  const bool reml=true, const bool check_boundary=true,
                  const double logdetXpX=NA_REAL, const double tol=1e-4)
 {
-    MatrixXd eKva(as<Map<MatrixXd> >(Kva));
-    VectorXd ey(as<Map<MatrixXd> >(y));
-    MatrixXd eX(as<Map<MatrixXd> >(X));
+    const MatrixXd eKva(as<Map<MatrixXd> >(Kva));
+    const VectorXd ey(as<Map<MatrixXd> >(y));
+    const MatrixXd eX(as<Map<MatrixXd> >(X));
 
-    struct lmm_fit result = fitLMM(eKva, ey, eX, reml, check_boundary,
-                                   logdetXpX, tol);
+    const struct lmm_fit result = fitLMM(eKva, ey, eX, reml, check_boundary,
+                                         logdetXpX, tol);
 
     return List::create(Named("loglik") =    result.loglik,
                         Named("hsq") =       result.hsq,
