@@ -1,11 +1,12 @@
 ---
 layout: page
 title: R/lmmlite
-description: R package with light implementation of linear mixed models for QTL mapping
+description: R package for linear mixed models for QTL mapping
 ---
 
-R/lmmlite is a light R package for fitting linear mixed models for
-genome-wide association studies (GWAS) and QTL mapping.
+R/lmmlite is an R package for fitting linear mixed models for
+genome-wide association studies (GWAS) and quantitative trait locus
+(QTL) mapping.
 
 I'm following the code in [pylmm](https://github.com/nickFurlotte/pylmm),
 and really I'm developing this package mostly so that I can better understand pylmm.
