@@ -2,7 +2,8 @@
 
 [![Build Status](https://travis-ci.org/kbroman/lmmlite.svg?branch=master)](https://travis-ci.org/kbroman/lmmlite)
 
-Karl Broman (following [Nick Furlotte](http://whatmind.com))
+Karl Broman (following the code in
+[Nick Furlotte](http://whatmind.com)'s [pylmm](https://github.com/nickFurlotte/pylmm))
 
 In order to better understand [pylmm](https://github.com/nickFurlotte/pylmm),
 for linear mixed models for genome-wide association studies
