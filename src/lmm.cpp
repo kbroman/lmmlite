@@ -32,7 +32,7 @@ NumericMatrix Rcpp_calc_xpx(const NumericMatrix& X)
 
 // eigen decomposition
 // returns eigenvalues and *transposed* eigenvectors
-std::pair<VectorXd, MatrixXd> eigen_decomp(MatrixXd A)
+std::pair<VectorXd, MatrixXd> eigen_decomp(const MatrixXd& A)
 {
     const SelfAdjointEigenSolver<MatrixXd> VLV(A);
     return std::make_pair(VLV.eigenvalues(), VLV.eigenvectors().transpose());
@@ -41,7 +41,7 @@ std::pair<VectorXd, MatrixXd> eigen_decomp(MatrixXd A)
 // eigen decomposition (version to be called from R)
 // returns eigenvalues and *transposed* eigenvectors
 // [[Rcpp::export]]
-List Rcpp_eigen_decomp(NumericMatrix A)
+List Rcpp_eigen_decomp(const NumericMatrix& A)
 {
     MatrixXd AA(as<Map<MatrixXd> >(A));
     std::pair<VectorXd,MatrixXd> result = eigen_decomp(AA);
@@ -53,7 +53,7 @@ List Rcpp_eigen_decomp(NumericMatrix A)
 // eigen + rotation
 // perform eigen decomposition of kinship matrix
 // and rotate phenotype and covariate matrices by transpose of eigenvectors
-struct eigenrot eigen_rotation(MatrixXd K, MatrixXd y, MatrixXd X)
+struct eigenrot eigen_rotation(const MatrixXd& K, const MatrixXd& y, const MatrixXd& X)
 {
     std::pair<VectorXd,MatrixXd> e = eigen_decomp(K);
     MatrixXd yrot = e.second * y;
@@ -70,7 +70,7 @@ struct eigenrot eigen_rotation(MatrixXd K, MatrixXd y, MatrixXd X)
 
 // eigen + rotation
 // [[Rcpp::export]]
-List Rcpp_eigen_rotation(NumericMatrix K, NumericMatrix y, NumericMatrix X)
+List Rcpp_eigen_rotation(const NumericMatrix& K, const NumericMatrix& y, const NumericMatrix& X)
 {
     MatrixXd KK(as<Map<MatrixXd> >(K));
     MatrixXd yy(as<Map<MatrixXd> >(y));
@@ -85,7 +85,7 @@ List Rcpp_eigen_rotation(NumericMatrix K, NumericMatrix y, NumericMatrix X)
 }
 
 // calculate log det X'X
-double calc_logdetXpX(MatrixXd X)
+double calc_logdetXpX(const MatrixXd& X)
 {
     MatrixXd XpX(calc_xpx(X)); // calc X'X
     int p = X.cols();
@@ -102,7 +102,7 @@ double calc_logdetXpX(MatrixXd X)
 
 // calculate log det X'X (version to be called from R)
 // [[Rcpp::export]]
-double Rcpp_calc_logdetXpX(NumericMatrix X)
+double Rcpp_calc_logdetXpX(const NumericMatrix& X)
 {
     MatrixXd XX(as<Map <MatrixXd> >(X));
 
@@ -119,8 +119,8 @@ double Rcpp_calc_logdetXpX(NumericMatrix X)
 // y     = rotated vector of phenotypes
 // X     = rotated matrix of covariates
 // reml  = whether you'll be using REML (so need to calculate log det XSX)
-struct lmm_fit getMLsoln(double hsq, VectorXd Kva, VectorXd y,
-                   MatrixXd X, bool reml=true)
+struct lmm_fit getMLsoln(const double hsq, const VectorXd& Kva, const VectorXd& y,
+                         const MatrixXd& X, const bool reml=true)
 {
     const int n = Kva.size();
     const int p = X.cols();
@@ -163,8 +163,8 @@ struct lmm_fit getMLsoln(double hsq, VectorXd Kva, VectorXd y,
 
 // getMLsoln (version called from R)
 // [[Rcpp::export]]
-List Rcpp_getMLsoln(double hsq, NumericVector Kva, NumericVector y,
-                    NumericMatrix X, bool reml=true)
+List Rcpp_getMLsoln(const double hsq, const NumericVector& Kva, const NumericVector& y,
+                    const NumericMatrix& X, const bool reml=true)
 {
     MatrixXd eKva(as<Map<MatrixXd> >(Kva));
     VectorXd ey(as<Map<MatrixXd> >(y));
@@ -188,8 +188,8 @@ List Rcpp_getMLsoln(double hsq, NumericVector Kva, NumericVector y,
 // X     = rotated matrix of covariates
 // reml  = boolean indicating whether to use REML (vs ML)
 // logdetXpX = log det X'X; if NA, it's calculated
-struct lmm_fit calcLL(double hsq, VectorXd Kva, VectorXd y,
-                MatrixXd X, bool reml=true, double logdetXpX=NA_REAL)
+struct lmm_fit calcLL(const double hsq, const VectorXd& Kva, const VectorXd& y,
+                const MatrixXd& X, const bool reml=true, const double logdetXpX=NA_REAL)
 {
     int n = Kva.size();
     int p = X.cols();
@@ -204,14 +204,16 @@ struct lmm_fit calcLL(double hsq, VectorXd Kva, VectorXd y,
     loglik *= -0.5;
 
     if(reml) {
+        double logdetXpX_val;
         if(NumericVector::is_na(logdetXpX)) { // need to calculate it
             MatrixXd XpX(calc_xpx(X));
             std::pair<VectorXd, MatrixXd> e = eigen_decomp(XpX);
-            logdetXpX=0.0;
-            for(int i=0; i<p; i++) logdetXpX += log(e.first[i]);
+            logdetXpX_val=0.0;
+            for(int i=0; i<p; i++) logdetXpX_val += log(e.first[i]);
         }
+        else logdetXpX_val = logdetXpX;
 
-        loglik += 0.5*(p*log(2 * M_PI * ml_soln.sigmasq) + logdetXpX - ml_soln.logdetXSX);
+        loglik += 0.5*(p*log(2 * M_PI * ml_soln.sigmasq) + logdetXpX_val - ml_soln.logdetXSX);
     }
 
     ml_soln.loglik = loglik;
@@ -220,8 +222,8 @@ struct lmm_fit calcLL(double hsq, VectorXd Kva, VectorXd y,
 
 // calcLL (version called from R)
 // [[Rcpp::export]]
-List Rcpp_calcLL(double hsq, NumericVector Kva, NumericVector y,
-                 NumericMatrix X, bool reml=true, double logdetXpX=NA_REAL)
+List Rcpp_calcLL(const double hsq, const NumericVector& Kva, const NumericVector& y,
+                 const NumericMatrix& X, const bool reml=true, const double logdetXpX=NA_REAL)
 {
     MatrixXd eKva(as<Map<MatrixXd> >(Kva));
     VectorXd ey(as<Map<MatrixXd> >(y));
@@ -235,7 +237,7 @@ List Rcpp_calcLL(double hsq, NumericVector Kva, NumericVector y,
 }
 
 // just the negative log likelihood, for the optimization
-double negLL(double x, struct calcLL_args *args)
+double negLL(const double x, struct calcLL_args *args)
 {
     struct lmm_fit result = calcLL(x, args->Kva, args->y, args->X,
                                    args->reml, args->logdetXpX);
@@ -253,21 +255,22 @@ double negLL(double x, struct calcLL_args *args)
 // check_boundary = if true, explicity check 0.0 and 1.0 boundaries
 // logdetXpX = log det X'X; if NA, it's calculated
 // tol   = tolerance for convergence
-struct lmm_fit fitLMM(VectorXd Kva, VectorXd y, MatrixXd X,
-                      bool reml=true, bool check_boundary=true,
-                      double logdetXpX=NA_REAL, double tol=1e-4)
+struct lmm_fit fitLMM(const VectorXd& Kva, const VectorXd& y, const MatrixXd& X,
+                      const bool reml=true, const bool check_boundary=true,
+                      const double logdetXpX=NA_REAL, const double tol=1e-4)
 {
     struct lmm_fit result;
 
     // calculate log det XpX, if necessary
     // (note same befor and after it's "rotated" by eigenvec of kinship matrix
+    double logdetXpX_val;
     if(reml && NumericVector::is_na(logdetXpX)) {
         MatrixXd XpX(calc_xpx(X));
         std::pair<VectorXd, MatrixXd> e = eigen_decomp(XpX);
         int p = X.cols();
-        logdetXpX=0.0;
-        for(int i=0; i<p; i++) logdetXpX += log(e.first[i]);
-    }
+        logdetXpX_val=0.0;
+        for(int i=0; i<p; i++) logdetXpX_val += log(e.first[i]);
+    } else logdetXpX_val = logdetXpX;
 
     // function arguments for calcLL
     struct calcLL_args args;
@@ -275,20 +278,20 @@ struct lmm_fit fitLMM(VectorXd Kva, VectorXd y, MatrixXd X,
     args.y = y;
     args.X = X;
     args.reml = reml;
-    args.logdetXpX = logdetXpX;
+    args.logdetXpX = logdetXpX_val;
 
     double hsq = qtl2_Brent_fmin(0.0, 1.0, (double (*)(double, void*)) negLL, &args, tol);
-    result = calcLL(hsq, Kva, y, X, reml, logdetXpX);
+    result = calcLL(hsq, Kva, y, X, reml, logdetXpX_val);
     result.hsq = hsq;
 
     if(check_boundary) {
         struct lmm_fit boundary_result;
-        boundary_result = calcLL(0.0, Kva, y, X, reml, logdetXpX);
+        boundary_result = calcLL(0.0, Kva, y, X, reml, logdetXpX_val);
         if(boundary_result.loglik > result.loglik) {
             result = boundary_result;
             result.hsq = 0.0;
         }
-        boundary_result = calcLL(1.0, Kva, y, X, reml, logdetXpX);
+        boundary_result = calcLL(1.0, Kva, y, X, reml, logdetXpX_val);
         if(boundary_result.loglik > result.loglik) {
             result = boundary_result;
             result.hsq = 1.0;
@@ -300,9 +303,9 @@ struct lmm_fit fitLMM(VectorXd Kva, VectorXd y, MatrixXd X,
 
 // fitLMM (version called from R)
 // [[Rcpp::export]]
-List Rcpp_fitLMM(NumericVector Kva, NumericVector y, NumericMatrix X,
-                 bool reml=true, bool check_boundary=true,
-                 double logdetXpX=NA_REAL, double tol=1e-4)
+List Rcpp_fitLMM(const NumericVector& Kva, const NumericVector& y, const NumericMatrix& X,
+                 const bool reml=true, const bool check_boundary=true,
+                 const double logdetXpX=NA_REAL, const double tol=1e-4)
 {
     MatrixXd eKva(as<Map<MatrixXd> >(Kva));
     VectorXd ey(as<Map<MatrixXd> >(y));
