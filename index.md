@@ -5,7 +5,8 @@ description: R package for fitting linear mixed models for GWAS and QTL mapping
 ---
 
 R/lmmlite is an R package for fitting linear mixed models for
-genome-wide association studies (GWAS) and QTL mapping.
+genome-wide association studies (GWAS) and quantitative trait locus
+(QTL) mapping.
 
 I'm following the code in [pylmm](https://github.com/nickFurlotte/pylmm),
 and really I'm developing this package mostly so that I can better understand pylmm.
@@ -31,9 +32,11 @@ You can install R/lmmlite from
 [GitHub](https://github.com/kbroman/lmmlite).
 
 You first need to install the
-[devtools](https://github.com/hadley/devtools) package.
+[devtools](https://github.com/hadley/devtools),
+[Rcpp](https://github.com/RcppCore/Rcpp), and
+[RcppEigen](https://github.com/RcppCore/RcppEigen) packages.
 
-    install.packages("devtools")
+    install.packages(c("devtools", "Rcpp", "RcppEigen"))
 
 Then use `devtools::install_github()` to install R/lmmlite.
 
