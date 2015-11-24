@@ -1,7 +1,7 @@
 ---
 layout: page
 title: R/lmmlite
-description: R package with light implementation of linear mixed models for QTL mapping
+description: R package for fitting linear mixed models for GWAS and QTL mapping
 ---
 
 R/lmmlite is an R package for fitting linear mixed models for
