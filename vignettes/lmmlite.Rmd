@@ -133,5 +133,5 @@ estimate the heritability. The result is a list containing `beta`,
 ```
 
 The `fitLMM()` function includes an argument `check_boundary`; if
-`TRUE`, the 0 and 1 boundaries are checked explicitly, in seeking to
+`TRUE` (the default), the 0 and 1 boundaries are checked explicitly, in seeking to
 estimate the heritability.
