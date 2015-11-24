@@ -1,4 +1,4 @@
-## R/lmmlite - R port of [pylmm](https://github.com/nickFurlotte/pylmm)
+## [R/lmmlite](http://kbroman.org/lmmlite) - R port of [pylmm](https://github.com/nickFurlotte/pylmm)
 
 [![Build Status](https://travis-ci.org/kbroman/lmmlite.svg?branch=master)](https://travis-ci.org/kbroman/lmmlite)
 
@@ -18,7 +18,29 @@ There's
 [another vignette on performance](http://kbroman.org/lmmlite/assets/performance.html)
 relative to pylmm.
 
+
 ---
+
+### Installation
+
+You can install R/lmmlite from
+[GitHub](https://github.com/kbroman/lmmlite).
+
+You first need to install the
+[devtools](https://github.com/hadley/devtools),
+[Rcpp](https://github.com/RcppCore/Rcpp), and
+[RcppEigen](https://github.com/RcppCore/RcppEigen) packages.
+
+    install.packages(c("devtools", "Rcpp", "RcppEigen"))
+
+Then use `devtools::install_github()` to install R/lmmlite.
+
+    library(devtools)
+    install_github("kbroman/lmmlite")
+
+---
+
+### License
 
 [R/lmmlite](https://github.com/kbroman/lmmlite) is released under the
 [GNU Affero GPL](https://www.gnu.org/licenses/why-affero-gpl.html),
