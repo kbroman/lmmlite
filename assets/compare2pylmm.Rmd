@@ -170,9 +170,11 @@ the pylmm ones, because I dropped a few terms that depend only on the
 sample size.
 
 For both REML and ML, the difference should be $n[\log(2 \pi) + 1 - \log n]/2$.
-Let's make the adjustment and plot the differences.
+Let's make the adjustment and plot the differences. (I'm going to
+suppress all of the code to make plots; you can see it in the
+[source for this vignette](https://github.com/kbroman/lmmlite/blob/gh-pages/assets/compare2pylmm.Rmd).)
 
-```{r adjust_loglik_and_plot}
+```{r adjust_loglik_and_plot, echo=FALSE}
 n <- colSums(!is.na(recla$pheno))
 adj <- n*(log(2*pi) + 1 - log(n))/2
 lldiff <- lmmlite$loglik - pylmm$loglik - rep(adj, each=2)
@@ -225,7 +227,7 @@ Let's turn to the parameter estimates. First, the heritability.
 Here the results are quite similar (maximum absolute difference
 `r myround(max(abs(pylmm$hsq - lmmlite$hsq)), 2)`).
 
-```{r plot_hsq_diff}
+```{r plot_hsq_diff, echo=FALSE}
 par(mfrow=c(1,2))
 par(mar=c(5.1,4.1,2.1,1.1))
 grayplot(pylmm$hsq, lmmlite$hsq, main="Heritability",
@@ -260,7 +262,7 @@ differences in estimated heritability and also differences in log
 likelihood, plus another phenotype with a small difference in
 estimated heritability but a negligible difference in log likelihood.
 
-```{r plot_hsq_diff_by_index, fig.height=7}
+```{r plot_hsq_diff_by_index, fig.height=7, echo=FALSE}
 par(mfrow=c(2,1))
 par(mar=c(5.1,4.1,2.1,1.1))
 grayplot(lmmlite$hsq - pylmm$hsq, main="Difference in heritability",
@@ -281,7 +283,7 @@ The other parameters show similar largely negligible
 differences. Here's a plot of the differences of the intercept and sex
 coefficients, against the estimate from pylmm.
 
-```{r beta_differences}
+```{r beta_differences, echo=FALSE}
 par(mfrow=c(1,2))
 par(mar=c(5.1,4.1,2.1,1.1))
 dif <- lmmlite$intercept - pylmm$intercept
@@ -308,7 +310,7 @@ The phenotypes have huge differences in scale, so we'll look at the
 differences as a percent of the estimate from pylmm, and we'll put the
 x-axis on the log scale.
 
-```{r plot_sigmasq}
+```{r plot_sigmasq, echo=FALSE}
 dif <- (lmmlite$sigmasq - pylmm$sigmasq)/pylmm$sigmasq*100
 mx <- max(abs(dif))
 grayplot(log10(pylmm$sigmasq), dif, ylim=c(-mx,mx),
@@ -322,7 +324,7 @@ differences are for exactly the phenotypes we'd expect. Here's the
 percent difference in $\hat{\sigma}^2$ by index, with the differences
 in estimated heritabilities for reference.
 
-```{r plot_sigmsq_with_hsq, fig.height=7}
+```{r plot_sigmsq_with_hsq, fig.height=7, echo=FALSE}
 par(mfrow=c(2,1))
 par(mar=c(5.1,4.1,2.1,1.1))
 grayplot(dif, ylim=c(-mx,mx),
@@ -421,7 +423,7 @@ is 10<sup>`r ceiling(log10(max(abs(lmmlite_ll$loglik_adj - pylmm_ll$loglik))))`<
 
 Here are plots of a few of them, with lmmlite in blue and pylmm in red (dashed):
 
-```{r plot_ll, fig.height=15}
+```{r plot_ll, fig.height=15, echo=FALSE}
 par(mfrow=c(5, 2), mar=c(5.1, 4.1, 2.1, 0.6))
 for(i in c(1,3,8,12,25)) {
     for(j in c("reml", "ml")) {
@@ -457,9 +459,13 @@ inclusion of the identity matrix is assumed. (An advantage of the regress
 package is that you can use multiple kinship-type matrices.)
 
 The default is to use REML; to use ML use give `kernel=0`. At least
-that's what the documentation seems to say.
+that's what the documentation seems to say. The argument `pos` can be
+used to constrain the variance components to be positive, which is
+what we want. (Thanks to Petr Simecek for pointing this out; initially
+I was doing this unconstrained and having a lot of problems, including
+errors.)
 
-```{r regress_fit, cache=TRUE}
+```{r regress_fit, cache=TRUE, results="hide"}
 library(regress)
 regr <- data.frame(index=rep(NA,2*n_phe),
                    method=rep("", 2*n_phe),
@@ -471,14 +477,16 @@ regr <- data.frame(index=rep(NA,2*n_phe),
 
 recla$pheno <- scale(recla$pheno)
 
-for(i in (1:ncol(recla$pheno))[-6]) {
-    out <- regress(recla$pheno[,i] ~ recla$covar, ~ recla$kinship)
+for(i in (1:ncol(recla$pheno))) {
+    out <- regress(recla$pheno[,i] ~ recla$covar, ~ recla$kinship,
+                   pos=c(TRUE, TRUE), tol=1e-8)
     regr[i*2-1,1] <- i
     regr[i*2-1,2] <- "reml"
     sigmasq <- sum(out$sigma)
     regr[i*2-1,-(1:2)] <- c(out$sigma[1]/sigmasq, out$beta[,1], sigmasq, out$llik)
 
-    out <- regress(recla$pheno[,i] ~ recla$covar, ~ recla$kinship, kernel=0)
+    out <- regress(recla$pheno[,i] ~ recla$covar, ~ recla$kinship, kernel=0,
+                   pos=c(TRUE, TRUE), tol=1e-8)
     regr[i*2,1] <- i
     regr[i*2,2] <- "ml"
     sigmasq <- sum(out$sigma)
@@ -515,14 +523,10 @@ for(i in 1:ncol(recla$pheno)) {
 }
 ```
 
-The results are quite different, but basically at the
-boundaries. regress doesn't constrain the variance estimates to be
-positive, and so the estimated heritability can be <0 or >1.
+The results are not *exactly* the same, but they are pretty close.
+Here are some plots.
 
-It doesn't seem worthwhile looking at everything, since the results
-are so different, but here are the estimates of the variance parameters.
-
-```{r plot_regr_herit, fig.height=7}
+```{r plot_regr_herit, fig.height=7, echo=FALSE}
 par(mar=c(5.1,4.1,2.1,1.1), mfrow=c(2,2))
 grayplot(lmmlite$hsq, regr$hsq, xlab="lmmlite", ylab="regress",
          main="heritability", type="n")
