@@ -85,7 +85,7 @@ covariate matrix.
 
 The next function `getMLsoln()` will estimates the coefficients
 ($\beta$) and residual variance ($\sigma^2 = \sigma^2_g + \sigma^2_e$)
-for a given value of the heritability ($h^2 = \sigma^2_g / \sigma^2).
+for a given value of the heritability ($h^2 = \sigma^2_g / \sigma^2$).
 It takes, as input, a single value for the heritability, and then
 `Kva`, `y`, and `X`, as returned from `eigen_rotation()`.  A further
 argument `reml`, indicates whether REML will later be used, in which
