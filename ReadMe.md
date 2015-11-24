@@ -15,13 +15,16 @@ LMMs for QTL mapping.
 ### Vignettes
 
 - [User guide](http://kbroman.org/lmmlite/assets/lmmlite.html)
+  [[source](https://github.com/kbroman/lmmlite/blob/master/vignettes/lmmlite.Rmd)]
 
 - [Results compared](http://kbroman.org/lmmlite/assets/compare2pylmm.html)
   to [pylmm](https://github.com/nickFurlotte/pylmm) (and also the R package
   [regress](https://cran.r-project.org/web/packages/regress/)).
+  [[source](https://github.com/kbroman/lmmlite/blob/gh-pages/assets/compare2pylmm.Rmd)]
 
 - [Performance compared](http://kbroman.org/lmmlite/assets/performance.html)
   to pylmm.
+  [[source](https://github.com/kbroman/lmmlite/blob/gh-pages/assets/performance.Rmd)]
 
 
 ---

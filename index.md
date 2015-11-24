@@ -18,13 +18,16 @@ The code is on [GitHub](https://github.com/kbroman/lmmlite).
 ### Vignettes
 
 - [User guide](assets/lmmlite.html)
+[[source](https://github.com/kbroman/lmmlite/blob/master/vignettes/lmmlite.Rmd)]
 
 - [Comparison of results](assets/compare2pylmm.html) to those of
 [pylmm](https://github.com/nickFurlotte/pylmm) and
 [regress](https://cran.r-project.org/web/packages/regress/).
+[[source](https://github.com/kbroman/lmmlite/blob/gh-pages/assets/compare2pylmm.Rmd)]
 
 - [Performance comparison](assets/performance.html) with
 [pylmm](https://github.com/nickFurlotte/pylmm).
+[[source](https://github.com/kbroman/lmmlite/blob/gh-pages/assets/performance.Rmd)]
 
 ---
 

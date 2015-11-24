@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="date" content="2015-11-23" />
+<meta name="date" content="2015-11-24" />
 
 <title>Performance compared to pylmm</title>
 
@@ -62,12 +62,13 @@ img {
 
 <div id="header">
 <h1 class="title">Performance compared to pylmm</h1>
-<h4 class="date"><em>2015-11-23</em></h4>
+<h4 class="date"><em>2015-11-24</em></h4>
 </div>
 
 
 <p><a href="https://github.com/kbroman/lmmlite">R/lmmlite</a> is a light implementation of the fit of linear mixed models for QTL analysis, following <a href="https://github.com/nickFurlotte/pylmm">pylmm</a>. It includes both plain R and C++ implementations (the latter using <a href="https://github.com/RcppCore/RcppEigen">RcppEigen</a>).</p>
 <p>Here I seek to compare the speed of my R and C++ implementations to pylmm. For timings within R, I use the <a href="https://cran.r-project.org/package=microbenchmark">microbenchmark</a> package.</p>
+<p>The source for this vignette is at <a href="https://github.com/kbroman/lmmlite/blob/gh-pages/assets/performance.Rmd">GitHub</a>.</p>
 <p>I’ll focus on the <code>recla</code> dataset that I include with the package. This is data on a set of diversity outcross mice, from <a href="http://www.ncbi.nlm.nih.gov/pubmed/24700285">Recla et al. (2014)</a> and <a href="http://www.ncbi.nlm.nih.gov/pubmed/23433259">Logan et al. (2013)</a>. The data are originally from the <a href="http://phenome.jax.org/db/q?rtn=projects/projdet&amp;reqprojid=285">QTL Archive/Mouse Phenotype Database</a> and I’ve also <a href="https://github.com/kbroman/qtl2data/tree/master/DO_Recla">placed them online</a> in the format used by <a href="http://kbroman.org/qtl2">R/qtl2</a>. I used <a href="https://github.com/rqtl/qtl2geno">qtl2geno</a> to calculate genotype probabilities from the MUGA SNP array data. The data include 261 mice, and form a list with three components: the estimated kinship matrix, a matrix with 26 phenotypes, and a covariate matrix that contains an intercept (all 1’s) and sex (0 for female and 1 for male).</p>
 <pre class="r"><code>library(lmmlite)
 library(microbenchmark)
@@ -118,9 +119,9 @@ batches &lt;- batch_cols_by_missing(recla$pheno)</code></pre>
 print(time_full, digits=4)</code></pre>
 <pre><code>## Unit: milliseconds
 ##  expr   min    lq  mean median    uq   max neval cld
-##     R 372.6 373.3 419.9  428.6 436.9 493.4    10   b
-##   cpp 172.3 174.5 180.5  175.2 178.1 227.9    10  a</code></pre>
-<p>The average computation time for the R code is 420 milliseconds, while the C++ code takes 180 milliseconds, a speed-up of <strong>2.3x</strong>.</p>
+##     R 367.1 416.8 426.3  423.4 427.5 506.0    10   b
+##   cpp 158.6 162.0 167.6  162.3 165.3 210.4    10  a</code></pre>
+<p>The average computation time for the R code is 426 milliseconds, while the C++ code takes 168 milliseconds, a speed-up of <strong>2.5x</strong>.</p>
 <p>Here’s just the code to do the initial eigen decomposition and the “rotation” of the phenotypes and covariates.</p>
 <pre class="r"><code>time_eigen &lt;- microbenchmark(R={
     for(i in seq(along=batches)) {
@@ -141,9 +142,9 @@ print(time_full, digits=4)</code></pre>
 print(time_eigen, digits=4)</code></pre>
 <pre><code>## Unit: milliseconds
 ##  expr   min    lq  mean median    uq   max neval cld
-##     R 212.5 269.5 283.2  273.3 328.6 332.3    10   b
-##   cpp 162.0 163.3 164.6  164.8 166.1 166.8    10  a</code></pre>
-<p>The mean computation time for the R code is 283 milliseconds, while the C++ code takes 165 milliseconds, a speed-up of <strong>1.7x</strong>.</p>
+##     R 216.1 267.1 278.1  270.0 327.9 339.0    10   b
+##   cpp 150.9 151.2 154.8  153.4 157.3 163.2    10  a</code></pre>
+<p>The mean computation time for the R code is 278 milliseconds, while the C++ code takes 155 milliseconds, a speed-up of <strong>1.8x</strong>.</p>
 <p>I’ll re-calculate the eigen decomposition for each batch, and save the results</p>
 <pre class="r"><code>eigenrot_cpp &lt;- eigenrot_R &lt;- vector(&quot;list&quot;, length(batches))
 for(i in seq(along=batches)) {
@@ -171,9 +172,9 @@ for(i in seq(along=batches)) {
 print(time_llm, digits=4)</code></pre>
 <pre><code>## Unit: milliseconds
 ##  expr    min     lq   mean median     uq    max neval cld
-##     R 157.14 159.34 167.75  161.4 165.64 224.10    10   b
-##   cpp  10.79  10.85  11.05   11.0  11.17  11.66    10  a</code></pre>
-<p>The mean computation time for the R code is 168 milliseconds, while the C++ code takes 11 milliseconds, a speed-up of <strong>15.2x</strong>.</p>
+##     R 160.28 161.82 165.18 164.47 168.69 173.50    10   b
+##   cpp  10.09  10.16  10.55  10.25  10.72  12.62    10  a</code></pre>
+<p>The mean computation time for the R code is 165 milliseconds, while the C++ code takes 11 milliseconds, a speed-up of <strong>15.7x</strong>.</p>
 </div>
 <div id="pylmm" class="section level2">
 <h2>pylmm</h2>
@@ -204,12 +205,12 @@ stop_time = time.time()
 ave_time = (stop_time - start_time)/n_times
 open('pylmm_time.txt', 'w').write(str(ave_time) + &quot;\n&quot;)
 print(ave_time)</code></pre>
-<pre><code>## 1.4867056846618651
+<pre><code>## 1.487135910987854
 ## ./lmm.py:196: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
 ##   if X0 == None:
 ## ./lmm.py:285: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
 ##   if X == None:</code></pre>
-<p>This isn’t really a fair comparison, but I’m seeing a time of 1.49 sec for pylmm, 0.42 sec for the R version of lmmlite, and 0.18 sec for the C++ version of lmmlite, so speed-ups of <strong>3.5x</strong> and <strong>8.2x</strong> for the R and C++ code in lmmlite, vs pylmm.</p>
+<p>This isn’t really a fair comparison, but I’m seeing a time of 1.49 sec for pylmm, 0.43 sec for the R version of lmmlite, and 0.17 sec for the C++ version of lmmlite, so speed-ups of <strong>3.5x</strong> and <strong>8.9x</strong> for the R and C++ code in lmmlite, vs pylmm.</p>
 <p>As a more fair comparison, I’ll re-run the lmmlite analysis, considering each phenotype individually.</p>
 <pre class="r"><code>time_full2 &lt;- microbenchmark(R={
     for(i in 1:ncol(recla$pheno)) {
@@ -228,11 +229,11 @@ print(ave_time)</code></pre>
         res &lt;- fitLMM(eigenrot$Kva, eigenrot$y, eigenrot$X, reml=TRUE, use_cpp=TRUE)
     }}, times=10)
 print(time_full2, digits=4)</code></pre>
-<pre><code>## Unit: seconds
-##  expr   min    lq mean median    uq   max neval cld
-##     R 1.579 1.649 1.67  1.657 1.712 1.753    10   b
-##   cpp 1.068 1.069 1.09  1.081 1.101 1.138    10  a</code></pre>
-<p>Now, in comparison to 1.49 sec for pylmm, I see 1.67 sec for the R version of lmmlite, and 1.09 sec for the C++ version of lmmlite, so speed-ups of <strong>0.9x</strong> and <strong>1.4x</strong> for the R and C++ code in lmmlite, vs pylmm. (Actually, the R version of lmmlite is slower than pylmm, so that’s not really a “speed-up”. The C++ version is faster, though.)</p>
+<pre><code>## Unit: milliseconds
+##  expr    min     lq mean median   uq  max neval cld
+##     R 1647.2 1656.2 1694   1692 1725 1763    10   b
+##   cpp  993.5  994.3 1012   1001 1011 1062    10  a</code></pre>
+<p>Now, in comparison to 1.49 sec for pylmm, I see 1.69 sec for the R version of lmmlite, and 1.01 sec for the C++ version of lmmlite, so speed-ups of <strong>0.9x</strong> and <strong>1.5x</strong> for the R and C++ code in lmmlite, vs pylmm. (Actually, the R version of lmmlite is slower than pylmm, so that’s not really a “speed-up”. The C++ version is faster, though.)</p>
 </div>
 <div id="session-info" class="section level2">
 <h2>Session info</h2>
@@ -245,7 +246,7 @@ print(time_full2, digits=4)</code></pre>
 ##  language en_US.UTF-8                 
 ##  collate  en_US.UTF-8                 
 ##  tz       America/Chicago             
-##  date     2015-11-23</code></pre>
+##  date     2015-11-24</code></pre>
 <pre><code>## Packages ------------------------------------------------------------------</code></pre>
 <pre><code>##  package        * version    date       source                         
 ##  assertthat       0.1        2013-12-06 CRAN (R 3.2.0)                 
@@ -261,7 +262,7 @@ print(time_full2, digits=4)</code></pre>
 ##  htmltools        0.2.6      2014-09-08 CRAN (R 3.2.0)                 
 ##  knitr            1.11.16    2015-11-16 Github (yihui/knitr@6e8ce0c)   
 ##  lattice          0.20-33    2015-07-14 CRAN (R 3.2.0)                 
-##  lmmlite        * 0.1-7      2015-11-23 local                          
+##  lmmlite        * 0.1-9      2015-11-24 local                          
 ##  magrittr         1.5        2014-11-22 CRAN (R 3.2.0)                 
 ##  memoise          0.2.1      2014-04-22 CRAN (R 3.2.0)                 
 ##  microbenchmark * 1.4-2      2014-09-28 CRAN (R 3.2.0)                 

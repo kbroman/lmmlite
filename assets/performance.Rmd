@@ -20,6 +20,9 @@ Here I seek to compare the speed of my R and C++ implementations to
 pylmm. For timings within R, I use the
 [microbenchmark](https://cran.r-project.org/package=microbenchmark) package.
 
+The source for this vignette is at
+[GitHub](https://github.com/kbroman/lmmlite/blob/gh-pages/assets/performance.Rmd).
+
 ```{r load_data, echo=FALSE}
 library(lmmlite)
 library(microbenchmark)

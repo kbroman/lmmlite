@@ -36,6 +36,9 @@ we'll see, gives rather different results) and
 [pylmm](https://github.com/nickFurlotte/pylmm) (and fortunately pylmm and lmmlite
 results do generally correspond).
 
+The source for this vignette is at
+[GitHub](https://github.com/kbroman/lmmlite/blob/gh-pages/assets/compare2pylmm.Rmd).
+
 ```{r load_data, echo=FALSE}
 library(lmmlite)
 data(recla)
