@@ -51,9 +51,11 @@ data(recla)
 ```
 
 The package includes two implementations of fit of linear mixed models
-(LMMs): plain R, and C++ (using [Rcpp]() and the [RcppEigen]()
-packages, the latter being an interface to the [Eigen]() C++ linear
-algebra library).
+(LMMs): plain R, and C++ (using
+[Rcpp](https://github.com/RcppCore/Rcpp) and the
+[RcppEigen](https://github.com/RcppCore/RcppEigen) packages, the
+latter being an interface to the [Eigen](http://eigen.tuxfamily.org/)
+C++ linear algebra library).
 
 R/lmmlite includes just four functions: `eigen_rotation()`,
 `getMLsoln()`, `calcLL()`, and `fitLMM()`. In each case, use
