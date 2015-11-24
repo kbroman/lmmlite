@@ -14,6 +14,8 @@ The code is on [GitHub](https://github.com/kbroman/lmmlite).
 
 **Vignettes**:
 
+- [User guide](assets/lmmlite.html)
+
 - [Comparison of results](assets/compare2pylmm.html) to those of
 [pylmm](https://github.com/nickFurlotte/pylmm) and
 [regress](https://cran.r-project.org/web/packages/regress/).

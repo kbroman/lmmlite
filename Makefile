@@ -2,6 +2,7 @@ R_OPTS=--no-save --no-restore --no-init-file --no-site-file # --vanilla, but wit
 
 all: assets/compare2pylmm.html         \
 	 assets/performance.html           \
+	 assets/lmmlite.html               \
 	 compare2pylmm/pylmm_results.csv   \
 	 compare2pylmm/pylmm_llvals.csv    \
 	 compare2pylmm/lmmlite_results.csv \
@@ -34,3 +35,9 @@ compare2pylmm/pylmm_llvals.csv: compare2pylmm/pylmm_calcll.py compare2pylmm/lmm.
 
 compare2pylmm/lmmlite_llvals.csv: compare2pylmm/lmmlite_calcll.R
 	cd $(<D);R $(R_OPTS) -e "source('$(<F)')"
+
+assets/lmmlite.html: assets/lmmlite.Rmd
+	cd $(<D);R $(R_OPTS) -e "rmarkdown::render('$(<F)')"
+
+assets/lmmlite.Rmd: ../lmmlite/vignettes/lmmlite.Rmd
+	cp $< $@

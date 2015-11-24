@@ -2,7 +2,7 @@
 # For more see: https://github.com/mojombo/jekyll/wiki/Permalinks
 permalink: /:categories/:year/:month/:day/:title
 
-exclude: [".rvmrc", ".rbenv-version", "ReadMe.md", "Rakefile", "changelog.md", "LICENSE.md", "Gemfile", "Gemfile.lock", "compare2pylmm", "assets/__pycache__", "assets/*.csv", "assets/*.py", "assets/compare2pylmm_cache/*", "assets/compare2pylmm_files/*"]
+exclude: [".rvmrc", ".rbenv-version", "ReadMe.md", "Rakefile", "changelog.md", "LICENSE.md", "Gemfile", "Gemfile.lock", "compare2pylmm", "assets/__pycache__", "assets/*.csv", "assets/*.py", "assets/compare2pylmm_cache/*", "assets/compare2pylmm_files/*", "assets/*.Rmd", "assets/*.txt"]
 highlighter: pygments
 
 # Themes are encouraged to use these universal variables
