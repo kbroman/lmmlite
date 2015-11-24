@@ -13,7 +13,9 @@ and really I'm developing this package mostly so that I can better understand py
 
 The code is on [GitHub](https://github.com/kbroman/lmmlite).
 
-**Vignettes**:
+---
+
+### Vignettes
 
 - [User guide](assets/lmmlite.html)
 

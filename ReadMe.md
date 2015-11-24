@@ -9,7 +9,9 @@ for linear mixed models for genome-wide association studies
 (GWAS), I'm porting it to R.  The goal is learning, and ultimately
 LMMs for QTL mapping.
 
-Vignettes:
+---
+
+### Vignettes
 
 - [User guide](http://kbroman.org/lmmlite/assets/lmmlite.html)
 
