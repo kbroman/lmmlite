@@ -103,7 +103,7 @@ attributes.
 The function `calcLL()` calculates the log likelihood for a given
 value of the heritability. (It can also take a vector of
 heritabilities.) It takes the same arguments as `getMLsoln()`, and in
-practice one would probably never call `getMLsoln()` directly.
+practice one would probably not call `getMLsoln()` directly.
 
 ```{r calcLL}
 hsq <- seq(0, 1, by=0.01)
