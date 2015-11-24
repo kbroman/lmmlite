@@ -119,9 +119,9 @@ batches &lt;- batch_cols_by_missing(recla$pheno)</code></pre>
 print(time_full, digits=4)</code></pre>
 <pre><code>## Unit: milliseconds
 ##  expr   min    lq  mean median    uq   max neval cld
-##     R 367.1 416.8 426.3  423.4 427.5 506.0    10   b
-##   cpp 158.6 162.0 167.6  162.3 165.3 210.4    10  a</code></pre>
-<p>The average computation time for the R code is 426 milliseconds, while the C++ code takes 168 milliseconds, a speed-up of <strong>2.5x</strong>.</p>
+##     R 421.4 422.0 450.7  449.3 476.5 490.4    10   b
+##   cpp 168.3 170.1 170.7  170.4 171.3 174.1    10  a</code></pre>
+<p>The average computation time for the R code is 451 milliseconds, while the C++ code takes 171 milliseconds, a speed-up of <strong>2.6x</strong>.</p>
 <p>Here’s just the code to do the initial eigen decomposition and the “rotation” of the phenotypes and covariates.</p>
 <pre class="r"><code>time_eigen &lt;- microbenchmark(R={
     for(i in seq(along=batches)) {
@@ -142,9 +142,9 @@ print(time_full, digits=4)</code></pre>
 print(time_eigen, digits=4)</code></pre>
 <pre><code>## Unit: milliseconds
 ##  expr   min    lq  mean median    uq   max neval cld
-##     R 216.1 267.1 278.1  270.0 327.9 339.0    10   b
-##   cpp 150.9 151.2 154.8  153.4 157.3 163.2    10  a</code></pre>
-<p>The mean computation time for the R code is 278 milliseconds, while the C++ code takes 155 milliseconds, a speed-up of <strong>1.8x</strong>.</p>
+##     R 209.2 268.3 275.3  269.8 274.8 327.9    10   b
+##   cpp 159.1 160.0 167.2  161.5 162.7 221.1    10  a</code></pre>
+<p>The mean computation time for the R code is 275 milliseconds, while the C++ code takes 167 milliseconds, a speed-up of <strong>1.6x</strong>.</p>
 <p>I’ll re-calculate the eigen decomposition for each batch, and save the results</p>
 <pre class="r"><code>eigenrot_cpp &lt;- eigenrot_R &lt;- vector(&quot;list&quot;, length(batches))
 for(i in seq(along=batches)) {
@@ -171,10 +171,10 @@ for(i in seq(along=batches)) {
     } }, times=10)
 print(time_llm, digits=4)</code></pre>
 <pre><code>## Unit: milliseconds
-##  expr    min     lq   mean median     uq    max neval cld
-##     R 160.28 161.82 165.18 164.47 168.69 173.50    10   b
-##   cpp  10.09  10.16  10.55  10.25  10.72  12.62    10  a</code></pre>
-<p>The mean computation time for the R code is 165 milliseconds, while the C++ code takes 11 milliseconds, a speed-up of <strong>15.7x</strong>.</p>
+##  expr     min      lq    mean median      uq     max neval cld
+##     R 161.464 162.051 164.437 163.37 163.698 178.903    10   b
+##   cpp   9.654   9.683   9.711   9.69   9.741   9.826    10  a</code></pre>
+<p>The mean computation time for the R code is 164 milliseconds, while the C++ code takes 10 milliseconds, a speed-up of <strong>16.9x</strong>.</p>
 </div>
 <div id="pylmm" class="section level2">
 <h2>pylmm</h2>
@@ -203,14 +203,8 @@ for j in range(n_times):
         result = lmm.LMM(pheno[:,[i]], kinship, X0=covar).fit(REML=True)
 stop_time = time.time()
 ave_time = (stop_time - start_time)/n_times
-open('pylmm_time.txt', 'w').write(str(ave_time) + &quot;\n&quot;)
-print(ave_time)</code></pre>
-<pre><code>## 1.487135910987854
-## ./lmm.py:196: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
-##   if X0 == None:
-## ./lmm.py:285: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
-##   if X == None:</code></pre>
-<p>This isn’t really a fair comparison, but I’m seeing a time of 1.49 sec for pylmm, 0.43 sec for the R version of lmmlite, and 0.17 sec for the C++ version of lmmlite, so speed-ups of <strong>3.5x</strong> and <strong>8.9x</strong> for the R and C++ code in lmmlite, vs pylmm.</p>
+open('pylmm_time.txt', 'w').write(str(ave_time) + &quot;\n&quot;)</code></pre>
+<p>This isn’t really a fair comparison, but I’m seeing a time of 1.47 sec for pylmm, 0.45 sec for the R version of lmmlite, and 0.17 sec for the C++ version of lmmlite, so speed-ups of <strong>3.3x</strong> and <strong>8.6x</strong> for the R and C++ code in lmmlite, vs pylmm.</p>
 <p>As a more fair comparison, I’ll re-run the lmmlite analysis, considering each phenotype individually.</p>
 <pre class="r"><code>time_full2 &lt;- microbenchmark(R={
     for(i in 1:ncol(recla$pheno)) {
@@ -229,11 +223,11 @@ print(ave_time)</code></pre>
         res &lt;- fitLMM(eigenrot$Kva, eigenrot$y, eigenrot$X, reml=TRUE, use_cpp=TRUE)
     }}, times=10)
 print(time_full2, digits=4)</code></pre>
-<pre><code>## Unit: milliseconds
-##  expr    min     lq mean median   uq  max neval cld
-##     R 1647.2 1656.2 1694   1692 1725 1763    10   b
-##   cpp  993.5  994.3 1012   1001 1011 1062    10  a</code></pre>
-<p>Now, in comparison to 1.49 sec for pylmm, I see 1.69 sec for the R version of lmmlite, and 1.01 sec for the C++ version of lmmlite, so speed-ups of <strong>0.9x</strong> and <strong>1.5x</strong> for the R and C++ code in lmmlite, vs pylmm. (Actually, the R version of lmmlite is slower than pylmm, so that’s not really a “speed-up”. The C++ version is faster, though.)</p>
+<pre><code>## Unit: seconds
+##  expr   min    lq  mean median    uq   max neval cld
+##     R 1.649 1.714 1.736  1.737 1.747 1.837    10   b
+##   cpp 1.058 1.061 1.081  1.065 1.073 1.217    10  a</code></pre>
+<p>Now, in comparison to 1.47 sec for pylmm, I see 1.74 sec for the R version of lmmlite, and 1.08 sec for the C++ version of lmmlite, so speed-ups of <strong>0.8x</strong> and <strong>1.4x</strong> for the R and C++ code in lmmlite, vs pylmm. (Actually, the R version of lmmlite is slower than pylmm, so that’s not really a “speed-up”. The C++ version is faster, though.)</p>
 </div>
 <div id="session-info" class="section level2">
 <h2>Session info</h2>

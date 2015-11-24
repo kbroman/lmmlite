@@ -139,10 +139,6 @@ for i in range(pheno.shape[1]):
     print_result(result, i+1, 'reml')
     result = lmm.LMM(pheno[:,[i]], kinship, X0=covar).fit(REML=False)
     print_result(result, i+1, 'ml')</code></pre>
-<pre><code>## ./lmm.py:196: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
-##   if X0 == None:
-## ./lmm.py:285: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
-##   if X == None:</code></pre>
 <p>Now I’ll read the data (into R).</p>
 <pre class="r"><code>pylmm &lt;- read.csv(&quot;pylmm_results.csv&quot;, as.is=TRUE)</code></pre>
 <div id="log-likelihoods" class="section level3">
@@ -238,8 +234,6 @@ for i in range(pheno.shape[1]):
     ll = [obj.LL(hsq, REML=False)[0] for hsq in hsq_vec]
     for j in range(n_val):
         f.write(&quot;,&quot;.join([str(i+1), &quot;ml&quot;, str(hsq_vec[j]), str(ll[j])]) + '\n')</code></pre>
-<pre><code>## ./lmm.py:196: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
-##   if X0 == None:</code></pre>
 <p>Now read those results into R:</p>
 <pre class="r"><code>pylmm_ll &lt;- read.csv(&quot;pylmm_llvals.csv&quot;)</code></pre>
 <p>The results are equivalent; the maximum difference in log likelihoods is 10<sup>-8</sup>.</p>

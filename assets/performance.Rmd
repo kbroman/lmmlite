@@ -213,7 +213,7 @@ for(i in c("kinship", "pheno", "covar"))
 I'm not sure the best way to time the code, so I'll just grab the
 start and stop time for the interesting bit.
 
-```{python time_pylmm}
+```{python time_pylmm, results="hide"}
 # this chunk is python code
 import lmm
 import numpy
@@ -235,7 +235,6 @@ for j in range(n_times):
 stop_time = time.time()
 ave_time = (stop_time - start_time)/n_times
 open('pylmm_time.txt', 'w').write(str(ave_time) + "\n")
-print(ave_time)
 ```
 
 ```{r load_python_time, include=FALSE}

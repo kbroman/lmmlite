@@ -125,7 +125,7 @@ for(i in c("kinship", "pheno", "covar"))
 
 Now I can run pylmm, writing the output to `"pylmm_results.csv"`.
 
-```{python fit_lmm_pylmm}
+```{python fit_lmm_pylmm, results="hide"}
 # this chunk is python code
 import lmm
 import numpy
@@ -381,7 +381,7 @@ for(i in 1:n_phe) {
 
 Now I'll do the same calculations with pylmm:
 
-```{python pylmm_calcll}
+```{python pylmm_calcll, results="hide"}
 # this chunk is python code
 import lmm
 import numpy
