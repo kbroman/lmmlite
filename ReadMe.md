@@ -29,11 +29,11 @@ You can install R/lmmlite from
 [GitHub](https://github.com/kbroman/lmmlite).
 
 You first need to install the
-[devtools](https://github.com/hadley/devtools),
-[Rcpp](https://github.com/RcppCore/Rcpp), and
-[RcppEigen](https://github.com/RcppCore/RcppEigen) packages.
+[devtools](https://github.com/hadley/devtools)
+and [RcppEigen](https://github.com/RcppCore/RcppEigen) packages.
+([Rcpp](https://github.com/RcppCore/Rcpp) will also be installed.)
 
-    install.packages(c("devtools", "Rcpp", "RcppEigen"))
+    install.packages(c("devtools", "RcppEigen"))
 
 Then use `devtools::install_github()` to install R/lmmlite.
 
