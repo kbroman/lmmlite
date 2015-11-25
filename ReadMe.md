@@ -51,6 +51,7 @@ Then use `devtools::install_github()` to install R/lmmlite.
 ### License
 
 [R/lmmlite](https://github.com/kbroman/lmmlite) is released under the
-[GNU Affero GPL](https://www.gnu.org/licenses/why-affero-gpl.html),
-because that's the license for
-[pylmm](https://github.com/nickFurlotte/pylmm).
+[GNU Affero GPL](https://www.gnu.org/licenses/why-affero-gpl.html).
+
+The code was developed following study of Nick Furlotte's
+[pylmm](https://github.com/nickFurlotte/pylmm) code.
