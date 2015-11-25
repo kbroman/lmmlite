@@ -7,8 +7,7 @@ Karl Broman (following the code in
 
 In order to better understand [pylmm](https://github.com/nickFurlotte/pylmm),
 for linear mixed models for genome-wide association studies
-(GWAS), I'm porting it to R.  The goal is learning, and ultimately
-LMMs for QTL mapping.
+(GWAS), I wrote an R version of the algorithm.
 
 ---
 
@@ -53,5 +52,5 @@ Then use `devtools::install_github()` to install R/lmmlite.
 [R/lmmlite](https://github.com/kbroman/lmmlite) is released under the
 [GNU Affero GPL](https://www.gnu.org/licenses/why-affero-gpl.html).
 
-The code was developed following study of Nick Furlotte's
+The code was developed following study of [Nick Furlotte](http://whatmind.com)'s
 [pylmm](https://github.com/nickFurlotte/pylmm) code.
