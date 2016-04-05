@@ -4,14 +4,14 @@
 \alias{eigen_rotation}
 \title{eigen decomposition + rotation}
 \usage{
-eigen_rotation(K, y, X, Kva, Kve_t, use_cpp = TRUE)
+eigen_rotation(K, y, X = NULL, Kva = NULL, Kve_t = NULL, use_cpp = TRUE)
 }
 \arguments{
 \item{K}{Kinship matrix (required if \code{use_cpp=TRUE})}
 
 \item{y}{Phenotypes}
 
-\item{X}{Numeric matrix with covariates. If missing, use a column
+\item{X}{Numeric matrix with covariates. If NULL, use a column
 of 1's (for intercept).}
 
 \item{Kva}{Eigenvalues of \code{K} (optional, ignored if \code{use_cpp=TRUE})}

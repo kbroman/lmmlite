@@ -9,7 +9,7 @@
 #'
 #' @param K Kinship matrix (required if \code{use_cpp=TRUE})
 #' @param y Phenotypes
-#' @param X Numeric matrix with covariates. If missing, use a column
+#' @param X Numeric matrix with covariates. If NULL, use a column
 #' of 1's (for intercept).
 #' @param Kva Eigenvalues of \code{K} (optional, ignored if \code{use_cpp=TRUE})
 #' @param Kve_t = transposed eigenvectors of K (optional, ignored if \code{use_cpp=TRUE})
@@ -23,11 +23,10 @@
 #' data(recla)
 #' e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
 eigen_rotation <-
-    function(K, y, X, Kva, Kve_t, use_cpp=TRUE)
+    function(K, y, X=NULL, Kva=NULL, Kve_t=NULL, use_cpp=TRUE)
 {
     # check inputs
-    if(use_cpp || missing(Kva) || is.null(Kva) ||
-       missing(Kve_t) || is.null(Kve_t)) {
+    if(use_cpp || is.null(Kva) || is.null(Kve_t)) {
         n <- nrow(K) # no. individuals
         stopifnot(ncol(K) == n) # square?
     }
@@ -39,7 +38,7 @@ eigen_rotation <-
     if(!is.matrix(y)) y <- as.matrix(y)
     stopifnot(nrow(y) == n)
 
-    if(missing(X) || is.null(X))
+    if(is.null(X))
         X <- matrix(1, nrow=n)
     if(!is.matrix(X)) X <- as.matrix(X)
     stopifnot(nrow(X) == n)
@@ -52,8 +51,7 @@ eigen_rotation <-
         return(result)
     }
 
-    if(missing(Kva) || is.null(Kva) ||
-       missing(Kve_t) || is.null(Kve_t)) {
+    if(is.null(Kva) || is.null(Kve_t)) {
         # calculate eigen vals and vecs
         e <- eigen(K)
         Kva <- e$values
