@@ -8,3 +8,4 @@ assets/*.py
 assets/compare2pylmm_cache
 assets/compare2pylmm_files
 assets/pylmm_time.txt
+Gemfile.lock
