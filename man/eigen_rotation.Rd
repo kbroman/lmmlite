@@ -34,4 +34,3 @@ the "rotation".
 data(recla)
 e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
 }
-

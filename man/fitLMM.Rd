@@ -38,4 +38,3 @@ data(recla)
 e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
 result <- fitLMM(e$Kva, e$y, e$X)
 }
-

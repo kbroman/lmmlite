@@ -35,4 +35,3 @@ data(recla)
 e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
 ml <- getMLsoln(0.5, e$Kva, e$y, e$X)
 }
-
