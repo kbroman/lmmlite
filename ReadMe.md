@@ -18,7 +18,7 @@ for linear mixed models for genome-wide association studies
 
 - [Results compared](http://kbroman.org/lmmlite/assets/compare2pylmm.html)
   to [pylmm](https://github.com/nickFurlotte/pylmm) (and also the R package
-  [regress](https://cran.r-project.org/web/packages/regress/)).
+  [regress](https://cran.r-project.org/package=regress)).
   [[source](https://github.com/kbroman/lmmlite/blob/gh-pages/assets/compare2pylmm.Rmd)]
 
 - [Performance compared](http://kbroman.org/lmmlite/assets/performance.html)
