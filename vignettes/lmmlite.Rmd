@@ -31,8 +31,8 @@ data(recla)
 
 We'll focus here on the `recla` dataset that I include with the
 package. This is data on a set of diversity outcross mice, from
-[Recla et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24700285) and
-[Logan et al. (2013)](http://www.ncbi.nlm.nih.gov/pubmed/23433259). The data are
+[Recla et al. (2014)](https://www.ncbi.nlm.nih.gov/pubmed/24700285) and
+[Logan et al. (2013)](https://www.ncbi.nlm.nih.gov/pubmed/23433259). The data are
 originally from the
 [QTL Archive/Mouse Phenotype Database](http://phenome.jax.org/db/q?rtn=projects/projdet&reqprojid=285)
 and I've also
