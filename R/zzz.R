@@ -1,4 +1,4 @@
 # the following to get NAMESPACE file
 #' @importFrom Rcpp sourceCpp
-#' @useDynLib lmmlite
+#' @useDynLib lmmlite, .registration=TRUE
 NULL
