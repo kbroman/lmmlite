@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // Rcpp_calc_xpx
 NumericMatrix Rcpp_calc_xpx(const NumericMatrix& X);
-RcppExport SEXP lmmlite_Rcpp_calc_xpx(SEXP XSEXP) {
+RcppExport SEXP _lmmlite_Rcpp_calc_xpx(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -19,7 +19,7 @@ END_RCPP
 }
 // Rcpp_eigen_decomp
 List Rcpp_eigen_decomp(const NumericMatrix& A);
-RcppExport SEXP lmmlite_Rcpp_eigen_decomp(SEXP ASEXP) {
+RcppExport SEXP _lmmlite_Rcpp_eigen_decomp(SEXP ASEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -30,7 +30,7 @@ END_RCPP
 }
 // Rcpp_eigen_rotation
 List Rcpp_eigen_rotation(const NumericMatrix& K, const NumericMatrix& y, const NumericMatrix& X);
-RcppExport SEXP lmmlite_Rcpp_eigen_rotation(SEXP KSEXP, SEXP ySEXP, SEXP XSEXP) {
+RcppExport SEXP _lmmlite_Rcpp_eigen_rotation(SEXP KSEXP, SEXP ySEXP, SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -43,7 +43,7 @@ END_RCPP
 }
 // Rcpp_calc_logdetXpX
 double Rcpp_calc_logdetXpX(const NumericMatrix& X);
-RcppExport SEXP lmmlite_Rcpp_calc_logdetXpX(SEXP XSEXP) {
+RcppExport SEXP _lmmlite_Rcpp_calc_logdetXpX(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -54,7 +54,7 @@ END_RCPP
 }
 // Rcpp_getMLsoln
 List Rcpp_getMLsoln(const double hsq, const NumericVector& Kva, const NumericVector& y, const NumericMatrix& X, const bool reml);
-RcppExport SEXP lmmlite_Rcpp_getMLsoln(SEXP hsqSEXP, SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP) {
+RcppExport SEXP _lmmlite_Rcpp_getMLsoln(SEXP hsqSEXP, SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -69,7 +69,7 @@ END_RCPP
 }
 // Rcpp_calcLL
 List Rcpp_calcLL(const double hsq, const NumericVector& Kva, const NumericVector& y, const NumericMatrix& X, const bool reml, const double logdetXpX);
-RcppExport SEXP lmmlite_Rcpp_calcLL(SEXP hsqSEXP, SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP, SEXP logdetXpXSEXP) {
+RcppExport SEXP _lmmlite_Rcpp_calcLL(SEXP hsqSEXP, SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP, SEXP logdetXpXSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -85,7 +85,7 @@ END_RCPP
 }
 // Rcpp_fitLMM
 List Rcpp_fitLMM(const NumericVector& Kva, const NumericVector& y, const NumericMatrix& X, const bool reml, const bool check_boundary, const double logdetXpX, const double tol);
-RcppExport SEXP lmmlite_Rcpp_fitLMM(SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP, SEXP check_boundarySEXP, SEXP logdetXpXSEXP, SEXP tolSEXP) {
+RcppExport SEXP _lmmlite_Rcpp_fitLMM(SEXP KvaSEXP, SEXP ySEXP, SEXP XSEXP, SEXP remlSEXP, SEXP check_boundarySEXP, SEXP logdetXpXSEXP, SEXP tolSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -99,4 +99,20 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(Rcpp_fitLMM(Kva, y, X, reml, check_boundary, logdetXpX, tol));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_lmmlite_Rcpp_calc_xpx", (DL_FUNC) &_lmmlite_Rcpp_calc_xpx, 1},
+    {"_lmmlite_Rcpp_eigen_decomp", (DL_FUNC) &_lmmlite_Rcpp_eigen_decomp, 1},
+    {"_lmmlite_Rcpp_eigen_rotation", (DL_FUNC) &_lmmlite_Rcpp_eigen_rotation, 3},
+    {"_lmmlite_Rcpp_calc_logdetXpX", (DL_FUNC) &_lmmlite_Rcpp_calc_logdetXpX, 1},
+    {"_lmmlite_Rcpp_getMLsoln", (DL_FUNC) &_lmmlite_Rcpp_getMLsoln, 5},
+    {"_lmmlite_Rcpp_calcLL", (DL_FUNC) &_lmmlite_Rcpp_calcLL, 6},
+    {"_lmmlite_Rcpp_fitLMM", (DL_FUNC) &_lmmlite_Rcpp_fitLMM, 7},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_lmmlite(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

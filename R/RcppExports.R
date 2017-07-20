@@ -2,30 +2,30 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 Rcpp_calc_xpx <- function(X) {
-    .Call('lmmlite_Rcpp_calc_xpx', PACKAGE = 'lmmlite', X)
+    .Call(`_lmmlite_Rcpp_calc_xpx`, X)
 }
 
 Rcpp_eigen_decomp <- function(A) {
-    .Call('lmmlite_Rcpp_eigen_decomp', PACKAGE = 'lmmlite', A)
+    .Call(`_lmmlite_Rcpp_eigen_decomp`, A)
 }
 
 Rcpp_eigen_rotation <- function(K, y, X) {
-    .Call('lmmlite_Rcpp_eigen_rotation', PACKAGE = 'lmmlite', K, y, X)
+    .Call(`_lmmlite_Rcpp_eigen_rotation`, K, y, X)
 }
 
 Rcpp_calc_logdetXpX <- function(X) {
-    .Call('lmmlite_Rcpp_calc_logdetXpX', PACKAGE = 'lmmlite', X)
+    .Call(`_lmmlite_Rcpp_calc_logdetXpX`, X)
 }
 
 Rcpp_getMLsoln <- function(hsq, Kva, y, X, reml = TRUE) {
-    .Call('lmmlite_Rcpp_getMLsoln', PACKAGE = 'lmmlite', hsq, Kva, y, X, reml)
+    .Call(`_lmmlite_Rcpp_getMLsoln`, hsq, Kva, y, X, reml)
 }
 
 Rcpp_calcLL <- function(hsq, Kva, y, X, reml = TRUE, logdetXpX = NA_real_) {
-    .Call('lmmlite_Rcpp_calcLL', PACKAGE = 'lmmlite', hsq, Kva, y, X, reml, logdetXpX)
+    .Call(`_lmmlite_Rcpp_calcLL`, hsq, Kva, y, X, reml, logdetXpX)
 }
 
 Rcpp_fitLMM <- function(Kva, y, X, reml = TRUE, check_boundary = TRUE, logdetXpX = NA_real_, tol = 1e-4) {
-    .Call('lmmlite_Rcpp_fitLMM', PACKAGE = 'lmmlite', Kva, y, X, reml, check_boundary, logdetXpX, tol)
+    .Call(`_lmmlite_Rcpp_fitLMM`, Kva, y, X, reml, check_boundary, logdetXpX, tol)
 }
 
