@@ -4,8 +4,8 @@
 \alias{fitLMM}
 \title{Fit a linear mixed model}
 \usage{
-fitLMM(Kva, y, X, reml = TRUE, check_boundary = TRUE, tol = 0.0001,
-  use_cpp = TRUE)
+fitLMM(Kva, y, X, reml = TRUE, check_boundary = TRUE, tol = 1e-04,
+  use_cpp = TRUE, compute_se = FALSE)
 }
 \arguments{
 \item{Kva}{Eigenvalues of K (calculated by \code{\link{eigen_rotation}})}
@@ -21,11 +21,16 @@ fitLMM(Kva, y, X, reml = TRUE, check_boundary = TRUE, tol = 0.0001,
 \item{tol}{Tolerance for convergence}
 
 \item{use_cpp}{= if TRUE, use c++ version of code}
+
+\item{compute_se}{= if TRUE, return the standard error of the \code{hsq} 
+estimate using the Fisher Information matrix of the MLE estimate. The 
+standard error will be in an \code{attr} of  \code{hsq} in the output.
+Currently requires \code{use_cpp = FALSE}}
 }
 \value{
 List containing estimates of \code{beta}, \code{sigmasq},
 \code{hsq}, \code{sigmasq_g}, and \code{sigmasq_e}, as well as the log
-likelihood (\code{loglik}).
+likelihood (\code{loglik}). Option to include the
 }
 \description{
 Fit a linear mixed model of the form y = Xb + e where e follows a
@@ -37,4 +42,7 @@ matrix and \code{I} is the identity matrix.
 data(recla)
 e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
 result <- fitLMM(e$Kva, e$y, e$X)
+wSE <- fitLMM(e$Kva, e$y, e$X, compute_se = TRUE, use_cpp = FALSE)
+attr(wSE$hsq, "se")
+
 }

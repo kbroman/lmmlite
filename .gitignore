@@ -1,3 +1,4 @@
 Rcache/
 src/*.o
 src/*.so
+.Rproj.user

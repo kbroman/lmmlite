@@ -218,18 +218,27 @@ calcLL <-
 #' @param check_boundary If TRUE, explicitly check log likelihood at 0 and 1.
 #' @param tol Tolerance for convergence
 #' @param use_cpp = if TRUE, use c++ version of code
-#'
+#' @param compute_se = if TRUE, return the standard error of the \code{hsq} 
+#' estimate using the Fisher Information matrix of the MLE estimate. The 
+#' standard error will be in an \code{attr} of  \code{hsq} in the output.
+#' Currently requires \code{use_cpp = FALSE}
+#' 
+#' @importFrom stats optim
+#' 
 #' @export
 #' @return List containing estimates of \code{beta}, \code{sigmasq},
 #' \code{hsq}, \code{sigmasq_g}, and \code{sigmasq_e}, as well as the log
-#' likelihood (\code{loglik}).
+#' likelihood (\code{loglik}). Option to include the 
 #'
 #' @examples
 #' data(recla)
 #' e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
 #' result <- fitLMM(e$Kva, e$y, e$X)
+#' wSE <- fitLMM(e$Kva, e$y, e$X, compute_se = TRUE, use_cpp = FALSE)
+#' attr(wSE$hsq, "se")
+#' 
 fitLMM <-
-    function(Kva, y, X, reml=TRUE, check_boundary=TRUE, tol=1e-4, use_cpp=TRUE)
+    function(Kva, y, X, reml=TRUE, check_boundary=TRUE, tol=1e-4, use_cpp=TRUE, compute_se = FALSE)
 {
     n <- length(Kva)
     if(!is.matrix(X)) X <- as.matrix(X)
@@ -258,8 +267,20 @@ fitLMM <-
     # maximize log likelihood
     out <- stats::optimize(calcLL, c(0, 1), Kva=Kva, y=y, X=X, reml=reml, use_cpp=use_cpp,
                            maximum=TRUE, tol=tol)
+    
+    # Use the hessian to get the stanard errors; had to use `optim` here...
+    if(compute_se){
+      calcLL2 <- function(hsq, Kva, y, X, reml, use_cpp){
+        return(-1*calcLL(hsq, Kva, y, X, reml, use_cpp))
+      }
+      opt2 <- optim(out$maximum, calcLL2, Kva=Kva, y=y, X=X, reml=reml, use_cpp=use_cpp,
+                           hessian=TRUE, lower = 0, upper = 1, method = "Brent")
+      vc <- solve(opt2$hessian) # var-cov matrix
+      se <- sqrt(diag(vc))        # standard errors 
+    }
 
     hsq <- out$maximum
+    if(compute_se) attr(hsq, "se") <- se
     obj <- out$objective
     sigmasq <- attr(obj, "sigmasq")
 
