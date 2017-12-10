@@ -228,7 +228,8 @@ calcLL <-
 #' @export
 #' @return List containing estimates of \code{beta}, \code{sigmasq},
 #' \code{hsq}, \code{sigmasq_g}, and \code{sigmasq_e}, as well as the log
-#' likelihood (\code{loglik}). Option to include the 
+#' likelihood (\code{loglik}). Can optionally choose to include the SE
+#' of \code{hsq} as an attribute. 
 #'
 #' @examples
 #' data(recla)
