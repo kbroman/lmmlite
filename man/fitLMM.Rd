@@ -4,7 +4,7 @@
 \alias{fitLMM}
 \title{Fit a linear mixed model}
 \usage{
-fitLMM(Kva, y, X, reml = TRUE, check_boundary = TRUE, tol = 1e-04,
+fitLMM(Kva, y, X, reml = TRUE, check_boundary = TRUE, tol = 0.0001,
   use_cpp = TRUE, compute_se = FALSE)
 }
 \arguments{
@@ -22,8 +22,8 @@ fitLMM(Kva, y, X, reml = TRUE, check_boundary = TRUE, tol = 1e-04,
 
 \item{use_cpp}{= if TRUE, use c++ version of code}
 
-\item{compute_se}{= if TRUE, return the standard error of the \code{hsq} 
-estimate using the Fisher Information matrix of the MLE estimate. The 
+\item{compute_se}{= if TRUE, return the standard error of the \code{hsq}
+estimate using the Fisher Information matrix of the MLE estimate. The
 standard error will be in an \code{attr} of  \code{hsq} in the output.
 Currently requires \code{use_cpp = FALSE}}
 }
@@ -43,7 +43,9 @@ matrix and \code{I} is the identity matrix.
 data(recla)
 e <- eigen_rotation(recla$kinship, recla$pheno[,1], recla$covar)
 result <- fitLMM(e$Kva, e$y, e$X)
-wSE <- fitLMM(e$Kva, e$y, e$X, compute_se = TRUE, use_cpp = FALSE)
+
+# also compute SE
+wSE <- fitLMM(e$Kva, e$y, e$X, compute_se = TRUE, use_cpp=FALSE)
 attr(wSE$hsq, "se")
 
 }

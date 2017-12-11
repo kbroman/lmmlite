@@ -1,5 +1,5 @@
 Package: lmmlite
-Version: 0.1-13
+Version: 0.2-1
 Date: 2017-12-10
 Title: Simple LMM Fitter for QTL Mapping
 Description: A port of parts of 'pylmm' for fitting linear mixed
