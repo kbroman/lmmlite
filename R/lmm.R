@@ -295,8 +295,8 @@ fitLMM <-
     result <- list(beta=attr(obj, "beta"),
                    sigmasq=sigmasq, # total var
                    hsq=hsq,
-                   sigmasq_g= as.numeric(hsq)*sigmasq, # genetic variance
-                   sigmasq_e = (1-as.numeric(hsq))*sigmasq, # residual variance
+                   sigmasq_g= hsq*sigmasq, # genetic variance
+                   sigmasq_e = (1-hsq)*sigmasq, # residual variance
                    loglik = as.numeric(obj))
     if(compute_se) result$hsq_se <- se
 
