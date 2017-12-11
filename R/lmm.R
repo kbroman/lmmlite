@@ -221,15 +221,16 @@ calcLL <-
 #' @param compute_se = if TRUE, return the standard error of the \code{hsq}
 #' estimate using the Fisher Information matrix of the MLE estimate. The
 #' standard error will be in an \code{attr} of  \code{hsq} in the output.
-#' Currently requires \code{use_cpp = FALSE}
+#' Currently requires \code{use_cpp = FALSE}, and so if \code{compute_se=TRUE}
+#' we take \code{use_cpp=FALSE}.
 #'
 #' @importFrom stats optim
 #'
 #' @export
 #' @return List containing estimates of \code{beta}, \code{sigmasq},
 #' \code{hsq}, \code{sigmasq_g}, and \code{sigmasq_e}, as well as the log
-#' likelihood (\code{loglik}). Can optionally choose to include the SE
-#' of \code{hsq} as an attribute.
+#' likelihood (\code{loglik}). If \code{compute_se=TRUE}, the output also
+#' contains \code{hsq_se}.
 #'
 #' @examples
 #' data(recla)
@@ -238,7 +239,7 @@ calcLL <-
 #'
 #' # also compute SE
 #' wSE <- fitLMM(e$Kva, e$y, e$X, compute_se = TRUE, use_cpp=FALSE)
-#' attr(wSE$hsq, "se")
+#' c(hsq=wSE$hsq, SE=wSE$hsq_se)
 #'
 fitLMM <-
     function(Kva, y, X, reml=TRUE, check_boundary=TRUE, tol=1e-4, use_cpp=TRUE, compute_se = FALSE)
@@ -248,6 +249,11 @@ fitLMM <-
     stopifnot(nrow(X) == n)
     if(!is.matrix(y)) y <- as.matrix(y)
     stopifnot(nrow(y) == n)
+
+    if(compute_se && use_cpp) {
+        use_cpp <- FALSE
+        warning("If compute_se=TRUE, we need to take use_cpp to be FALSE")
+    }
 
     if(use_cpp) {
         logdetXpX <- NA
@@ -283,14 +289,16 @@ fitLMM <-
     }
 
     hsq <- out$maximum
-    if(compute_se) attr(hsq, "se") <- se
     obj <- out$objective
     sigmasq <- attr(obj, "sigmasq")
 
-    list(beta=attr(obj, "beta"),
-         sigmasq=sigmasq, # total var
-         hsq=hsq,
-         sigmasq_g= as.numeric(hsq)*sigmasq, # genetic variance
-         sigmasq_e = (1-as.numeric(hsq))*sigmasq, # residual variance
-         loglik = as.numeric(obj))
+    result <- list(beta=attr(obj, "beta"),
+                   sigmasq=sigmasq, # total var
+                   hsq=hsq,
+                   sigmasq_g= as.numeric(hsq)*sigmasq, # genetic variance
+                   sigmasq_e = (1-as.numeric(hsq))*sigmasq, # residual variance
+                   loglik = as.numeric(obj))
+    if(compute_se) result$hsq_se <- se
+
+    result
 }

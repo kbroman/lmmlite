@@ -25,13 +25,14 @@ fitLMM(Kva, y, X, reml = TRUE, check_boundary = TRUE, tol = 0.0001,
 \item{compute_se}{= if TRUE, return the standard error of the \code{hsq}
 estimate using the Fisher Information matrix of the MLE estimate. The
 standard error will be in an \code{attr} of  \code{hsq} in the output.
-Currently requires \code{use_cpp = FALSE}}
+Currently requires \code{use_cpp = FALSE}, and so if \code{compute_se=TRUE}
+we take \code{use_cpp=FALSE}.}
 }
 \value{
 List containing estimates of \code{beta}, \code{sigmasq},
 \code{hsq}, \code{sigmasq_g}, and \code{sigmasq_e}, as well as the log
-likelihood (\code{loglik}). Can optionally choose to include the SE
-of \code{hsq} as an attribute.
+likelihood (\code{loglik}). If \code{compute_se=TRUE}, the output also
+contains \code{hsq_se}.
 }
 \description{
 Fit a linear mixed model of the form y = Xb + e where e follows a
@@ -46,6 +47,6 @@ result <- fitLMM(e$Kva, e$y, e$X)
 
 # also compute SE
 wSE <- fitLMM(e$Kva, e$y, e$X, compute_se = TRUE, use_cpp=FALSE)
-attr(wSE$hsq, "se")
+c(hsq=wSE$hsq, SE=wSE$hsq_se)
 
 }

@@ -13,15 +13,16 @@ test_that("additionally computing SE for h2 does nothing surprising", {
     y <- recla$pheno[,1]
     X <- recla$covar
     e <- eigen_rotation(k, y, X, use_cpp=TRUE)
-  
+
     # Fit model for a given phenotype with and without standard errors
     m1 <- fitLMM(e$Kva, e$y, e$X, tol=tol, use_cpp=FALSE)
     m2 <- fitLMM(e$Kva, e$y, e$X, tol=tol, use_cpp=FALSE, compute_se = TRUE)
-    
-    # Verify legitmmate SE
-    expect_gt(attr(m2$hsq, "se"), 0)
-    
+
+    # regression test of se
+    expected_se <- 0.24256449791987141906
+    expect_equal(m2$hsq_se, expected_se)
+
     # Verify equivalent output one removing the SE
-    m2$hsq <- as.numeric(m2$hsq)
+    m2$hsq_se <- NULL
     expect_equal(m1, m2)
 })
