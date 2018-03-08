@@ -19,9 +19,11 @@ Suggests:
     knitr,
     rmarkdown
 License: AGPL-3
-URL: http://kbroman.org/lmmlite
+URL: http://kbroman.org/lmmlite, https://github.com/kbroman/lmmlite
+BugReports: https://github.com/kbroman/lmmlite/issues
 LazyData: true
 VignetteBuilder: knitr
 LinkingTo: Rcpp, RcppEigen
 Encoding: UTF-8
+ByteCompile: true
 RoxygenNote: 6.0.1
