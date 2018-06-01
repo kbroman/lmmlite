@@ -6,7 +6,7 @@
 \format{A list with three components, \code{kinship}, \code{pheno},
 and \code{covar}, each a matrix.}
 \source{
-QTL Archive, \url{http://phenome.jax.org/db/q?rtn=projects/projdet&reqprojid=285}
+QTL Archive, \url{https://phenome.jax.org/projects/Recla1}
 }
 \description{
 Estimated kinship matrix, phenotypes, and covariates

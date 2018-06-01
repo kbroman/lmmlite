@@ -24,7 +24,7 @@
 #' (2013) High-precision genetic mapping of behavioral traits in the
 #' diversity outbred mouse population. Genes Brain Behav 12:424-437
 #'
-#' @source QTL Archive, \url{http://phenome.jax.org/db/q?rtn=projects/projdet&reqprojid=285}
+#' @source QTL Archive, \url{https://phenome.jax.org/projects/Recla1}
 #' @keywords datasets
 #' @examples
 #' data(recla)
