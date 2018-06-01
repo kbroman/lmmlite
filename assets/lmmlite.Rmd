@@ -7,7 +7,7 @@ vignette: >
   \usepackage[utf8](inputenc)
 ---
 
-[R/lmmlite](http://kbroman.org/lmmlite) is an R package for fitting linear
+[R/lmmlite](https://kbroman.org/lmmlite) is an R package for fitting linear
 mixed models in the context of genome-wide association studies (GWAS)
 and quantitative trait locus (QTL) mapping. At present, **it is not intended for
 "production" use.** I wrote this to try to get a better
