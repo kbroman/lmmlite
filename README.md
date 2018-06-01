@@ -1,4 +1,4 @@
-## [R/lmmlite](http://kbroman.org/lmmlite) - R port of [pylmm](https://github.com/nickFurlotte/pylmm)
+## [R/lmmlite](https://kbroman.org/lmmlite) - R port of [pylmm](https://github.com/nickFurlotte/pylmm)
 
 [![Build Status](https://travis-ci.org/kbroman/lmmlite.svg?branch=master)](https://travis-ci.org/kbroman/lmmlite)
 
@@ -13,15 +13,15 @@ for linear mixed models for genome-wide association studies
 
 ### Vignettes
 
-- [User guide](http://kbroman.org/lmmlite/assets/lmmlite.html)
+- [User guide](https://kbroman.org/lmmlite/assets/lmmlite.html)
   [[source](https://github.com/kbroman/lmmlite/blob/master/vignettes/lmmlite.Rmd)]
 
-- [Results compared](http://kbroman.org/lmmlite/assets/compare2pylmm.html)
+- [Results compared](https://kbroman.org/lmmlite/assets/compare2pylmm.html)
   to [pylmm](https://github.com/nickFurlotte/pylmm) (and also the R package
   [regress](https://cran.r-project.org/package=regress)).
   [[source](https://github.com/kbroman/lmmlite/blob/gh-pages/assets/compare2pylmm.Rmd)]
 
-- [Performance compared](http://kbroman.org/lmmlite/assets/performance.html)
+- [Performance compared](https://kbroman.org/lmmlite/assets/performance.html)
   to pylmm.
   [[source](https://github.com/kbroman/lmmlite/blob/gh-pages/assets/performance.Rmd)]
 

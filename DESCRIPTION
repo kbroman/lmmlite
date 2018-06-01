@@ -19,7 +19,7 @@ Suggests:
     knitr,
     rmarkdown
 License: AGPL-3
-URL: http://kbroman.org/lmmlite, https://github.com/kbroman/lmmlite
+URL: https://kbroman.org/lmmlite, https://github.com/kbroman/lmmlite
 BugReports: https://github.com/kbroman/lmmlite/issues
 LazyData: true
 VignetteBuilder: knitr
