@@ -32,14 +32,14 @@ data(recla)
 
 I'll focus on the `recla` dataset that I include with the
 package. This is data on a set of diversity outcross mice, from
-[Recla et al. (2014)](http://www.ncbi.nlm.nih.gov/pubmed/24700285) and
-[Logan et al. (2013)](http://www.ncbi.nlm.nih.gov/pubmed/23433259). The data are
+[Recla et al. (2014)](https://www.ncbi.nlm.nih.gov/pubmed/24700285) and
+[Logan et al. (2013)](https://www.ncbi.nlm.nih.gov/pubmed/23433259). The data are
 originally from the
-[QTL Archive/Mouse Phenotype Database](http://phenome.jax.org/db/q?rtn=projects/projdet&reqprojid=285)
+[QTL Archive/Mouse Phenotype Database](https://phenome.jax.org/projects/Recla1)
 and I've also
 [placed them online](https://github.com/kbroman/qtl2data/tree/master/DO_Recla)
 in the format used by [R/qtl2](http://kbroman.org/qtl2). I used
-[qtl2geno](https://github.com/rqtl/qtl2geno) to calculate genotype
+R/qtl2 to calculate genotype
 probabilities from the MUGA SNP array data. The data include
 `r nrow(recla$kinship)` mice, and form a list with three components:
 the estimated kinship matrix, a matrix with `r ncol(recla$pheno)`

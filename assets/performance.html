@@ -52,9 +52,9 @@ code {
   color: inherit;
   background-color: rgba(0, 0, 0, 0.04);
 }
-img { 
-  max-width:100%; 
-  height: auto; 
+img {
+  max-width:100%;
+  height: auto;
 }
 </style>
 <div class="container-fluid main-container">
@@ -69,7 +69,7 @@ img {
 <p><a href="https://github.com/kbroman/lmmlite">R/lmmlite</a> is a light implementation of the fit of linear mixed models for QTL analysis, following <a href="https://github.com/nickFurlotte/pylmm">pylmm</a>. It includes both plain R and C++ implementations (the latter using <a href="https://github.com/RcppCore/RcppEigen">RcppEigen</a>).</p>
 <p>Here I seek to compare the speed of my R and C++ implementations to pylmm. For timings within R, I use the <a href="https://cran.r-project.org/package=microbenchmark">microbenchmark</a> package.</p>
 <p>The source for this vignette is at <a href="https://github.com/kbroman/lmmlite/blob/gh-pages/assets/performance.Rmd">GitHub</a>.</p>
-<p>I’ll focus on the <code>recla</code> dataset that I include with the package. This is data on a set of diversity outcross mice, from <a href="http://www.ncbi.nlm.nih.gov/pubmed/24700285">Recla et al. (2014)</a> and <a href="http://www.ncbi.nlm.nih.gov/pubmed/23433259">Logan et al. (2013)</a>. The data are originally from the <a href="http://phenome.jax.org/db/q?rtn=projects/projdet&amp;reqprojid=285">QTL Archive/Mouse Phenotype Database</a> and I’ve also <a href="https://github.com/kbroman/qtl2data/tree/master/DO_Recla">placed them online</a> in the format used by <a href="http://kbroman.org/qtl2">R/qtl2</a>. I used <a href="https://github.com/rqtl/qtl2geno">qtl2geno</a> to calculate genotype probabilities from the MUGA SNP array data. The data include 261 mice, and form a list with three components: the estimated kinship matrix, a matrix with 26 phenotypes, and a covariate matrix that contains an intercept (all 1’s) and sex (0 for female and 1 for male).</p>
+<p>I’ll focus on the <code>recla</code> dataset that I include with the package. This is data on a set of diversity outcross mice, from <a href="https://www.ncbi.nlm.nih.gov/pubmed/24700285">Recla et al. (2014)</a> and <a href="https://www.ncbi.nlm.nih.gov/pubmed/23433259">Logan et al. (2013)</a>. The data are originally from the <a href="https://phenome.jax.org/projects/Recla1">QTL Archive/Mouse Phenotype Database</a> and I’ve also <a href="https://github.com/kbroman/qtl2data/tree/master/DO_Recla">placed them online</a> in the format used by <a href="https://kbroman.org/qtl2">R/qtl2</a>. I used R/qtl2 to calculate genotype probabilities from the MUGA SNP array data. The data include 261 mice, and form a list with three components: the estimated kinship matrix, a matrix with 26 phenotypes, and a covariate matrix that contains an intercept (all 1’s) and sex (0 for female and 1 for male).</p>
 <pre class="r"><code>library(lmmlite)
 library(microbenchmark)
 library(broman)
@@ -233,46 +233,46 @@ print(time_full2, digits=4)</code></pre>
 <h2>Session info</h2>
 <pre class="r"><code>devtools::session_info()</code></pre>
 <pre><code>## Session info --------------------------------------------------------------</code></pre>
-<pre><code>##  setting  value                       
+<pre><code>##  setting  value
 ##  version  R version 3.2.2 (2015-08-14)
-##  system   x86_64, darwin13.4.0        
-##  ui       X11                         
-##  language en_US.UTF-8                 
-##  collate  en_US.UTF-8                 
-##  tz       America/Chicago             
+##  system   x86_64, darwin13.4.0
+##  ui       X11
+##  language en_US.UTF-8
+##  collate  en_US.UTF-8
+##  tz       America/Chicago
 ##  date     2015-11-24</code></pre>
 <pre><code>## Packages ------------------------------------------------------------------</code></pre>
-<pre><code>##  package        * version    date       source                         
-##  assertthat       0.1        2013-12-06 CRAN (R 3.2.0)                 
-##  broman         * 0.61-3     2015-11-22 local                          
-##  codetools        0.2-14     2015-07-15 CRAN (R 3.2.0)                 
-##  colorspace       1.2-6      2015-03-11 CRAN (R 3.2.0)                 
-##  devtools         1.9.1      2015-09-11 CRAN (R 3.2.0)                 
-##  digest           0.6.8      2014-12-31 CRAN (R 3.2.0)                 
-##  evaluate         0.8        2015-09-18 CRAN (R 3.2.0)                 
-##  formatR          1.2.1      2015-09-18 CRAN (R 3.2.0)                 
+<pre><code>##  package        * version    date       source
+##  assertthat       0.1        2013-12-06 CRAN (R 3.2.0)
+##  broman         * 0.61-3     2015-11-22 local
+##  codetools        0.2-14     2015-07-15 CRAN (R 3.2.0)
+##  colorspace       1.2-6      2015-03-11 CRAN (R 3.2.0)
+##  devtools         1.9.1      2015-09-11 CRAN (R 3.2.0)
+##  digest           0.6.8      2014-12-31 CRAN (R 3.2.0)
+##  evaluate         0.8        2015-09-18 CRAN (R 3.2.0)
+##  formatR          1.2.1      2015-09-18 CRAN (R 3.2.0)
 ##  ggplot2          1.0.1.9003 2015-11-11 Github (hadley/ggplot2@23a748f)
-##  gtable           0.1.2      2012-12-05 CRAN (R 3.2.0)                 
-##  htmltools        0.2.6      2014-09-08 CRAN (R 3.2.0)                 
-##  knitr            1.11.16    2015-11-16 Github (yihui/knitr@6e8ce0c)   
-##  lattice          0.20-33    2015-07-14 CRAN (R 3.2.0)                 
-##  lmmlite        * 0.1-9      2015-11-24 local                          
-##  magrittr         1.5        2014-11-22 CRAN (R 3.2.0)                 
-##  memoise          0.2.1      2014-04-22 CRAN (R 3.2.0)                 
-##  microbenchmark * 1.4-2      2014-09-28 CRAN (R 3.2.0)                 
-##  multcomp         1.4-1      2015-07-23 CRAN (R 3.2.0)                 
-##  munsell          0.4.2      2013-07-11 CRAN (R 3.2.0)                 
-##  mvtnorm          1.0-3      2015-07-22 CRAN (R 3.2.0)                 
-##  plyr             1.8.3      2015-06-12 CRAN (R 3.2.0)                 
-##  Rcpp             0.12.2     2015-11-15 CRAN (R 3.2.2)                 
-##  rmarkdown        0.8.1      2015-10-10 CRAN (R 3.2.2)                 
-##  sandwich         2.3-4      2015-09-24 CRAN (R 3.2.2)                 
-##  scales           0.3.0      2015-08-25 CRAN (R 3.2.0)                 
-##  stringi          1.0-1      2015-10-22 CRAN (R 3.2.0)                 
-##  stringr          1.0.0      2015-04-30 CRAN (R 3.2.0)                 
-##  survival         2.38-3     2015-07-02 CRAN (R 3.2.0)                 
-##  TH.data          1.0-6      2015-01-05 CRAN (R 3.2.0)                 
-##  yaml             2.1.13     2014-06-12 CRAN (R 3.2.0)                 
+##  gtable           0.1.2      2012-12-05 CRAN (R 3.2.0)
+##  htmltools        0.2.6      2014-09-08 CRAN (R 3.2.0)
+##  knitr            1.11.16    2015-11-16 Github (yihui/knitr@6e8ce0c)
+##  lattice          0.20-33    2015-07-14 CRAN (R 3.2.0)
+##  lmmlite        * 0.1-9      2015-11-24 local
+##  magrittr         1.5        2014-11-22 CRAN (R 3.2.0)
+##  memoise          0.2.1      2014-04-22 CRAN (R 3.2.0)
+##  microbenchmark * 1.4-2      2014-09-28 CRAN (R 3.2.0)
+##  multcomp         1.4-1      2015-07-23 CRAN (R 3.2.0)
+##  munsell          0.4.2      2013-07-11 CRAN (R 3.2.0)
+##  mvtnorm          1.0-3      2015-07-22 CRAN (R 3.2.0)
+##  plyr             1.8.3      2015-06-12 CRAN (R 3.2.0)
+##  Rcpp             0.12.2     2015-11-15 CRAN (R 3.2.2)
+##  rmarkdown        0.8.1      2015-10-10 CRAN (R 3.2.2)
+##  sandwich         2.3-4      2015-09-24 CRAN (R 3.2.2)
+##  scales           0.3.0      2015-08-25 CRAN (R 3.2.0)
+##  stringi          1.0-1      2015-10-22 CRAN (R 3.2.0)
+##  stringr          1.0.0      2015-04-30 CRAN (R 3.2.0)
+##  survival         2.38-3     2015-07-02 CRAN (R 3.2.0)
+##  TH.data          1.0-6      2015-01-05 CRAN (R 3.2.0)
+##  yaml             2.1.13     2014-06-12 CRAN (R 3.2.0)
 ##  zoo              1.7-12     2015-03-16 CRAN (R 3.2.0)</code></pre>
 </div>
 

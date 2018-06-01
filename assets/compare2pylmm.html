@@ -52,9 +52,9 @@ code {
   color: inherit;
   background-color: rgba(0, 0, 0, 0.04);
 }
-img { 
-  max-width:100%; 
-  height: auto; 
+img {
+  max-width:100%;
+  height: auto;
 }
 </style>
 <div class="container-fluid main-container">
@@ -71,7 +71,7 @@ img {
 <p>The sort of model I want to fit is <span class="math">\(y = X\beta + \epsilon\)</span> where <span class="math">\(\epsilon\)</span> is multivariate normal with mean 0 and variance <span class="math">\(\sigma^2_g K + \sigma^2_e I\)</span>, where <span class="math">\(K\)</span> is a known kinship matrix and <span class="math">\(I\)</span> is the identity. In pylmm, the focus is on <span class="math">\(\sigma^2 = \sigma^2_g + \sigma^2_e\)</span> and the heritability <span class="math">\(h^2 = \sigma^2_g / \sigma^2\)</span>.</p>
 <p>To make sure that my code is correct, here I’ll compare the lmmlite results to those of the R package <a href="https://cran.r-project.org/web/packages/regress/">regress</a> (which, as we’ll see, gives rather different results) and <a href="https://github.com/nickFurlotte/pylmm">pylmm</a> (and fortunately pylmm and lmmlite results do generally correspond).</p>
 <p>The source for this vignette is at <a href="https://github.com/kbroman/lmmlite/blob/gh-pages/assets/compare2pylmm.Rmd">GitHub</a>.</p>
-<p>I’ll focus on the <code>recla</code> dataset that I include with the package. This is data on a set of diversity outcross mice, from <a href="http://www.ncbi.nlm.nih.gov/pubmed/24700285">Recla et al. (2014)</a> and <a href="http://www.ncbi.nlm.nih.gov/pubmed/23433259">Logan et al. (2013)</a>. The data are originally from the <a href="http://phenome.jax.org/db/q?rtn=projects/projdet&amp;reqprojid=285">QTL Archive/Mouse Phenotype Database</a> and I’ve also <a href="https://github.com/kbroman/qtl2data/tree/master/DO_Recla">placed them online</a> in the format used by <a href="http://kbroman.org/qtl2">R/qtl2</a>. I used <a href="https://github.com/rqtl/qtl2geno">qtl2geno</a> to calculate genotype probabilities from the MUGA SNP array data. The data include 261 mice, and form a list with three components: the estimated kinship matrix, a matrix with 26 phenotypes, and a covariate matrix that contains an intercept (all 1’s) and sex (0 for female and 1 for male).</p>
+<p>I’ll focus on the <code>recla</code> dataset that I include with the package. This is data on a set of diversity outcross mice, from <a href="https://www.ncbi.nlm.nih.gov/pubmed/24700285">Recla et al. (2014)</a> and <a href="https://www.ncbi.nlm.nih.gov/pubmed/23433259">Logan et al. (2013)</a>. The data are originally from the <a href="https://phenome.jax.org/projects/Recla1">QTL Archive/Mouse Phenotype Database</a> and I’ve also <a href="https://github.com/kbroman/qtl2data/tree/master/DO_Recla">placed them online</a> in the format used by <a href="https://kbroman.org/qtl2">R/qtl2</a>. I used R/qtl2 to calculate genotype probabilities from the MUGA SNP array data. The data include 261 mice, and form a list with three components: the estimated kinship matrix, a matrix with 26 phenotypes, and a covariate matrix that contains an intercept (all 1’s) and sex (0 for female and 1 for male).</p>
 <pre class="r"><code>library(lmmlite)
 data(recla)</code></pre>
 <p>Let’s first run the lmmlite code and fit the LMM for each phenotype, by REML and maximum likelihood (ML). Currently, lmmlite doesn’t deal with missing data at all, so we need to do a bit of extra work: for each phenotype, we drop any individuals with missing phenotypes.</p>
@@ -299,31 +299,31 @@ for(i in 1:ncol(recla$pheno)) {
 <h2>Session info</h2>
 <pre class="r"><code>devtools::session_info()</code></pre>
 <pre><code>## Session info --------------------------------------------------------------</code></pre>
-<pre><code>##  setting  value                       
+<pre><code>##  setting  value
 ##  version  R version 3.2.2 (2015-08-14)
-##  system   x86_64, darwin13.4.0        
-##  ui       X11                         
-##  language en_US.UTF-8                 
-##  collate  en_US.UTF-8                 
-##  tz       America/Chicago             
+##  system   x86_64, darwin13.4.0
+##  ui       X11
+##  language en_US.UTF-8
+##  collate  en_US.UTF-8
+##  tz       America/Chicago
 ##  date     2015-11-24</code></pre>
 <pre><code>## Packages ------------------------------------------------------------------</code></pre>
-<pre><code>##  package    * version date       source                      
-##  assertthat   0.1     2013-12-06 CRAN (R 3.2.0)              
-##  broman     * 0.61-3  2015-11-22 local                       
-##  devtools     1.9.1   2015-09-11 CRAN (R 3.2.0)              
-##  digest       0.6.8   2014-12-31 CRAN (R 3.2.0)              
-##  evaluate     0.8     2015-09-18 CRAN (R 3.2.0)              
-##  formatR      1.2.1   2015-09-18 CRAN (R 3.2.0)              
-##  htmltools    0.2.6   2014-09-08 CRAN (R 3.2.0)              
+<pre><code>##  package    * version date       source
+##  assertthat   0.1     2013-12-06 CRAN (R 3.2.0)
+##  broman     * 0.61-3  2015-11-22 local
+##  devtools     1.9.1   2015-09-11 CRAN (R 3.2.0)
+##  digest       0.6.8   2014-12-31 CRAN (R 3.2.0)
+##  evaluate     0.8     2015-09-18 CRAN (R 3.2.0)
+##  formatR      1.2.1   2015-09-18 CRAN (R 3.2.0)
+##  htmltools    0.2.6   2014-09-08 CRAN (R 3.2.0)
 ##  knitr        1.11.16 2015-11-16 Github (yihui/knitr@6e8ce0c)
-##  lmmlite    * 0.1-9   2015-11-24 local                       
-##  magrittr     1.5     2014-11-22 CRAN (R 3.2.0)              
-##  memoise      0.2.1   2014-04-22 CRAN (R 3.2.0)              
-##  Rcpp         0.12.2  2015-11-15 CRAN (R 3.2.2)              
-##  rmarkdown    0.8.1   2015-10-10 CRAN (R 3.2.2)              
-##  stringi      1.0-1   2015-10-22 CRAN (R 3.2.0)              
-##  stringr      1.0.0   2015-04-30 CRAN (R 3.2.0)              
+##  lmmlite    * 0.1-9   2015-11-24 local
+##  magrittr     1.5     2014-11-22 CRAN (R 3.2.0)
+##  memoise      0.2.1   2014-04-22 CRAN (R 3.2.0)
+##  Rcpp         0.12.2  2015-11-15 CRAN (R 3.2.2)
+##  rmarkdown    0.8.1   2015-10-10 CRAN (R 3.2.2)
+##  stringi      1.0-1   2015-10-22 CRAN (R 3.2.0)
+##  stringr      1.0.0   2015-04-30 CRAN (R 3.2.0)
 ##  yaml         2.1.13  2014-06-12 CRAN (R 3.2.0)</code></pre>
 </div>
 
