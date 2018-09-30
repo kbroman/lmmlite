@@ -6,7 +6,7 @@ Description: A port of parts of 'pylmm' for fitting linear mixed
     models relevant to genome-wide association studies (GWAS) and
     quantitative trait locus (QTL) mapping.
 Author: Karl W Broman (closely following the pylmm code by Nick Furlotte)
-Maintainer: Karl W Broman <kbroman@biostat.wisc.edu>
+Maintainer: Karl W Broman <broman@wisc.edu>
 Depends:
     R (>= 3.1.0)
 Imports:
