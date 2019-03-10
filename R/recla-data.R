@@ -9,10 +9,10 @@
 #'
 #' @details These are data for a set of diversity outcross mice. The
 #' kinship matrix was calculated from MUGA array data, using the
-#' \href{https://github.com/rqtl/qtl2geno}{qtl2geno} package.
+#' [R/qtl2](https://kbroman.org/qtl2) package.
 #'
-#' @format A list with three components, \code{kinship}, \code{pheno},
-#' and \code{covar}, each a matrix.
+#' @format A list with three components, `kinship`, `pheno`,
+#' and `covar`, each a matrix.
 #'
 #' @references Recla JM, Robledo RF, Gatti DM, Bult CJ, Churchill GA,
 #' Chesler EJ (2014) Precise genetic mapping and integrative
@@ -24,7 +24,7 @@
 #' (2013) High-precision genetic mapping of behavioral traits in the
 #' diversity outbred mouse population. Genes Brain Behav 12:424-437
 #'
-#' @source QTL Archive, \url{https://phenome.jax.org/projects/Recla1}
+#' @source QTL Archive, <https://phenome.jax.org/projects/Recla1>
 #' @keywords datasets
 #' @examples
 #' data(recla)

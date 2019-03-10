@@ -9,11 +9,11 @@ getMLsoln(hsq, Kva, y, X, reml = TRUE, use_cpp = TRUE)
 \arguments{
 \item{hsq}{heritability}
 
-\item{Kva}{eigenvalues of K (calculated by \code{\link{eigen_rotation}})}
+\item{Kva}{eigenvalues of K (calculated by \code{\link[=eigen_rotation]{eigen_rotation()}})}
 
-\item{y}{rotated phenotypes (calculated by \code{\link{eigen_rotation}})}
+\item{y}{rotated phenotypes (calculated by \code{\link[=eigen_rotation]{eigen_rotation()}})}
 
-\item{X}{rotated covariate matrix (calculated by \code{\link{eigen_rotation}})}
+\item{X}{rotated covariate matrix (calculated by \code{\link[=eigen_rotation]{eigen_rotation()}})}
 
 \item{reml}{If TRUE, use REML; otherwise use ordinary maximum likelihood.}
 

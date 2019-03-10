@@ -4,7 +4,8 @@
 \alias{eigen_rotation}
 \title{eigen decomposition + rotation}
 \usage{
-eigen_rotation(K, y, X = NULL, Kva = NULL, Kve_t = NULL, use_cpp = TRUE)
+eigen_rotation(K, y, X = NULL, Kva = NULL, Kve_t = NULL,
+  use_cpp = TRUE)
 }
 \arguments{
 \item{K}{Kinship matrix (required if \code{use_cpp=TRUE})}

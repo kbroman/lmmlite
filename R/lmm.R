@@ -2,22 +2,22 @@
 
 #' eigen decomposition + rotation
 #'
-#' Do eigen decomposition of kinship matrix and rotate \code{X} and
-#' \code{y} by that, i.e., pre-multiply by the transpose of the matrix
-#' of eigenvectors. If \code{Kva} and \code{Kve_t} provided, just do
+#' Do eigen decomposition of kinship matrix and rotate `X` and
+#' `y` by that, i.e., pre-multiply by the transpose of the matrix
+#' of eigenvectors. If `Kva` and `Kve_t` provided, just do
 #' the "rotation".
 #'
-#' @param K Kinship matrix (required if \code{use_cpp=TRUE})
+#' @param K Kinship matrix (required if `use_cpp=TRUE`)
 #' @param y Phenotypes
 #' @param X Numeric matrix with covariates. If NULL, use a column
 #' of 1's (for intercept).
-#' @param Kva Eigenvalues of \code{K} (optional, ignored if \code{use_cpp=TRUE})
-#' @param Kve_t = transposed eigenvectors of K (optional, ignored if \code{use_cpp=TRUE})
+#' @param Kva Eigenvalues of `K` (optional, ignored if `use_cpp=TRUE`)
+#' @param Kve_t = transposed eigenvectors of K (optional, ignored if `use_cpp=TRUE`)
 #' @param use_cpp = if TRUE, use c++ version of code
 #'
 #' @export
-#' @return List containing \code{Kva}, \code{Kve_t} and rotated
-#' \code{y} and \code{X}.
+#' @return List containing `Kva`, `Kve_t` and rotated
+#' `y` and `X`.
 #'
 #' @examples
 #' data(recla)
@@ -67,21 +67,21 @@ eigen_rotation <-
 
 #' Get MLEs for coefficients and variance
 #'
-#' For a fixed value for \code{hsq}, the heritability, calculate the
-#' corresponding maximum likelihood estimates of \code{beta} and
-#' \code{sigmasq}, with the latter being the total variance,
-#' \code{sigmasq_g + sigmasq_e}.
+#' For a fixed value for `hsq`, the heritability, calculate the
+#' corresponding maximum likelihood estimates of `beta` and
+#' `sigmasq`, with the latter being the total variance,
+#' `sigmasq_g + sigmasq_e`.
 #'
 #' @param hsq heritability
-#' @param Kva eigenvalues of K (calculated by \code{\link{eigen_rotation}})
-#' @param y rotated phenotypes (calculated by \code{\link{eigen_rotation}})
-#' @param X rotated covariate matrix (calculated by \code{\link{eigen_rotation}})
+#' @param Kva eigenvalues of K (calculated by [eigen_rotation()])
+#' @param y rotated phenotypes (calculated by [eigen_rotation()])
+#' @param X rotated covariate matrix (calculated by [eigen_rotation()])
 #' @param reml If TRUE, use REML; otherwise use ordinary maximum likelihood.
 #' @param use_cpp = if TRUE, use c++ version of code
 #'
 #' @export
-#' @return list containing \code{beta} and \code{sigmasq}, with residual
-#' sum of squares and (if \code{reml=TRUE}, \code{log det (XSX)}) as
+#' @return list containing `beta` and `sigmasq`, with residual
+#' sum of squares and (if `reml=TRUE`, `log det (XSX)`) as
 #' attributes.
 #'
 #' @examples
@@ -138,18 +138,18 @@ getMLsoln <-
 
 #' Calculate log likelihood for a given heritability
 #'
-#' Calculate the log likelihood for a given value of the heritability, \code{hsq}.
+#' Calculate the log likelihood for a given value of the heritability, `hsq`.
 #'
 #' @param hsq heritability
-#' @param Kva eigenvalues of K (calculated by \code{\link{eigen_rotation}})
-#' @param y rotated phenotypes (calculated by \code{\link{eigen_rotation}})
-#' @param X rotated covariate matrix (calculated by \code{\link{eigen_rotation}})
+#' @param Kva eigenvalues of K (calculated by [eigen_rotation()])
+#' @param y rotated phenotypes (calculated by [eigen_rotation()])
+#' @param X rotated covariate matrix (calculated by [eigen_rotation()])
 #' @param reml If TRUE, use REML; otherwise use ordinary maximum likelihood.
 #' @param use_cpp = if TRUE, use c++ version of code
 #'
 #' @export
 #' @return The log likelihood value, with the corresponding estimates
-#' of \code{beta} and \code{sigmasq} included as attributes.
+#' of `beta` and `sigmasq` included as attributes.
 #'
 #' @examples
 #' data(recla)
@@ -208,29 +208,29 @@ calcLL <-
 #'
 #' Fit a linear mixed model of the form y = Xb + e where e follows a
 #' multivariate normal distribution with mean 0 and variance matrix
-#' \code{sigmasq_g K + sigmasq_e I}, where \code{K} is a known kniship
-#' matrix and \code{I} is the identity matrix.
+#' `sigmasq_g K + sigmasq_e I`, where `K` is a known kniship
+#' matrix and `I` is the identity matrix.
 #'
-#' @param Kva Eigenvalues of K (calculated by \code{\link{eigen_rotation}})
-#' @param y Rotated phenotypes (calculated by \code{\link{eigen_rotation}})
-#' @param X Rotated covariate matrix (calculated by \code{\link{eigen_rotation}})
+#' @param Kva Eigenvalues of K (calculated by [eigen_rotation()])
+#' @param y Rotated phenotypes (calculated by [eigen_rotation()])
+#' @param X Rotated covariate matrix (calculated by [eigen_rotation()])
 #' @param reml If TRUE, use REML; otherwise use ordinary maximum likelihood.
 #' @param check_boundary If TRUE, explicitly check log likelihood at 0 and 1.
 #' @param tol Tolerance for convergence
 #' @param use_cpp = if TRUE, use c++ version of code
-#' @param compute_se = if TRUE, return the standard error of the \code{hsq}
+#' @param compute_se = if TRUE, return the standard error of the `hsq`
 #' estimate using the Fisher Information matrix of the MLE estimate. The
-#' standard error will be in an \code{attr} of  \code{hsq} in the output.
-#' Currently requires \code{use_cpp = FALSE}, and so if \code{compute_se=TRUE}
-#' we take \code{use_cpp=FALSE}.
+#' standard error will be in an `attr` of  `hsq` in the output.
+#' Currently requires `use_cpp = FALSE`, and so if `compute_se=TRUE`
+#' we take `use_cpp=FALSE`.
 #'
 #' @importFrom stats optim
 #'
 #' @export
-#' @return List containing estimates of \code{beta}, \code{sigmasq},
-#' \code{hsq}, \code{sigmasq_g}, and \code{sigmasq_e}, as well as the log
-#' likelihood (\code{loglik}). If \code{compute_se=TRUE}, the output also
-#' contains \code{hsq_se}.
+#' @return List containing estimates of `beta`, `sigmasq`,
+#' `hsq`, `sigmasq_g`, and `sigmasq_e`, as well as the log
+#' likelihood (`loglik`). If `compute_se=TRUE`, the output also
+#' contains `hsq_se`.
 #'
 #' @examples
 #' data(recla)

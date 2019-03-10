@@ -8,11 +8,11 @@ fitLMM(Kva, y, X, reml = TRUE, check_boundary = TRUE, tol = 0.0001,
   use_cpp = TRUE, compute_se = FALSE)
 }
 \arguments{
-\item{Kva}{Eigenvalues of K (calculated by \code{\link{eigen_rotation}})}
+\item{Kva}{Eigenvalues of K (calculated by \code{\link[=eigen_rotation]{eigen_rotation()}})}
 
-\item{y}{Rotated phenotypes (calculated by \code{\link{eigen_rotation}})}
+\item{y}{Rotated phenotypes (calculated by \code{\link[=eigen_rotation]{eigen_rotation()}})}
 
-\item{X}{Rotated covariate matrix (calculated by \code{\link{eigen_rotation}})}
+\item{X}{Rotated covariate matrix (calculated by \code{\link[=eigen_rotation]{eigen_rotation()}})}
 
 \item{reml}{If TRUE, use REML; otherwise use ordinary maximum likelihood.}
 
