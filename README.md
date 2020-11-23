@@ -1,6 +1,6 @@
 ## [R/lmmlite](https://kbroman.org/lmmlite) - R port of [pylmm](https://github.com/nickFurlotte/pylmm)
 
-[![Build Status](https://travis-ci.org/kbroman/lmmlite.svg?branch=master)](https://travis-ci.org/kbroman/lmmlite)
+[![R build status](https://github.com/kbroman/lmmlite/workflows/R-CMD-check/badge.svg)](https://github.com/kbroman/lmmlite/actions)
 
 Karl Broman (following the code in
 [Nick Furlotte](http://whatmind.com)'s [pylmm](https://github.com/nickFurlotte/pylmm))
