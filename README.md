@@ -1,6 +1,6 @@
 ## [R/lmmlite](https://kbroman.org/lmmlite) - R port of [pylmm](https://github.com/nickFurlotte/pylmm)
 
-[![Build Status](https://travis-ci.org/kbroman/lmmlite.svg?branch=master)](https://travis-ci.org/kbroman/lmmlite)
+[![R build status](https://github.com/kbroman/lmmlite/workflows/R-CMD-check/badge.svg)](https://github.com/kbroman/lmmlite/actions)
 
 Karl Broman (following the code in
 [Nick Furlotte](http://whatmind.com)'s [pylmm](https://github.com/nickFurlotte/pylmm))
@@ -18,7 +18,7 @@ for linear mixed models for genome-wide association studies
 
 - [Results compared](https://kbroman.org/lmmlite/assets/compare2pylmm.html)
   to [pylmm](https://github.com/nickFurlotte/pylmm) (and also the R package
-  [regress](https://cran.r-project.org/web/packages/regress/)).
+  [regress](https://cran.r-project.org/package=regress)).
   [[source](https://github.com/kbroman/lmmlite/blob/gh-pages/assets/compare2pylmm.Rmd)]
 
 - [Performance compared](https://kbroman.org/lmmlite/assets/performance.html)
@@ -34,16 +34,18 @@ You can install R/lmmlite from
 [GitHub](https://github.com/kbroman/lmmlite).
 
 You first need to install the
-[devtools](https://github.com/hadley/devtools)
-and [RcppEigen](https://github.com/RcppCore/RcppEigen) packages.
-([Rcpp](https://github.com/RcppCore/Rcpp) will also be installed.)
+[remotes](https://remotes.r-lib.org) pakcage.
 
-    install.packages(c("devtools", "RcppEigen"))
+    install.packages("remotes")
 
-Then use `devtools::install_github()` to install R/lmmlite.
+Then use `install_github()` to install R/lmmlite.
 
-    library(devtools)
+    library(remotes)
     install_github("kbroman/lmmlite")
+
+The [Rcpp](https://github.com/RcppCore/Rcpp) and
+[RcppEigen](https://github.com/RcppCore/RcppEigen) packages
+will also be installed.
 
 ---
 
