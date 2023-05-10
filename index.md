@@ -4,6 +4,9 @@ title: R/lmmlite
 description: R package for fitting linear mixed models for GWAS and QTL mapping
 ---
 
+[![R-CMD-check](https://github.com/kbroman/lmmlite/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/kbroman/lmmlite/actions/workflows/R-CMD-check.yaml)
+[![zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5149506.svg)](https://doi.org/10.5281/zenodo.5149506)
+
 R/lmmlite is an R package for fitting linear mixed models for
 genome-wide association studies (GWAS) and quantitative trait locus
 (QTL) mapping.
