@@ -1,6 +1,7 @@
 ## [R/lmmlite](https://kbroman.org/lmmlite) - R port of [pylmm](https://github.com/nickFurlotte/pylmm)
 
-[![R build status](https://github.com/kbroman/lmmlite/workflows/R-CMD-check/badge.svg)](https://github.com/kbroman/lmmlite/actions)
+[![R-CMD-check](https://github.com/kbroman/lmmlite/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/kbroman/lmmlite/actions/workflows/R-CMD-check.yaml)
+[![zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5149506.svg)](https://doi.org/10.5281/zenodo.5149506)
 
 Karl Broman (following the code in
 [Nick Furlotte](http://whatmind.com)'s [pylmm](https://github.com/nickFurlotte/pylmm))
