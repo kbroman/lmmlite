@@ -35,7 +35,7 @@ You can install R/lmmlite from
 [GitHub](https://github.com/kbroman/lmmlite).
 
 You first need to install the
-[remotes](https://remotes.r-lib.org) pakcage.
+[remotes](https://remotes.r-lib.org) package.
 
     install.packages("remotes")
 
