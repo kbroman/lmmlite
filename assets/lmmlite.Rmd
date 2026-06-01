@@ -31,8 +31,8 @@ data(recla)
 
 We'll focus here on the `recla` dataset that I include with the
 package. This is data on a set of diversity outcross mice, from
-[Recla et al. (2014)](https://www.ncbi.nlm.nih.gov/pubmed/24700285) and
-[Logan et al. (2013)](https://www.ncbi.nlm.nih.gov/pubmed/23433259). The data are
+[Recla et al. (2014)](https://pubmed.ncbi.nlm.nih.gov/24700285/) and
+[Logan et al. (2013)](https://pubmed.ncbi.nlm.nih.gov/23433259/). The data are
 originally from the
 [QTL Archive/Mouse Phenotype Database](https://phenome.jax.org/projects/Recla1)
 and I've also
@@ -54,7 +54,7 @@ The package includes two implementations of the fit of linear mixed models
 (LMMs): plain R, and C++ (using the
 [Rcpp](https://github.com/RcppCore/Rcpp) and
 [RcppEigen](https://github.com/RcppCore/RcppEigen) packages, the
-latter being an interface to the [Eigen](http://eigen.tuxfamily.org/)
+latter being an interface to the [Eigen](https://libeigen.gitlab.io/)
 C++ linear algebra library).
 
 R/lmmlite includes just four functions: `eigen_rotation()`,
