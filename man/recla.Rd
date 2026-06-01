@@ -3,8 +3,10 @@
 \name{recla}
 \alias{recla}
 \title{Example kinship, phenotype, and covariate data}
-\format{A list with three components, \code{kinship}, \code{pheno},
-and \code{covar}, each a matrix.}
+\format{
+A list with three components, \code{kinship}, \code{pheno},
+and \code{covar}, each a matrix.
+}
 \source{
 QTL Archive, \url{https://phenome.jax.org/projects/Recla1}
 }

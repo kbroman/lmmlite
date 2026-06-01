@@ -21,7 +21,7 @@ getMLsoln(hsq, Kva, y, X, reml = TRUE, use_cpp = TRUE)
 }
 \value{
 list containing \code{beta} and \code{sigmasq}, with residual
-sum of squares and (if \code{reml=TRUE}, \code{log det (XSX)}) as
+sum of squares and (if \code{reml=TRUE}, \verb{log det (XSX)}) as
 attributes.
 }
 \description{

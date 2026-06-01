@@ -4,8 +4,16 @@
 \alias{fitLMM}
 \title{Fit a linear mixed model}
 \usage{
-fitLMM(Kva, y, X, reml = TRUE, check_boundary = TRUE, tol = 0.0001,
-  use_cpp = TRUE, compute_se = FALSE)
+fitLMM(
+  Kva,
+  y,
+  X,
+  reml = TRUE,
+  check_boundary = TRUE,
+  tol = 0.0001,
+  use_cpp = TRUE,
+  compute_se = FALSE
+)
 }
 \arguments{
 \item{Kva}{Eigenvalues of K (calculated by \code{\link[=eigen_rotation]{eigen_rotation()}})}
@@ -37,7 +45,7 @@ contains \code{hsq_se}.
 \description{
 Fit a linear mixed model of the form y = Xb + e where e follows a
 multivariate normal distribution with mean 0 and variance matrix
-\code{sigmasq_g K + sigmasq_e I}, where \code{K} is a known kniship
+\verb{sigmasq_g K + sigmasq_e I}, where \code{K} is a known kniship
 matrix and \code{I} is the identity matrix.
 }
 \examples{
