@@ -8,6 +8,18 @@
 \description{
 A port of parts of 'pylmm' for fitting linear mixed models relevant to genome-wide association studies (GWAS) and quantitative trait locus (QTL) mapping.
 }
+\section{Vignettes}{
+
+\itemize{
+\item \href{https://kbroman.org/lmmlite/assets/lmmlite.html}{User guide}
+\item \href{https://kbroman.org/lmmlite/assets/compare2pylmm.html}{Results compared}
+to \href{https://github.com/nickFurlotte/pylmm}{pylmm} (and also the R package
+\href{https://cran.r-project.org/package=regress}{regress}).
+\item \href{https://kbroman.org/lmmlite/assets/performance.html}{Performance compared}
+to pylmm.
+}
+}
+
 \seealso{
 Useful links:
 \itemize{
