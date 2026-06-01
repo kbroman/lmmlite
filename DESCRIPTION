@@ -5,7 +5,10 @@ Title: Simple LMM Fitter for QTL Mapping
 Description: A port of parts of 'pylmm' for fitting linear mixed
     models relevant to genome-wide association studies (GWAS) and
     quantitative trait locus (QTL) mapping.
-Author: Karl W Broman (closely following the pylmm code by Nick Furlotte)
+Authors@: Karl W Broman [aut, cre] (ORCID: <https://orcid.org/0000-0002-4914-6671>, (closely following the pylmm code by Nick Furlotte))
+Authors@R: c(person("Karl W", "Broman", role=c("aut", "cre"),
+             email="broman@wisc.edu", comment=c(ORCID = "0000-0002-4914-6671",
+             "(closely following the pylmm code by Nick Furlotte)")))
 Maintainer: Karl W Broman <broman@wisc.edu>
 Depends:
     R (>= 3.1.0)
@@ -26,5 +29,5 @@ VignetteBuilder: knitr
 LinkingTo: Rcpp, RcppEigen
 Encoding: UTF-8
 ByteCompile: true
-RoxygenNote: 6.1.1
 Roxygen: list(markdown=TRUE)
+Config/roxygen2/version: 8.0.0
