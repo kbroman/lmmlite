@@ -9,7 +9,7 @@
 #'
 #' @details These are data for a set of diversity outcross mice. The
 #' kinship matrix was calculated from MUGA array data, using the
-#' [R/qtl2](https://kbroman.org/qtl2/) package.
+#' [R/qtl2](https://kbroman.org/qtl2) package.
 #'
 #' @format A list with three components, `kinship`, `pheno`,
 #' and `covar`, each a matrix.

@@ -18,7 +18,7 @@ Logan et al. (2013)
 \details{
 These are data for a set of diversity outcross mice. The
 kinship matrix was calculated from MUGA array data, using the
-\href{https://kbroman.org/qtl2/}{R/qtl2} package.
+\href{https://kbroman.org/qtl2}{R/qtl2} package.
 }
 \examples{
 data(recla)
