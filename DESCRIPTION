@@ -5,7 +5,7 @@ Title: Simple LMM Fitter for QTL Mapping
 Description: A port of parts of 'pylmm' for fitting linear mixed
     models relevant to genome-wide association studies (GWAS) and
     quantitative trait locus (QTL) mapping.
-Authors@: Karl W Broman [aut, cre] (ORCID: <https://orcid.org/0000-0002-4914-6671>, (closely following the pylmm code by Nick Furlotte))
+Author: Karl W Broman [aut, cre] (ORCID: <https://orcid.org/0000-0002-4914-6671>, (closely following the pylmm code by Nick Furlotte))
 Authors@R: c(person("Karl W", "Broman", role=c("aut", "cre"),
              email="broman@wisc.edu", comment=c(ORCID = "0000-0002-4914-6671",
              "(closely following the pylmm code by Nick Furlotte)")))
@@ -22,7 +22,7 @@ Suggests:
     knitr,
     rmarkdown
 License: AGPL-3
-URL: https://kbroman.org/lmmlite, https://github.com/kbroman/lmmlite
+URL: https://kbroman.org/lmmlite/, https://github.com/kbroman/lmmlite
 BugReports: https://github.com/kbroman/lmmlite/issues
 LazyData: true
 VignetteBuilder: knitr

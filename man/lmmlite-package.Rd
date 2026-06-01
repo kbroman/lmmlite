@@ -23,7 +23,7 @@ to pylmm.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://kbroman.org/lmmlite}
+  \item \url{https://kbroman.org/lmmlite/}
   \item \url{https://github.com/kbroman/lmmlite}
   \item Report bugs at \url{https://github.com/kbroman/lmmlite/issues}
 }
