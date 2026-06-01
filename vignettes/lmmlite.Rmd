@@ -7,7 +7,7 @@ vignette: >
   \usepackage[utf8](inputenc)
 ---
 
-[R/lmmlite](https://kbroman.org/lmmlite) is an R package for fitting linear
+[R/lmmlite](https://kbroman.org/lmmlite/) is an R package for fitting linear
 mixed models in the context of genome-wide association studies (GWAS)
 and quantitative trait locus (QTL) mapping. At present, **it is not intended for
 "production" use.** I wrote this to try to get a better
@@ -37,7 +37,7 @@ originally from the
 [QTL Archive/Mouse Phenotype Database](https://phenome.jax.org/projects/Recla1)
 and I've also
 [placed them online](https://github.com/kbroman/qtl2data/tree/master/DO_Recla)
-in the format used by [R/qtl2](https://kbroman.org/qtl2). I used
+in the format used by [R/qtl2](https://kbroman.org/qtl2/). I used
 [qtl2geno](https://github.com/rqtl/qtl2geno) to calculate genotype
 probabilities from the MUGA SNP array data. The data include
 `r nrow(recla$kinship)` mice, and form a list with three components:
