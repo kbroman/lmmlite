@@ -1,6 +1,7 @@
 ## [R/lmmlite](https://kbroman.org/lmmlite/) - R port of [pylmm](https://github.com/nickFurlotte/pylmm)
 
 [![R-CMD-check](https://github.com/kbroman/lmmlite/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/kbroman/lmmlite/actions/workflows/R-CMD-check.yaml)
+[![r-universe badge](https://kbroman.r-universe.dev/lmmlite/badges/version)](https://kbroman.r-universe.dev/lmmlite)
 [![zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5149506.svg)](https://doi.org/10.5281/zenodo.5149506)
 
 Karl Broman (following the code in
@@ -31,18 +32,22 @@ for linear mixed models for genome-wide association studies
 
 ### Installation
 
-You can install R/lmmlite from
-[GitHub](https://github.com/kbroman/lmmlite).
+Install circplot from
+[R-universe](https://kbroman.r-universe.dev/lmmlite):
 
-You first need to install the
-[remotes](https://remotes.r-lib.org) package.
+```r
+install.packages("lmmlite", repos=c("https://kbroman.r-universe.dev",
+                                    "https://cloud.r-project.org"))
+```
 
-    install.packages("remotes")
+Or install it from github using the [remotes](https://remotes.r-lib.org)
+package:
 
-Then use `install_github()` to install R/lmmlite.
-
-    library(remotes)
-    install_github("kbroman/lmmlite")
+```r
+install.packages("remotes")
+library(remotes)
+install_github("kbroman/lmmlite")
+```
 
 The [Rcpp](https://github.com/RcppCore/Rcpp) and
 [RcppEigen](https://github.com/RcppCore/RcppEigen) packages
